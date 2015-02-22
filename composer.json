@@ -9,7 +9,7 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Stopsopa\\UtilsBundle": "src/" }
+        "psr-0": { "": "src/", "SymfonyStandard": "app/", "Stopsopa\\UtilsBundle": "src/" }
     },
     "require": {
         "symfony/framework-standard-edition" : "2.3.*"
