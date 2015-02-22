@@ -15,12 +15,11 @@
         "symfony/framework-standard-edition" : "2.3.*"
     },
     "scripts" : {
-        "post-root-package-install" : "Stopsopa\\UtilsBundle\\Init::install",
         
         "pre-install-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-install-cmd"          : "Stopsopa\\UtilsBundle\\Init::install",
         "pre-update-cmd"            : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-update-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
+        
+        
         "pre-status-cmd"            : "Stopsopa\\UtilsBundle\\Init::install",
         "post-status-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
         "pre-dependencies-solving"  : "Stopsopa\\UtilsBundle\\Init::install",
@@ -36,6 +35,30 @@
         "post-root-package"         : "Stopsopa\\UtilsBundle\\Init::install",
         "post-create-project"       : "Stopsopa\\UtilsBundle\\Init::install",
         "pre-archive-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-archive-cmd"          : "Stopsopa\\UtilsBundle\\Init::install"
+        "post-archive-cmd"          : "Stopsopa\\UtilsBundle\\Init::install",
+        
+        
+        
+        
+        "post-root-package-install": [
+            "SymfonyStandard\\Composer::hookRootPackageInstall",
+            "Stopsopa\\UtilsBundle\\Init::install"
+        ],
+        "post-install-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+        ],
+        "post-update-cmd": [
+            "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::buildBootstrap",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
+            "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
+        ]
     }
 }
