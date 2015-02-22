@@ -1,3 +1,5 @@
+composer create-project stopsopa/utils runtime "dev-master"
+
 
 <h1>stopsopa/annotations</h1>
 
