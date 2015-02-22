@@ -12,7 +12,7 @@
         "psr-0": { "Stopsopa\\UtilsBundle": "src/" }
     },
     "require": {
-        "symfony/framework-standard-edition" : "dev-master"
+        "symfony/framework-standard-edition" : "2.3.*"
     },
     "scripts" : {
         "pre-install-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
