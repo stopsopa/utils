@@ -11,7 +11,9 @@
     "autoload": {
         "psr-0": { "Stopsopa\\UtilsBundle": "src/" }
     },
-    "require": {},
+    "require": {
+        "symfony/framework-standard-edition" : "dev-master"
+    },
     "scripts" : {
         "pre-install-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
         "post-install-cmd"          : "Stopsopa\\UtilsBundle\\Init::install",
