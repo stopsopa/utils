@@ -1,48 +1,33 @@
 {
-    "name": "stopsopa/utils",
-    "description": "Utils libraries",
+    "name": "symfony/framework-standard-edition",
     "license": "MIT",
-    "authors": [
-        {
-            "name": "Szymon Działowski",
-            "email": "szymon.dzialowski@gmail.com"
-        }
-    ],
+    "type": "project",
+    "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
-        "psr-0": { "": "src/", "SymfonyStandard": "app/", "Stopsopa\\UtilsBundle": "src/" }
+        "psr-0": { "": "src/", "SymfonyStandard": "app/" }
     },
     "require": {
-        "symfony/framework-standard-edition" : "2.3.*"
+        "php": ">=5.3.3",
+        "symfony/symfony": "2.6.*",
+        "doctrine/orm": "~2.2,>=2.2.3,<2.5",
+        "doctrine/dbal": "<2.5",
+        "doctrine/doctrine-bundle": "~1.2",
+        "twig/extensions": "~1.0",
+        "symfony/assetic-bundle": "~2.3",
+        "symfony/swiftmailer-bundle": "~2.3",
+        "symfony/monolog-bundle": "~2.4",
+        "sensio/distribution-bundle": "~3.0,>=3.0.12",
+        "sensio/framework-extra-bundle": "~3.0,>=3.0.2",
+        "incenteev/composer-parameter-handler": "~2.0",        
+        
+        "stopsopa/utils": "dev-master"
     },
-    "scripts" : {
-        
-        "pre-install-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
-        "pre-update-cmd"            : "Stopsopa\\UtilsBundle\\Init::install",
-        
-        
-        "pre-status-cmd"            : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-status-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
-        "pre-dependencies-solving"  : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-dependencies-solving" : "Stopsopa\\UtilsBundle\\Init::install",
-        "pre-package-install"       : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-package-install"      : "Stopsopa\\UtilsBundle\\Init::install",
-        "pre-package-update"        : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-package-update"       : "Stopsopa\\UtilsBundle\\Init::install",
-        "pre-package-uninstall"     : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-package-uninstall"    : "Stopsopa\\UtilsBundle\\Init::install",
-        "pre-autoload-dump"         : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-autoload-dump"        : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-root-package"         : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-create-project"       : "Stopsopa\\UtilsBundle\\Init::install",
-        "pre-archive-cmd"           : "Stopsopa\\UtilsBundle\\Init::install",
-        "post-archive-cmd"          : "Stopsopa\\UtilsBundle\\Init::install",
-        
-        
-        
-        
+    "require-dev": {
+        "sensio/generator-bundle": "~2.3"
+    },
+    "scripts": {
         "post-root-package-install": [
-            "SymfonyStandard\\Composer::hookRootPackageInstall",
-            "Stopsopa\\UtilsBundle\\Init::install"
+            "SymfonyStandard\\Composer::hookRootPackageInstall"
         ],
         "post-install-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -60,5 +45,19 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::removeSymfonyStandardFiles"
         ]
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "extra": {
+        "symfony-app-dir": "app",
+        "symfony-web-dir": "web",
+        "symfony-assets-install": "relative",
+        "incenteev-parameters": {
+            "file": "app/config/parameters.yml"
+        },
+        "branch-alias": {
+            "dev-master": "2.6-dev"
+        }
     }
 }
