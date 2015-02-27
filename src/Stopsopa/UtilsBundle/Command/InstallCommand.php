@@ -2,9 +2,8 @@
 
 namespace Stopsopa\UtilsBundle\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InstallCommand extends AbstractCommand {
@@ -21,7 +20,8 @@ class InstallCommand extends AbstractCommand {
      */
     public function execute(InputInterface $input, OutputInterface $output) 
     {
-        $this->init($input, $output, true);
+        die(AbstractApp::getRootDir());
+//        $this->init($input, $output, true);
         
         $output->writeln('go');
     }

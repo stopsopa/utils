@@ -112,7 +112,7 @@ class UtilArray
      *
      * @return boolean
      */
-    public static function isAssoc($data)
+    public static function isAssoc(&$data)
     {
         $i = 0;
         foreach ($data as $k => $d) {

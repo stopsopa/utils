@@ -97,68 +97,67 @@ abstract class AbstractCommand extends ContainerAwareCommand {
      * @param OutputInterface $output
      * @param string|array $em
      */
-    protected function init(InputInterface $input, OutputInterface $output, $em = null) {
+    protected function init(InputInterface $input, OutputInterface $output, $em = null) {        
         
-      
-      if ($em === true)
-        $em = 'default';
-      
-      if (is_null($em)) 
-        throw new Exception("Ustaw najpierw parametr 'em' np: 'old' lub ustaw wartość 'true' aby wybrać domyślny manager. ".__METHOD__);      
+        if ($em === true)
+            $em = 'default';
 
-      $this->input   = $input;
-      $this->output  = $output;
-      if (is_string($em)) {
-        $this->em      = $this->getContainer()->get("doctrine.orm.{$em}_entity_manager");
-        $this->dbal    = $this->em->getConnection();
-      }
-      if (is_array($em)) {
-        $this->em      = array();
-        $this->dbal    = array();
-        foreach ($em as $d) {
-          $this->em[$d]   = $this->getContainer()->get("doctrine.orm.{$d}_entity_manager");
-          $this->dbal[$d] = $this->em[$d]->getConnection();
-        }
-      }
+        if (is_null($em)) 
+            throw new Exception("Ustaw najpierw parametr 'em' np: 'old' lub ustaw wartość 'true' aby wybrać domyślny manager. ".__METHOD__);      
 
-      /**
-       * Przestawiam domyślny język
-       */
-      try {
-//          niechginiee('opt');
-//          niechginie($input->getOption('lang'));
-        if ($lang = $input->getOption('lang'))
-          $this->getContainer()->parameters['locale'] = $lang;        
-      }
-      catch (InvalidArgumentException $e) {
-        if (strpos($e->getMessage(), ' option does not exist') !== false) {
-          echo $e->getMessage().PHP_EOL;
-          die("
-Trzeba pdmienić ścieżkę do klasy w app/console z:
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-na:
-use Cms\BaseBundle\Classes\Application;
-");          
+        $this->input   = $input;
+        $this->output  = $output;
+        if (is_string($em)) {
+            $this->em      = $this->getContainer()->get("doctrine.orm.{$em}_entity_manager");
+            $this->dbal    = $this->em->getConnection();
         }
-      }
+        if (is_array($em)) {
+            $this->em      = array();
+            $this->dbal    = array();
+            foreach ($em as $d) {
+                $this->em[$d]   = $this->getContainer()->get("doctrine.orm.{$d}_entity_manager");
+                $this->dbal[$d] = $this->em[$d]->getConnection();
+            }
+        }
+
+        /**
+         * Przestawiam domyślny język
+         */
+        try {
+  //          niechginiee('opt');
+  //          niechginie($input->getOption('lang'));
+            if ($lang = $input->getOption('lang'))
+                $this->getContainer()->parameters['locale'] = $lang;        
+        }
+        catch (InvalidArgumentException $e) {
+            if (strpos($e->getMessage(), ' option does not exist') !== false) {
+                echo $e->getMessage().PHP_EOL;
+                die("
+  Trzeba pdmienić ścieżkę do klasy w app/console z:
+  use Symfony\Bundle\FrameworkBundle\Console\Application;
+  na:
+  use Cms\BaseBundle\Classes\Application;
+  ");          
+            }
+        }
     }
 
     protected function _getOutput() {
       
-      if (!$this->output) 
-        throw new Exception("Before you user output first user \$this->init(\$input, \$output); in method ->execute() in this command class...");
-      
-      return $this->output;
+        if (!$this->output) 
+            throw new Exception("Before you user output first user \$this->init(\$input, \$output); in method ->execute() in this command class...");
+
+        return $this->output;
     }
 
     protected function writeln($str) {
 //      echo $str.PHP_EOL;
-      $this->_getOutput()->writeln($str);
+        $this->_getOutput()->writeln($str);
 //      return $this;
     }
     protected function write($str) {
 //      echo $str;
-      $this->_getOutput()->write($str);
+        $this->_getOutput()->write($str);
 //      return $this;
     }
     /**
@@ -166,7 +165,7 @@ use Cms\BaseBundle\Classes\Application;
      * @param int $count
      */
     public function setSum($count) {
-      $this->count = $count;
+        $this->count = $count;
     }
     /**
      * Szymon Działowski
@@ -174,15 +173,15 @@ use Cms\BaseBundle\Classes\Application;
      */
     protected $_i = 0;
     public function viewProgress($num, $length = 75, $signs = '[#-]') {
-      if ($this->_i > 100000000) $this->_i = 0;
-        $this->_i++;
+        if ($this->_i > 100000000) $this->_i = 0;
+            $this->_i++;
 
-      $percent = floor(($num / $this->count) * 100);
-      $percent = str_pad($percent,     3, ' ', STR_PAD_LEFT);
+        $percent = floor(($num / $this->count) * 100);
+        $percent = str_pad($percent,     3, ' ', STR_PAD_LEFT);
 
-      $count     = str_pad("$num/{$this->count}", 16, ' ', STR_PAD_LEFT);
-      $k = '|/-\\';
-      $this->write("\rPending: $count : ".$this->_buildBelt($percent,$length,$signs).' '.($k[($this->_i)%4])." $percent% ");
+        $count     = str_pad("$num/{$this->count}", 16, ' ', STR_PAD_LEFT);
+        $k = '|/-\\';
+        $this->write("\rPending: $count : ".$this->_buildBelt($percent,$length,$signs).' '.($k[($this->_i)%4])." $percent% ");
     }
     /**
      * Szymon Działowski
@@ -191,16 +190,16 @@ use Cms\BaseBundle\Classes\Application;
      * @return string
      */
     protected function _buildBelt($percent,$length = 50,$signs = '[= ]') {
-      $fill  = floor(($length/100)*$percent);
-      $empty = ceil(($length/100)*(100-$percent));
-      return trim($signs[0].str_repeat($signs[1], $fill).str_repeat($signs[2], $empty).$signs[3]);
+        $fill  = floor(($length/100)*$percent);
+        $empty = ceil(($length/100)*(100-$percent));
+        return trim($signs[0].str_repeat($signs[1], $fill).str_repeat($signs[2], $empty).$signs[3]);
     }
 
     public function getDialog() {
         $dialog = $this->getHelperSet()->get('dialog');
-        if (!$dialog || get_class($dialog) !== 'Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper') {
-            $this->getHelperSet()->set($dialog = new DialogHelper());
-        }
+        
+        if (!$dialog || get_class($dialog) !== 'Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper') 
+            $this->getHelperSet()->set($dialog = new DialogHelper());        
 
         return $dialog;
     }

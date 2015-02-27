@@ -2,14 +2,21 @@
 
 namespace Stopsopa\UtilsBundle\Lib;
 
+use Exception;
+use Stopsopa\UtilsBundle\Exception\NoFrameworkException;
+use ReflectionClass;
+
+// klasy do przerzucenia bo wymuszają zależności
 use Symfony\Component\HttpKernel\Kernel;
 use AppCache;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Exception;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Stopsopa\UtilsBundle\Lib\AbstractApp
+ */
 class AbstractApp
 {
     /**
@@ -26,8 +33,7 @@ class AbstractApp
     CONST SERVICE_ENGINE         = 'site.engine';
     CONST SERVICE_TEMPLATING     = 'templating';
     CONST SERVICE_VERSIONED      = 'service.cmsbase.versioned.service';
-    CONST SERVICE_DBALLIGHT      = 'cmsbase.dballight.service';
-    
+    CONST SERVICE_DBALLIGHT      = 'cmsbase.dballight.service';    
     
     protected static $_kernel;
     /**
@@ -37,6 +43,10 @@ class AbstractApp
     {
         if (!static::$_kernel) {
             global $kernel;
+            
+            if (!isset($kernel)) 
+                throw new NoFrameworkException("UtilsBundle nie uzyskał dostępu do komponentów symfony");
+            
             static::$_kernel = $kernel;
             if ($kernel instanceof AppCache) {
                 static::$_kernel = $kernel->getKernel();
@@ -108,24 +118,43 @@ class AbstractApp
 
         return $path;
     }
+    protected static $root;
+
     /**
      * Zwraca ścieżkę do katalogu głównego projektu
      * @param bool $bundlepath - def: false, true - absolute path to current bundle
      * @return string
      */
     public static function getRootDir($bundlepath = false) {
-        $dir = dirname(static::getCont()->getParameter('kernel.root_dir'));
+        
+        // przyspieszenie
+        if (static::$root) 
+            return static::$root;
+        
+        try {
+            $dir = dirname(static::getCont()->getParameter('kernel.root_dir'));
 
-        if ($bundlepath) {
-            return static::getKernel()->getBundle($bundlepath)->getPath();
-//            $n = get_called_class();
-//            $n = substr($n, 0, -strlen(strrchr($n, '\\')));
-//            $n = substr($n, 0, -strlen(strrchr($n, '\\')));
-//            $n = str_replace('\\', '/', $n);
-//            $dir .= "/src/$n";
+            if ($bundlepath) {
+                return static::getKernel()->getBundle($bundlepath)->getPath();
+    //            $n = get_called_class();
+    //            $n = substr($n, 0, -strlen(strrchr($n, '\\')));
+    //            $n = substr($n, 0, -strlen(strrchr($n, '\\')));
+    //            $n = str_replace('\\', '/', $n);
+    //            $dir .= "/src/$n";
+            }
+
+            return $dir;            
+        } catch (NoFrameworkException $ex) {
+            
+            // nie wiem czy to najlepsze ale najwyżej później to wymienie
+            if (!static::$root) {
+                $reflection = new ReflectionClass('Composer\Autoload\ClassLoader');
+                $file = $reflection->getFileName();
+                static::$root = dirname(dirname(dirname($path)));
+            }            
+            
+            return static::$root;
         }
-
-        return $dir;
     }
     /**
      * ---------- wyleci do AppGenerated.php
