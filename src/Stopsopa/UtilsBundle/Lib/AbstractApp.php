@@ -33,8 +33,8 @@ class AbstractApp
     CONST SERVICE_ENGINE         = 'site.engine';
     CONST SERVICE_TEMPLATING     = 'templating';
     CONST SERVICE_VERSIONED      = 'service.cmsbase.versioned.service';
-    CONST SERVICE_DBALLIGHT      = 'cmsbase.dballight.service';    
-    
+    CONST SERVICE_DBALLIGHT      = 'cmsbase.dballight.service';
+
     protected static $_kernel;
     /**
      * @return Kernel
@@ -43,10 +43,10 @@ class AbstractApp
     {
         if (!static::$_kernel) {
             global $kernel;
-            
-            if (!isset($kernel)) 
+
+            if (!isset($kernel))
                 throw new NoFrameworkException("UtilsBundle nie uzyskał dostępu do komponentów symfony");
-            
+
             static::$_kernel = $kernel;
             if ($kernel instanceof AppCache) {
                 static::$_kernel = $kernel->getKernel();
@@ -84,16 +84,16 @@ class AbstractApp
      * @return mixed
      */
     public static function getParam($name) {
-        
-        if ($param = static::getCont()->hasParameter($name)) 
-            return static::getCont()->getParameter($name);      
+
+        if ($param = static::getCont()->hasParameter($name))
+            return static::getCont()->getParameter($name);
 
         if (strpos($name, '.') !== false) {
             $parts = explode('.', $name, 2);
             $data = static::getCont()->getParameter($parts[0]);
             $data = UtilArray::cascadeGet($data, $parts[1]);
-            if ($data) 
-                return $data;          
+            if ($data)
+                return $data;
         }
         return static::getCont()->getParameter($name);
     }
@@ -126,11 +126,11 @@ class AbstractApp
      * @return string
      */
     public static function getRootDir($bundlepath = false) {
-        
+
         // przyspieszenie
-        if (static::$root) 
+        if (static::$root)
             return static::$root;
-        
+
         try {
             $dir = dirname(static::getCont()->getParameter('kernel.root_dir'));
 
@@ -143,28 +143,27 @@ class AbstractApp
     //            $dir .= "/src/$n";
             }
 
-            return $dir;            
+            return $dir;
         } catch (NoFrameworkException $ex) {
-            
+
             // nie wiem czy to najlepsze ale najwyżej później to wymienie
             if (!static::$root) {
                 $reflection = new ReflectionClass('Composer\Autoload\ClassLoader');
-                $file = $reflection->getFileName();
-                static::$root = dirname(dirname(dirname($path)));
-            }            
-            
+                static::$root = dirname(dirname(dirname($reflection->getFileName())));
+            }
+
             return static::$root;
         }
     }
     /**
      * ---------- wyleci do AppGenerated.php
      * tam gdzie będzie AbstractEntity
-     * 
-     * 
-     * 
-     * Wywoływać 
+     *
+     *
+     *
+     * Wywoływać
      * $this->getClassMetadata($this); -- jeśli z wywoływane z wewnątrz AbstractManager
-     * lub 
+     * lub
      * App::getClassMetadata('string'|object);
      * @param type $class
      * @return type
@@ -173,24 +172,24 @@ class AbstractApp
     public static function getClassMetadata($class = null, $em = 'default') {
         if (is_object($class)) {
             throw new Exception("Aby podać obiekt jako pierwszy argument do metody getClassMetadata() trzeba nadpisać metodę w AppGenerated.php");
-//            if ($class instanceof AbstractManager) 
+//            if ($class instanceof AbstractManager)
 //                /* @var $class AbstractManager */
-//                $class = $class->getClass();          
-//            else           
-//                $class = AbstractEntity::getClassNamespace($class);          
+//                $class = $class->getClass();
+//            else
+//                $class = AbstractEntity::getClassNamespace($class);
         }
 
-        if (!$class) 
+        if (!$class)
             throw new Exception("Parameter class is not string, is: ".  gettype($class));
 
         return static::getEntityManager($em)->getClassMetadata($class);
     }
     /**
-     * Wywoływać 
+     * Wywoływać
      * $this->getTableNameByClass($this); -- jeśli z wywoływane z wewnątrz AbstractManager
-     * lub 
+     * lub
      * App::getTableNameByClass('string'|object);
-     * 
+     *
      * Całkiem możliwe że trzeba będzie to wywalić i po prostu po ludzku zdefiniować nazwy tabel na sztywno w encjach
      * bo całe zamieszanie powstaje przy generowaniu nazw tabel na podstawie encji
      *
@@ -200,7 +199,7 @@ class AbstractApp
      * ...linux rozróżnia wielkość liter w nazwach plików a windows nie
      * @return type
      */
-    public static function getTableNameByClass($class = null) {      
+    public static function getTableNameByClass($class = null) {
         $tableName = static::getClassMetadata($class)->getTableName();
 
         if (preg_match('/win/', strtolower(PHP_OS)))
@@ -208,7 +207,7 @@ class AbstractApp
 
         return $tableName;
     }
-    
+
 
     /**
      * @param string $type default or forum
@@ -224,10 +223,10 @@ class AbstractApp
     public static function getDbal($type = 'default') {
         return static::getEntityManager($type)->getConnection();
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * @return Router
      */
@@ -262,9 +261,9 @@ class AbstractApp
 //    }
 //    public static function isGoogleBoot($request = null) {
 //      /* @var $request Request */
-//      if (!$request) 
+//      if (!$request)
 //        $request = static::getRequest();
-//      
+//
 //      return ( preg_match('/Googlebot/', $request->server->get('HTTP_USER_AGENT', '')) );
 //    }
     /**
@@ -291,7 +290,7 @@ class AbstractApp
 //      }
 //      return false;
 //    }
-//    public static function trans($id, $parameters = null, $domain = null, $locale = null) {	
+//    public static function trans($id, $parameters = null, $domain = null, $locale = null) {
 //	if (is_string($parameters)) {
 //	    $domain = $parameters;
 //	    $parameters = array();
@@ -300,20 +299,20 @@ class AbstractApp
 //    }
 //    public static function getTwigDir($sfname) {
 //        $parts = explode(':', $sfname);
-//        
+//
 //        if (count($parts) != 3)
 //            throw new Exception("Twig symfony path '$sfname' is not valid");
-//        
+//
 //        if ($parts[0]) {
 //            $dir = self::getRootDir($parts[0])."/Resources/views";
 //        }
 //        else {
 //            $dir = self::getRootDir()."/app/Resources/views";
 //        }
-//        
-//        if ($parts[1]) 
+//
+//        if ($parts[1])
 //            return $dir."/".$parts[1];
-//        
+//
 //        return $dir;
 //    }
 
@@ -321,10 +320,10 @@ class AbstractApp
 //        $dir = self::getTwigDir($sfname);
 //        $parts = explode(':', $sfname);
 //        $file = "$dir/$parts[2]";
-//        
-//        if (file_exists($file)) 
+//
+//        if (file_exists($file))
 //            return file_get_contents($file);
-//        
+//
 //        throw new Exception("Template '$sfname' not found");
 //    }
     /**
@@ -332,10 +331,10 @@ class AbstractApp
      * np: 'CmsBundle:Admin:index.html.twig'
      */
 //    public static function isTemplateValidSfPath($source) {
-//        
-//        if (strpos($source, "\n") !== false) 
+//
+//        if (strpos($source, "\n") !== false)
 //            return false;
-//        
+//
 //        return (bool)preg_match('#^([a-z_\-]*)?\:([a-z_\-]*)?\:[a-z_\-\\\\.]+$#i', $source);
 //    }
     /**
@@ -343,16 +342,16 @@ class AbstractApp
      * @return Translator
      */
 //    public static function getServiceTranslator() {
-//      return static::get(static::SERVICE_TRANSLATOR);      
+//      return static::get(static::SERVICE_TRANSLATOR);
 //    }
 //    /**
 //     * Tłumaczenia encji systemu cms
 //     * @return VersionedService
 //     */
 //    public static function getServiceVersioned() {
-//      return static::get(static::SERVICE_VERSIONED);      
+//      return static::get(static::SERVICE_VERSIONED);
 //    }
-//    /**     
+//    /**
 //     * @return TwigEngine
 //     */
 //    public static function getServiceTemplating() {
@@ -369,20 +368,20 @@ class AbstractApp
 //     */
 //    public static function getServiceEngine() {
 //        return static::get(static::SERVICE_ENGINE);
-//    }  
-//    
+//    }
+//
 //    public static function getRoutingParams($name) {
 //        $service = self::getRouter();
 //        /* @var $data Route */
 //        $data = $service->getRouteCollection()->get($name);
 //        if ($data) {
 //            preg_match_all('#\{([^}]+)\}#i', $data->getPath(), $matches);
-//            if (@is_array($matches[1])) 
+//            if (@is_array($matches[1]))
 //                return $matches[1];
-//            
+//
 //            return array();
 //        }
-//        
+//
 //        throw new Exception("Not found Route by name: '$name'");
 //    }
 
@@ -392,13 +391,13 @@ class AbstractApp
 //        $data = $service->getRouteCollection()->get($name);
 //        if ($data) {
 //            foreach (self::getRoutingParams($name) as $param) {
-//                if ($data->getDefault($param) === null) 
+//                if ($data->getDefault($param) === null)
 //                    return false;
 //            }
 //            return true;
 //        }
-//        
-//        
+//
+//
 //        throw new Exception("Not found Route by name: '$name'");
 //    }
 //    /**
