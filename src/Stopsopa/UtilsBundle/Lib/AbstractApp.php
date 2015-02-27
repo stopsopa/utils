@@ -39,22 +39,35 @@ class AbstractApp
     /**
      * @return Kernel
      */
-    public static function getKernel()
+    public static function getKernel($hrow = true)
     {
         if (!static::$_kernel) {
             global $kernel;
 
-            if (!isset($kernel))
-                throw new NoFrameworkException("UtilsBundle nie uzyskał dostępu do komponentów symfony");
+            if (!isset($kernel)) {
+                
+                if ($hrow) 
+                    throw new NoFrameworkException("UtilsBundle nie uzyskał dostępu do komponentów symfony");                
+                
+                return null;                
+            }
 
             static::$_kernel = $kernel;
-            if ($kernel instanceof AppCache) {
-                static::$_kernel = $kernel->getKernel();
-            }
+            if ($kernel instanceof AppCache) 
+                static::$_kernel = $kernel->getKernel();            
         }
 
         return static::$_kernel;
     }
+    protected static $issymfony;
+    public static function isSymfony() 
+    {
+        if (static::$issymfony === null) 
+            static::$issymfony = (bool)static::getKernel(false);
+        
+        return static::$issymfony;
+    }
+
     /**
      * @return ContainerInterface
      */
@@ -126,12 +139,7 @@ class AbstractApp
      * @return string
      */
     public static function getRootDir($bundlepath = false) {
-
-        // przyspieszenie
-        if (static::$root)
-            return static::$root;
-
-        try {
+        if (static::isSymfony()) {
             $dir = dirname(static::getCont()->getParameter('kernel.root_dir'));
 
             if ($bundlepath) {
@@ -144,15 +152,15 @@ class AbstractApp
             }
 
             return $dir;
-        } catch (NoFrameworkException $ex) {
-
+        }
+        else {
             // nie wiem czy to najlepsze ale najwyżej później to wymienie
             if (!static::$root) {
                 $reflection = new ReflectionClass('Composer\Autoload\ClassLoader');
                 static::$root = dirname(dirname(dirname($reflection->getFileName())));
             }
 
-            return static::$root;
+            return static::$root;            
         }
     }
     /**
