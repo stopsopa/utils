@@ -99,14 +99,18 @@ abstract class AbstractCommand extends ContainerAwareCommand {
      */
     protected function init(InputInterface $input, OutputInterface $output, $em = null) {        
         
+        $this->input   = $input;
+        $this->output  = $output;
+        
+        if ($em === false) 
+            return;
+        
         if ($em === true)
             $em = 'default';
 
-        if (is_null($em)) 
+        if (is_null($em))
             throw new Exception("Ustaw najpierw parametr 'em' np: 'old' lub ustaw wartość 'true' aby wybrać domyślny manager. ".__METHOD__);      
 
-        $this->input   = $input;
-        $this->output  = $output;
         if (is_string($em)) {
             $this->em      = $this->getContainer()->get("doctrine.orm.{$em}_entity_manager");
             $this->dbal    = $this->em->getConnection();
