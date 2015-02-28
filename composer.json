@@ -12,6 +12,6 @@
         "psr-0": {"": "src/"}
     },
     "require" : {
-        "symfony/console": "dev-master"
+        "symfony/console": ">=2.0"
     }
 }
