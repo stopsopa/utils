@@ -33,6 +33,7 @@ if (strpos($_SERVER['PHP_SELF'], 'Stopsopa/UtilsBundle/Command') !== false) {
     $output = new ConsoleOutput();
     $output->writeln("<fg=magenta>Tip: Create script named 'console' in main directory of project:</fg=magenta>");
     $output->writeln("");
+    $output->writeln("<fg=magenta>  #!/bin/php</fg=magenta>");
     $output->writeln("<fg=magenta>  <?php</fg=magenta>");
     $output->writeln("<fg=magenta>  require_once 'vendor/stopsopa/utils/src/Stopsopa/UtilsBundle/Command/command.php';</fg=magenta>");
     $output->writeln("");
