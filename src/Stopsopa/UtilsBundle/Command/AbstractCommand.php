@@ -7,16 +7,16 @@ use Doctrine\ORM\EntityManager;
 use Exception;
 use InvalidArgumentException;
 use Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Cms\BaseBundle\Services\AbstractService;
-
+use Symfony\Component\Console\Command\Command;
 
 /**
  * Cms\BaseBundle\Command\AbstractCommand
  */
-abstract class AbstractCommand extends ContainerAwareCommand {
+abstract class AbstractCommand extends Command {
 
     /**
      * @var Connection
@@ -112,14 +112,14 @@ abstract class AbstractCommand extends ContainerAwareCommand {
             throw new Exception("Ustaw najpierw parametr 'em' np: 'old' lub ustaw wartość 'true' aby wybrać domyślny manager. ".__METHOD__);      
 
         if (is_string($em)) {
-            $this->em      = $this->getContainer()->get("doctrine.orm.{$em}_entity_manager");
+            $this->em      = AbstractApp::get("doctrine.orm.{$em}_entity_manager");
             $this->dbal    = $this->em->getConnection();
         }
         if (is_array($em)) {
             $this->em      = array();
             $this->dbal    = array();
             foreach ($em as $d) {
-                $this->em[$d]   = $this->getContainer()->get("doctrine.orm.{$d}_entity_manager");
+                $this->em[$d]   = AbstractApp::get("doctrine.orm.{$d}_entity_manager");
                 $this->dbal[$d] = $this->em[$d]->getConnection();
             }
         }
@@ -127,23 +127,23 @@ abstract class AbstractCommand extends ContainerAwareCommand {
         /**
          * Przestawiam domyślny język
          */
-        try {
-  //          niechginiee('opt');
-  //          niechginie($input->getOption('lang'));
-            if ($lang = $input->getOption('lang'))
-                $this->getContainer()->parameters['locale'] = $lang;        
-        }
-        catch (InvalidArgumentException $e) {
-            if (strpos($e->getMessage(), ' option does not exist') !== false) {
-                echo $e->getMessage().PHP_EOL;
-                die("
-  Trzeba pdmienić ścieżkę do klasy w app/console z:
-  use Symfony\Bundle\FrameworkBundle\Console\Application;
-  na:
-  use Cms\BaseBundle\Classes\Application;
-  ");          
-            }
-        }
+//        try {
+//  //          niechginiee('opt');
+//  //          niechginie($input->getOption('lang'));
+//            if ($lang = $input->getOption('lang'))
+//                $this->getContainer()->parameters['locale'] = $lang;        
+//        }
+//        catch (InvalidArgumentException $e) {
+//            if (strpos($e->getMessage(), ' option does not exist') !== false) {
+//                echo $e->getMessage().PHP_EOL;
+//                die("
+//  Trzeba pdmienić ścieżkę do klasy w app/console z:
+//  use Symfony\Bundle\FrameworkBundle\Console\Application;
+//  na:
+//  use Cms\BaseBundle\Classes\Application;
+//  ");          
+//            }
+//        }
     }
 
     protected function _getOutput() {

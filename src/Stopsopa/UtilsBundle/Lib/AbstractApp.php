@@ -63,7 +63,7 @@ class AbstractApp
     public static function isSymfony() 
     {
         if (static::$issymfony === null) 
-            static::$issymfony = (bool)static::getKernel(false);
+            static::$issymfony = class_exists('\Symfony\Component\HttpKernel\HttpKernel');
         
         return static::$issymfony;
     }
@@ -157,7 +157,7 @@ class AbstractApp
             // nie wiem czy to najlepsze ale najwyżej później to wymienie
             if (!static::$root) {
                 $reflection = new ReflectionClass('Composer\Autoload\ClassLoader');
-                static::$root = dirname(dirname(dirname($reflection->getFileName())));
+                static::$root = str_replace('\\', '/', dirname(dirname(dirname($reflection->getFileName()))));
             }
 
             return static::$root;            
