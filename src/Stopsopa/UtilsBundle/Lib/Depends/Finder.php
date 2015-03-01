@@ -1,6 +1,6 @@
 <?php
 
-namespace Stopsopa\UtilsBundle\Lib;
+namespace Stopsopa\UtilsBundle\Lib\Depends;
 
 use Closure;
 use Symfony\Component\Finder\Adapter\AdapterInterface;

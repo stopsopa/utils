@@ -1,6 +1,6 @@
 <?php
 
-namespace Stopsopa\UtilsBundle\Lib;
+namespace Stopsopa\UtilsBundle\Lib\Standalone;
 
 /**
  * Zwykłe funkcje json_encode, json_decode

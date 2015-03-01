@@ -1,6 +1,6 @@
 <?php
 
-namespace Stopsopa\UtilsBundle\Lib;
+namespace Stopsopa\UtilsBundle\Lib\Depends;
 
 use Symfony\Component\Yaml\Yaml as SfYaml;
 use Exception;

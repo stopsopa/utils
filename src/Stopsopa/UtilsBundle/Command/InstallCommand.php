@@ -4,6 +4,9 @@ namespace Stopsopa\UtilsBundle\Command;
 
 use Stopsopa\UtilsBundle\Composer\AbstractInstallerPart;
 use Stopsopa\UtilsBundle\Composer\UtilHelper;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilIni;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -21,6 +24,8 @@ class InstallCommand extends AbstractCommand {
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {        
+        var_dump(AbstractApp::getStpaConfig());
+        die();
         foreach ($this->_findPartsClasses() as $cls) {
             /* @var $cls AbstractInstallerPart */
             $cls->install($input, $output);

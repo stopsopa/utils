@@ -1,12 +1,12 @@
 <?php
 
-namespace Stopsopa\UtilsBundle\Lib;
+namespace Stopsopa\UtilsBundle\Lib\Standalone;
 
 use Exception;
 
-class UtilFile
+class UtilFilesystem
 {
-    public static function checkIfFileExistOrICanCreate($file)
+    public static function checkIfFileExistOrICanCreate($file, $createIfNotExist = false)
     {
         if (file_exists($file)) {
             static::checkFile($file, true);
@@ -17,12 +17,13 @@ class UtilFile
             } catch (Exception $ex) {
                 throw new Exception("Cant create file: '$file' - reason: ".$ex->getMessage());
             }
+            $createIfNotExist and touch($file);
         }
     }
     public static function checkDir($dir, $toWrite = false)
     {
         if (!file_exists($dir)) {
-            throw new Exception("Direcoty not exist: '$dir'", 1);
+            throw new Exception("Directory not exist: '$dir'", 1);
         }
 
         if (!is_dir($dir)) {
@@ -41,11 +42,11 @@ class UtilFile
 
         return true;
     }
-    public static function checkFile($file, $toWrite = false)
+    public static function checkFile($file, $toWrite = false, $isDeletable = false)
     {
         $dir = dirname($file);
 
-        self::checkDir($dir);
+        $isDeletable and static::checkDir($dir, true);
 
         if (!file_exists($file)) {
             throw new Exception("File not exist: '$file'", 1);

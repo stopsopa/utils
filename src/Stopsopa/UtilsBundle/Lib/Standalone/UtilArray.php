@@ -1,6 +1,6 @@
 <?php
 
-namespace Stopsopa\UtilsBundle\Lib;
+namespace Stopsopa\UtilsBundle\Lib\Standalone;
 
 /**
  * Stopsopa\UtilsBundle\Lib\UtilArray.
@@ -150,9 +150,9 @@ class UtilArray
 
         return $data;
     }
-    public static function cascadeGet(&$source, $key)
+    public static function cascadeGet(&$source, $key = null)
     {
-        if ($key === true) {
+        if ($key === null) {
             return $source;
         }
 

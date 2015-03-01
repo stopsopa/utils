@@ -13,6 +13,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 
 /**
  * Stopsopa\UtilsBundle\Lib\AbstractApp
@@ -414,4 +416,22 @@ class AbstractApp
 //    public static function getServiceDbalLight() {
 //        return self::get(self::SERVICE_DBALLIGHT);
 //    }
+    protected static $stpaconfig;
+    public static function getStpaConfig($key = null) 
+    {
+        if (static::$stpaconfig === null) {
+            $root       = static::getRootDir();
+            $config     = "$root/stpaconfig.ini";
+            
+            try {
+                UtilFilesystem::checkFile($config);                
+            } catch (Exception $ex) {
+                $config = "$root/vendor/stopsopa/utils/src/Stopsopa/UtilsBundle/Resources/config/stpaconfig.ini";
+            }
+            
+            static::$stpaconfig = parse_ini_file($config, true);                        
+        }        
+        
+        return UtilArray::cascadeGet(static::$stpaconfig, $key);        
+    }
 }
