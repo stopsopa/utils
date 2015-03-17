@@ -43,12 +43,12 @@ class Json
         if (version_compare(PHP_VERSION, '5.4', '>=')) {
             $json = json_encode($data, $options);
             if ($json === false)
-                throw new Exception("native 1: Nie powiodło się przekształcenie za pomocą json_encode".print_r($data, true));
+                throw new Exception("pretty 1: Nie powiodło się przekształcenie za pomocą json_encode".print_r($data, true));
         }
 
         $json = json_encode($data);
         if ($json === false)
-            throw new Exception("native 2: Nie powiodło się przekształcenie za pomocą json_encode".print_r($data, true));
+            throw new Exception("pretty 2: Nie powiodło się przekształcenie za pomocą json_encode".print_r($data, true));
 
         $prettyPrint = (bool)($options & self::JSON_PRETTY_PRINT);
         $unescapeUnicode = (bool)($options & self::JSON_UNESCAPED_UNICODE);
