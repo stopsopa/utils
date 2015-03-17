@@ -429,9 +429,25 @@ class AbstractApp
                 $config = "$root/vendor/stopsopa/utils/src/Stopsopa/UtilsBundle/Resources/config/stpaconfig.ini";
             }
             
-            static::$stpaconfig = parse_ini_file($config, true);                        
+            static::$stpaconfig = parse_ini_file($config, true);             
+            $root = static::getRootDir();
+            static::_bindConfig(static::$stpaconfig, $root);            
         }        
         
         return UtilArray::cascadeGet(static::$stpaconfig, $key);        
+    }
+    protected static function _bindConfig(&$config = null, &$root) {
+        if (is_string($config)) {
+            
+            if (strpos($config, '%root%') !== false) 
+                $config = str_replace('%root%', $root, $config);
+            
+            return;
+        }
+        
+        if (is_array($config)) {
+            foreach ($config as $key => &$val) 
+                static::_bindConfig($val, $root); 
+        }
     }
 }

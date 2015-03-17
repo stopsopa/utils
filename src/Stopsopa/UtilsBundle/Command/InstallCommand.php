@@ -24,14 +24,20 @@ class InstallCommand extends AbstractCommand {
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {        
-        var_dump(AbstractApp::getStpaConfig());
-        die();
+        // tworzenie katalogu głównego /app
+        $app = AbstractApp::getStpaConfig('core.app');
+        if (!file_exists($app)) {
+            UtilFilesystem::checkDir(dirname($app), true);
+            $output->writeln("<info>Tworzenie katalogu: </info><comment>$app</comment>");
+            mkdir($app);
+        }
+        
+        
+        
         foreach ($this->_findPartsClasses() as $cls) {
             /* @var $cls AbstractInstallerPart */
             $cls->install($input, $output);
         }
-        
-        $output->writeln('dalsze rzeczy');
     }
     protected function _findPartsClasses() {
         $list = array();
