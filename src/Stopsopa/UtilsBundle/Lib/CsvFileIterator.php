@@ -57,7 +57,7 @@ class CsvFileIterator implements Iterator {
             $this->options['enclosure'],
             $this->options['escape']
         );
-        $this->key++;
+        ++$this->key;
     }
 
     public function valid() {
