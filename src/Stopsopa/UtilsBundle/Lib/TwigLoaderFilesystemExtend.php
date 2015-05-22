@@ -57,31 +57,32 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
      */
     public function exists($name)
     {
-
         $p = explode(':', $this->transform($name));
 
         if ($p[0]) {
-            $file = AbstractApp::getKernel()->getBundle($p[0])->getPath().'/Resources/views/'.$p[1].'/'.$p[2];
+            $file = AbstractApp::getKernel()->getBundle($p[0])->getPath();
         }
         else {
-            $file = AbstractApp::getRootDir().'/app/Resources/views/'.$p[1].'/'.$p[2];
+            $file = AbstractApp::getRootDir().'/app';
         }
+
+        $file .= '/Resources/views/'.$p[1].'/'.$p[2];
 
         return file_exists($file) ? $file : false;
 
-        $name = $this->normalizeName($name);
-
-        if (isset($this->cache[$name])) {
-            return true;
-        }
-
-        try {
-            $this->findTemplate($name);
-
-            return true;
-        } catch (Twig_Error_Loader $exception) {
-            return false;
-        }
+//        $name = $this->normalizeName($name);
+//
+//        if (isset($this->cache[$name])) {
+//            return true;
+//        }
+//
+//        try {
+//            $this->findTemplate($name);
+//
+//            return true;
+//        } catch (Twig_Error_Loader $exception) {
+//            return false;
+//        }
     }
     public function getCacheKey($name) {
 
@@ -173,11 +174,9 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 //                    ));
 
                     foreach ($l as $k => $e) {
-//                        echo "\n--------------\n";
-//                        nieginie($e, 2);
                         $l[$k] = $match[1].$match[3].$loader.$output."=".$e.$match[4];
                     }
-//                    niechginie($l, 2);
+
                     return join("\n", $l)."\n";
                 }
                 return "\n";
