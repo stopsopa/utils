@@ -150,7 +150,7 @@ class UtilArray
 
         return $data;
     }
-    public static function cascadeGet(&$source, $key = null)
+    public static function cascadeGet(&$source, $key = null, $default = null)
     {
         if ($key === null) {
             return $source;
@@ -167,11 +167,11 @@ class UtilArray
                     return $element[$d];
                 }
             } else {
-                return;
+                return $default;
             }
         }
 
-        return;
+        return $default;
     }
 
     /**

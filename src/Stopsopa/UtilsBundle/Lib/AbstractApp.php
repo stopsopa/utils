@@ -427,7 +427,7 @@ class AbstractApp
 //        return self::get(self::SERVICE_DBALLIGHT);
 //    }
     protected static $stpaconfig;
-    public static function getStpaConfig($key = null)
+    public static function getStpaConfig($key = null, $default = null)
     {
         if (static::$stpaconfig === null) {
             $root       = static::getRootDir();
@@ -444,7 +444,7 @@ class AbstractApp
             static::_bindConfig(static::$stpaconfig, $root);
         }
 
-        return UtilArray::cascadeGet(static::$stpaconfig, $key);
+        return UtilArray::cascadeGet(static::$stpaconfig, $key, $default);
     }
     protected static function _bindConfig(&$config = null, &$root) {
         if (is_string($config)) {

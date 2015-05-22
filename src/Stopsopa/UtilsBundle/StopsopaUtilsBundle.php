@@ -5,8 +5,8 @@ namespace Stopsopa\UtilsBundle;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
- * Stopsopa\UtilsBundle\UtilsBundle
+ * Stopsopa\UtilsBundle\StopsopaUtilsBundle
  */
-class UtilsBundle extends Bundle
+class StopsopaUtilsBundle extends Bundle
 {
 }

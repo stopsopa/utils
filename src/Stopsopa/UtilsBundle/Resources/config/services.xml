@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+
+<container  xmlns="http://symfony.com/schema/dic/services"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+  <parameters>
+    <parameter key="twig.loader.filesystem.class">Stopsopa\UtilsBundle\Lib\TwigFilesystemLoader</parameter>
+
+    <!--<parameter key="site_basic.service.message.class">Cms\BaseBundle\Services\Messages</parameter>-->
+    <!--<parameter key="site_basic.service.matcher.class">Site\BaseBundle\Services\Matcher</parameter>-->
+    <!--<parameter key="app_dev_controller">app_dev.php</parameter>-->
+
+    <!-- Nadpisanie Twig tak aby można było podawać templatki jako stringi -->
+    <!--Stopsopa\UtilsBundle\Lib\TwigLoaderFilesystemExtend-->
+
+
+    <!-- nadpisujemy router symfony2 -->
+    <!--<parameter key="router.class">Cms\BaseBundle\Services\Router</parameter>-->
+
+    <!-- nadpisanie fitra twig |trans([],'PtCommonBundle') -> |trans('PtCommonBundle') -->
+    <!--<parameter key="twig.extension.trans.class">Cms\BaseBundle\Twig\Extension\TranslationExtension</parameter>-->
+
+<!--    <parameter key="site.site_cms_lang.parameter.lang">Cms\BaseBundle\Entity\Lang</parameter>
+    <parameter key="site.site_cms_lang.parameter.manager">Cms\BaseBundle\Entity\LangManager</parameter>-->
+
+
+<!--        <parameter key="site.engine.class">Cms\BaseBundle\Services\SiteEngine</parameter>
+        <parameter key="site.engine.prereferer">_site.engine_:</parameter>
+         parametry do manipulacji znacznikami <script> vvv
+        <parameter key="site.engine.cls">predestroy</parameter>
+        <parameter key="site.engine.bag">_engine</parameter>
+        <parameter key="site.engine.xvalid">X-Valid</parameter>
+        <parameter key="site.engine.boxid">_enginebox</parameter>
+        <parameter key="site.engine.start.script.mime.type">text/ajax</parameter>
+        <parameter key="site.dumperclass">Cms\BaseBundle\Services\DumperService</parameter>
+        <parameter key="cms.twigextension">Cms\BaseBundle\Twig\Extension\CmsTwigBundleExtension</parameter>
+
+        <parameter key="cms.base.formhelper.class">Cms\BaseBundle\Services\CmsFormHelperService</parameter>
+        <parameter key="cms.base.formhelper.errorbag">_errorbag</parameter>
+
+        <parameter key="captcha.form.type.class">Cms\BaseBundle\Form\Type\RecaptchaType</parameter>
+        <parameter key="captcha.validator.true.class">Cms\BaseBundle\Validator\Constraints\TrueValidator</parameter>
+
+        <parameter key="cms.base.cmslang.entitymanager">Cms\BaseBundle\Entity\CmsLangManager</parameter>
+        <parameter key="cms.base.cmslang.entity">Cms\BaseBundle\Entity\CmsLang</parameter>
+
+        <parameter key="cms.base.entitytranslations.subscriber.class">Cms\BaseBundle\Services\VersionedService</parameter>
+
+        <parameter key="doctrine.orm.metadata.xml.class">Cms\BaseBundle\Services\SimplifiedXmlDriver</parameter>
+         prefix/postfix do nazw tabel wersjonujących
+        <parameter key="doctrine.orm.metadata.xml.tablewrapper">%_ver</parameter>
+
+
+        <parameter key="cms.base.cmstree.entitymanager">Cms\BaseBundle\Entity\CmsTreeManager</parameter>
+        <parameter key="cms.base.cmstree.entity">Cms\BaseBundle\Entity\CmsTree</parameter>-->
+
+
+<!--        <parameter key="cmsbase.dballight.class">Cms\BaseBundle\Services\DbalLightService</parameter>
+
+
+        <parameter key="cmsbase.form.type.multitree.class">Cms\BaseBundle\Form\Type\MultiTreeType</parameter>-->
+
+    </parameters>
+
+  <!--<services>-->
+<!--        <service id="cmsbase.dballight.service" class="%cmsbase.dballight.class%" />
+
+        <service id="cms.base.cmstree.manager" class="%cms.base.cmstree.entitymanager%">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>%cms.base.cmstree.entity%</argument>
+        </service>
+
+        <service id="service.cmsbase.versioned.service" class="%cms.base.entitytranslations.subscriber.class%">
+            <tag name="doctrine.event_subscriber" connection="default"/>
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service id="cms.base.cmslang.manager" class="%cms.base.cmslang.entitymanager%">
+          <argument type="service" id="doctrine.orm.entity_manager"/>
+          <argument>%cms.base.cmslang.entity%</argument>
+        </service>
+
+        <service id="captcha.form.type" class="%captcha.form.type.class%">
+            <tag name="form.type" alias="captcha" />
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service id="captcha.validator.true" class="%captcha.validator.true.class%">
+            <tag name="validator.constraint_validator" alias="captcha.true" />
+            <argument type="service" id="service_container" />
+        </service>
+
+        <service id="cmsbase.form.type.multitree" class="%cmsbase.form.type.multitree.class%">
+            <tag name="form.type" alias="multitree" />
+        </service>
+         Nadpisanie Twig tak aby można było podawać templatki jako stringi
+        <service id="twig.loader.filesystem" class="%twig.loader.filesystem.class%" public="false">
+            <argument type="service" id="templating.locator" />
+            <argument type="service" id="templating.name_parser" />
+            <argument type="service" id="service_container"/>
+            <tag name="twig.loader"/>
+        </service>
+
+        <service id="cms.base.formhelper.service" class="%cms.base.formhelper.class%" />
+
+       Rozszerzenia twig vvv
+        <service id="cms_twig.example" class="%cms.twigextension%" public="false">
+            <argument type="service" id="service_container"/>
+            <tag name="twig.extension" />
+        </service>
+       Rozszerzenia twig ^^^
+
+
+        <service id="site.abstract.entity.manager"
+                 factory-service="doctrine" factory-method="getManager"
+                 class="Doctrine\ORM\EntityManager" public="false" />
+
+
+         exception hanlder vvv
+
+        <service id="site.exception_handler" class="Cms\BaseBundle\Exception\EventListener">
+            <tag name="kernel.event_listener" event="kernel.exception" method="onCoreException" priority="1000" />
+        </service>
+
+         template engine ^^^
+
+
+
+        <service id="site.engine" class="%site.engine.class%">
+            <argument type="service" id="service_container"/>
+            <argument type="service" id="templating"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="request"/>
+            <argument>%site.engine.layouts%</argument>
+            <argument>%site.engine.cls%</argument>
+            <argument>%site.engine.start.script.mime.type%</argument>
+            <argument>%kernel.environment%</argument>
+            <argument>%site.engine.prereferer%</argument>
+        Mój kod początek
+            <call method="setMessageService">
+                <argument type="service" id="site_basic.service.messages"/>
+            </call>
+            <call method="setMetatagService">
+                <argument type="service" id="site.cms.metatag"/>
+            </call>
+            <call method="setTranslateEntityService">
+                <argument type="service" id="site.site_cms_lang.service.translate_entity"/>
+            </call>
+
+
+             śledzenie redirectów za kontrolerem vvv
+                 przed kontrolerem
+                  <tag name="kernel.event_listener" event="kernel.request" method="onKernelControllerBeforeController"></tag>
+                 za kontrolerem
+                  <tag name="kernel.event_listener" event="kernel.response" method="onKernelControllerAfterController"></tag>
+             śledzenie redirectów za kontrolerem ^^^
+
+        Mój kod koniec
+
+            <argument type="service" id="service_id" />
+                        <argument>plain_value</argument>
+            <argument>%parameter_name%</argument>
+
+
+        </service>
+
+        <service id="dumper" class="%site.dumperclass%">
+            <argument type="service" id="service_container"/>
+        </service>
+
+
+        <service id="site_basic.service.messages" class="%site_basic.service.message.class%">
+          <argument type="service" id="service_container"></argument>
+          <tag name="twig.extension" alias="site_messages_twig" />
+        </service>
+
+    <service id="matcher.profiler" class="Site\BaseBundle\Services\Matcher">
+        <argument type="service" id="security.context" />
+    </service>
+
+
+      <service id="site.site_cms_lang.service.translate_entity" class="Cms\BaseBundle\Services\TranslateEntityService">
+        <argument type="service" id="service_container" />
+        <argument type="service" id="site.site_cms_lang.manager.lang"/>
+        <argument type="service" id="site.cms.metatag"/>
+        <argument type="service" id="router"/>
+        <tag name="twig.extension"/>
+      </service>
+
+      <service id="accept_language_redirect_listener" class="Cms\BaseBundle\Services\AcceptLanguageRedirectListener">
+        <argument type="service" id="service_container" />
+        <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest"/>
+      </service>-->
+
+  <!--</services>-->
+
+</container>
