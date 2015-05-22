@@ -7,6 +7,8 @@ use Twig_Error_Loader;
 use Twig_Loader_Filesystem;
 
 /**
+ * Trochę burdelu się narobiło w tej klasie :/
+ *
  * Stopsopa\UtilsBundle\Lib\TwigLoaderFilesystemExtend
  */
 class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
@@ -30,18 +32,22 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
             if (strpos($m[2], $find) === 0)
                 $m[2] = substr($m[2], strlen($find));
 
-//            if ($test) {
-//                nieginie($m);
-//            }
+            if (strpos($name, 'Bundle') === false) {
+                $m[1] .= 'Bundle';
+            }
 
-            $name = $m[1].'Bundle:'.$m[2].':'.$m[3];
-
-//            if ($test) {
-//                niechginie($name);
-//            }
+            $name = $m[1].':'.$m[2].':'.$m[3];
 
             return $name;
         }
+        else {
+            $k = explode(':', $name);
+            if (count($k) < 3) {
+                $name = '::'.$name;
+            }
+        }
+
+
 
         return $name;
     }
@@ -51,20 +57,17 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
      */
     public function exists($name)
     {
-//        if (strpos($name, '@') === 0) {
 
-            $p = explode(':', $this->transform($name));
+        $p = explode(':', $this->transform($name));
 
+        if ($p[0]) {
             $file = AbstractApp::getKernel()->getBundle($p[0])->getPath().'/Resources/views/'.$p[1].'/'.$p[2];
+        }
+        else {
+            $file = AbstractApp::getRootDir().'/app/Resources/views/'.$p[1].'/'.$p[2];
+        }
 
-//            if ($name == '@WebProfiler/Collector/exception.html.twig') {
-//                niechginie(AbstractApp::getKernel()->getBundle('WebProfilerBundle'));
-//                nieginie(file_exists($file));
-//                niechginie($file);
-//            }
-
-            return file_exists($file) ? $file : false;
-//        }
+        return file_exists($file) ? $file : false;
 
         $name = $this->normalizeName($name);
 
@@ -190,13 +193,4 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 
         return preg_match('/Exception/i', $name);
     }
-    /**
-     * Jeśli nie ma rozszerzenia to dodajemy twig
-     */
-//    private function checkExt($name) {
-//        if (strlen(pathinfo($name,PATHINFO_EXTENSION))) {
-//            return '';
-//        }
-//        return '.twig';
-//    }
 }

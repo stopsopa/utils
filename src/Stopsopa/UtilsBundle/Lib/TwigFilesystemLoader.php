@@ -9,6 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\TemplateReferenceInterface;
 use Twig_Error_Loader;
+use Symfony\Component\Templating\TemplateReference;
 
 /**
  * Ta klasa to zwykła kopia z vendorsów z podmienioną klasą macierzystą/rozszerzaną
@@ -83,10 +84,12 @@ class TwigFilesystemLoader extends TwigLoaderFilesystemExtend {
 
 
         // simon dodałem to:  vvv
-        if (false === $file || null === $file) {
+        if ((false === $file || null === $file) && $template) {
             /* @var $template Symfony\Component\Templating\TemplateReference */
 //            niechginie($template->getPath());
-            $file = $this->exists($template->getPath());
+            if ($template instanceof TemplateReference) {
+                $file = $this->exists($template->getPath());
+            } 
         }
         // simon dodałem to:  ^^^
 
