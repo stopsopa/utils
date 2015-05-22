@@ -11,7 +11,7 @@ use Exception;
  */
 class Yaml
 {
-  protected static $spaces;
+    protected static $spaces;
     public static function dump($data, $spaces = 2)
     {
         $spaces = (int) $spaces;
@@ -53,49 +53,50 @@ class Yaml
                 }
             } else {
                 switch (true) {
-          case is_string($data):
-            $ret .= self::checkColons($data);
-            break;
-          case is_null($data):
-            $ret .= '~';
-            break;
-          case is_bool($data):
-            $ret .= $data ? 'true' : 'false';
-            break;
-          case is_object($data):
-            throw new Exception("Yaml:parse() value is an object. Class: ".get_class($data));
-          default:
-            $ret .= $data;
-            break;
-        }
+                    case is_string($data):
+                        $ret .= self::checkColons($data);
+                        break;
+                    case is_null($data):
+                        $ret .= '~';
+                        break;
+                    case is_bool($data):
+                        $ret .= $data ? 'true' : 'false';
+                        break;
+                    case is_object($data):
+                        throw new Exception("Yaml:parse() value is an object. Class: ".get_class($data));
+                    default:
+                        $ret .= $data;
+                        break;
+                }
+
                 $ret .= "\n";
             }
         }
 
         return $ret;
     }
-  /**
-   * Jeśli w podanym kluczu są dwukropki to otaczam cały string cudzysłowami
-   * aby składnia w netbeans się nie sypała.
-   *
-   * @param type $text
-   *
-   * @return type
-   */
-  protected static function checkColons($text)
-  {
-      if (strpos($text, ':') !== false
+    /**
+     * Jeśli w podanym kluczu są dwukropki to otaczam cały string cudzysłowami
+     * aby składnia w netbeans się nie sypała.
+     *
+     * @param type $text
+     *
+     * @return type
+     */
+    protected static function checkColons($text)
+    {
+        if (strpos($text, ':') !== false
         || strpos($text, '[') !== false
         || strpos($text, '{') !== false
         || strpos($text, '-') !== false
         || strpos($text, '<') !== false
         || strpos($text, '&') !== false
-    ) {
-          return '"'.str_replace('"', '\"', $text).'"';
-      }
+        ) {
+            return '"'.str_replace('"', '\"', $text).'"';
+        }
 
-      return $text;
-  }
+        return $text;
+    }
 
     protected static function isAssoc($data)
     {
@@ -108,10 +109,10 @@ class Yaml
 
         return false;
     }
-  /**
-   * @var SfYaml
-   */
-  protected static $sfparser;
+    /**
+     * @var SfYaml
+     */
+    protected static $sfparser;
     public static function parse($input, $exceptionOnInvalidType = false, $objectSupport = false)
     {
         if (!self::$sfparser) {
@@ -120,21 +121,21 @@ class Yaml
 
         return self::$sfparser->parse($input, $exceptionOnInvalidType, $objectSupport);
     }
-  /**
-   * Parsuje plik w formacie yml.
-   *
-   * @param type $file
-   * @param type $exceptionOnInvalidType
-   * @param type $objectSupport
-   *
-   * @return type
-   */
-  public static function parseFile($file, $exceptionOnInvalidType = false, $objectSupport = false)
-  {
-      if (!is_readable($file)) {
-          throw new Exception("File '$file' is not readable");
-      }
+    /**
+     * Parsuje plik w formacie yml.
+     *
+     * @param type $file
+     * @param type $exceptionOnInvalidType
+     * @param type $objectSupport
+     *
+     * @return type
+     */
+    public static function parseFile($file, $exceptionOnInvalidType = false, $objectSupport = false)
+    {
+        if (!is_readable($file)) {
+            throw new Exception("File '$file' is not readable");
+        }
 
-      return self::parse(file_get_contents($file), $exceptionOnInvalidType, $objectSupport);
-  }
+        return self::parse(file_get_contents($file), $exceptionOnInvalidType, $objectSupport);
+    }
 }

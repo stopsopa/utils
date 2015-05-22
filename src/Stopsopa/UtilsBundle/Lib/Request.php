@@ -4,6 +4,7 @@ namespace Stopsopa\UtilsBundle\Lib;
 
 use Symfony\Component\HttpFoundation\Request as CoreRequest;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Stopsopa\UtilsBundle\Lib\Json\Json;
 
 /**
  * Stopsopa\UtilsBundle\Lib\Request.
@@ -29,7 +30,7 @@ class Request extends CoreRequest
     public function initialize(array $query = array(), array $request = array(), array $attributes = array(), array $cookies = array(), array $files = array(), array $server = array(), $content = null)
     {
         parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
-        $this->json = new ParameterBag(json_decode($this->getContent(), true) ?: array());
+        $this->json = new ParameterBag(Json::decode($this->getContent()) ?: array());
     }
     public function getClientIp()
     {

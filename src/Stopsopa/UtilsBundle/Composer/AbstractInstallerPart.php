@@ -4,10 +4,10 @@ namespace Stopsopa\UtilsBundle\Composer;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class AbstractInstallerPart {  
+abstract class AbstractInstallerPart {
     /**
-     * Wyższa liczba wyższy priorytet
-     * niższa liczba niższy priorytet
+     * Wyższa liczba wyższy priorytet, wykona wcześniej
+     * Niższa liczba niższy priorytet, wykona później
      * @return int
      */
     public function getPrior() {

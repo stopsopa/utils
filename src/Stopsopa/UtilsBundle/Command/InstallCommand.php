@@ -15,7 +15,8 @@ class InstallCommand extends AbstractCommand {
     public function configure() {
         $this
             ->setName('stpa:install')
-            ->setDescription("Instalato iterujący po wszystkich bundlach w namespace Stopsopa i szukający w nich znajdujących się klas ... dopsiac")
+            ->setDescription("Instalator iterujący po wszystkich bundlach w namespace Stopsopa i szukający w nich znajdujących się klas ... dopsiac")
+            ->addOption('list', null, null,'Porcja danych do przetworzenia: ')
         ;
     }
     /**
@@ -23,7 +24,7 @@ class InstallCommand extends AbstractCommand {
      * @param OutputInterface $output
      */
     public function execute(InputInterface $input, OutputInterface $output)
-    {        
+    {
         // tworzenie katalogu głównego /app
         $app = AbstractApp::getStpaConfig('core.app');
         if (!file_exists($app)) {
@@ -31,25 +32,37 @@ class InstallCommand extends AbstractCommand {
             $output->writeln("<info>Tworzenie katalogu: </info><comment>$app</comment>");
             mkdir($app);
         }
-        
-        
-        
-        foreach ($this->_findPartsClasses() as $cls) {
-            /* @var $cls AbstractInstallerPart */
-            $cls->install($input, $output);
+
+        $list = $this->_findPartsClasses();
+
+        if ($input->getOption('list') === false) {
+            foreach ($list as $cls) {
+                /* @var $cls AbstractInstallerPart */
+                $cls->install($input, $output);
+            }
+        }
+        else {
+            $tmp = array();
+
+            foreach ($list as $cls) {
+                /* @var $cls AbstractInstallerPart */
+                $tmp[] = str_pad($cls->getPrior(), 8, ' ', STR_PAD_LEFT).' : '.get_class($cls);
+            }
+
+            $output->writeln(implode("\n", $tmp));
         }
     }
     protected function _findPartsClasses() {
         $list = array();
-        
+
         $d = DIRECTORY_SEPARATOR;
+
+        // zastąpić później preg_quote($str);
         $dd = $d;
-        if ($d === '\\') 
-            $dd .= $d;            
-        
-        foreach (
-            UtilHelper::findClasses("#{$dd}InstallerPart\.php$#", '#\\InstallerPart$#', '#Abstract#') as $namespace
-        ) {
+        if ($d === '\\')
+            $dd .= $d;
+
+        foreach (UtilHelper::findClasses("#{$dd}InstallerPart\.php$#", '#\\InstallerPart$#', '#Abstract#') as $namespace) {
             $cls = new $namespace();
             if ($cls instanceof AbstractInstallerPart) {
                 $list[] = $cls;
@@ -58,7 +71,7 @@ class InstallCommand extends AbstractCommand {
 
         usort($list, function ($a, $b) {
             /* @var $cls AbstractInstallerPart */
-            return $a->getPrior() > $b->getPrior();
+            return $a->getPrior() < $b->getPrior();
         });
 
         return $list;

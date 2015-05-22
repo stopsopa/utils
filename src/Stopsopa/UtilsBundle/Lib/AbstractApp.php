@@ -24,18 +24,18 @@ class AbstractApp
     /**
      * Lista domyślnych serwisów symfonowych, najczęściej używanych
      */
-    const SERVICE_CONTAINER      = 'service_container'; // ContainerInterface
-    const SERVICE_SECURITY       = 'security.context';
-    const SERVICE_SESSION        = 'session';
-    const SERVICE_EM             = 'doctrine.orm.default_entity_manager';
-    const SERVICE_DBAL           = 'doctrine.dbal.default_connection';
-    const SERVICE_TRANSLATOR     = 'translator';
-    const SERVICE_ROUTER         = 'router';
-    const SERVICE_REQUEST        = 'request';
-    CONST SERVICE_ENGINE         = 'site.engine';
+//    const SERVICE_CONTAINER      = 'service_container'; // ContainerInterface
+//    const SERVICE_SECURITY       = 'security.context';
+//    const SERVICE_SESSION        = 'session';
+//    const SERVICE_EM             = 'doctrine.orm.default_entity_manager';
+//    const SERVICE_DBAL           = 'doctrine.dbal.default_connection';
+//    const SERVICE_TRANSLATOR     = 'translator';
+//    const SERVICE_ROUTER         = 'router';
+//    const SERVICE_REQUEST        = 'request';
+//    CONST SERVICE_ENGINE         = 'site.engine';
     CONST SERVICE_TEMPLATING     = 'templating';
-    CONST SERVICE_VERSIONED      = 'service.cmsbase.versioned.service';
-    CONST SERVICE_DBALLIGHT      = 'cmsbase.dballight.service';
+//    CONST SERVICE_VERSIONED      = 'service.cmsbase.versioned.service';
+//    CONST SERVICE_DBALLIGHT      = 'cmsbase.dballight.service';
 
     protected static $_kernel;
     /**
@@ -47,26 +47,36 @@ class AbstractApp
             global $kernel;
 
             if (!isset($kernel)) {
-                
-                if ($hrow) 
-                    throw new NoFrameworkException("UtilsBundle nie uzyskał dostępu do komponentów symfony");                
-                
-                return null;                
+
+                if ($hrow)
+                    throw new NoFrameworkException("UtilsBundle nie uzyskał dostępu do komponentów symfony");
+
+                return null;
             }
 
             static::$_kernel = $kernel;
-            if ($kernel instanceof AppCache) 
-                static::$_kernel = $kernel->getKernel();            
+            if ($kernel instanceof AppCache)
+                static::$_kernel = $kernel->getKernel();
         }
 
         return static::$_kernel;
     }
     protected static $issymfony;
-    public static function isSymfony() 
+    public static function isSymfony()
     {
-        if (static::$issymfony === null) 
+        if (static::$issymfony === null) {
             static::$issymfony = class_exists('\Symfony\Component\HttpKernel\HttpKernel');
-        
+
+            if (static::$issymfony) {
+                try {
+                    $kernel = static::getKernel();
+                } catch (NoFrameworkException $ex) {
+                    throw new NoFrameworkException("Jeśli projekt został załączony do infrastruktury symfony to uruchamiaj mechanizmy UtilBundle z poziomu symfony, nie standalone", NoFrameworkException::INAPPROPRIATE_USE);
+                }
+            }
+        }
+
+
         return static::$issymfony;
     }
 
@@ -162,7 +172,7 @@ class AbstractApp
                 static::$root = str_replace('\\', '/', dirname(dirname(dirname($reflection->getFileName()))));
             }
 
-            return static::$root;            
+            return static::$root;
         }
     }
     /**
@@ -417,37 +427,37 @@ class AbstractApp
 //        return self::get(self::SERVICE_DBALLIGHT);
 //    }
     protected static $stpaconfig;
-    public static function getStpaConfig($key = null) 
+    public static function getStpaConfig($key = null)
     {
         if (static::$stpaconfig === null) {
             $root       = static::getRootDir();
             $config     = "$root/stpaconfig.ini";
-            
+
             try {
-                UtilFilesystem::checkFile($config);                
+                UtilFilesystem::checkFile($config);
             } catch (Exception $ex) {
                 $config = "$root/vendor/stopsopa/utils/src/Stopsopa/UtilsBundle/Resources/config/stpaconfig.ini";
             }
-            
-            static::$stpaconfig = parse_ini_file($config, true);             
+
+            static::$stpaconfig = parse_ini_file($config, true);
             $root = static::getRootDir();
-            static::_bindConfig(static::$stpaconfig, $root);            
-        }        
-        
-        return UtilArray::cascadeGet(static::$stpaconfig, $key);        
+            static::_bindConfig(static::$stpaconfig, $root);
+        }
+
+        return UtilArray::cascadeGet(static::$stpaconfig, $key);
     }
     protected static function _bindConfig(&$config = null, &$root) {
         if (is_string($config)) {
-            
-            if (strpos($config, '%root%') !== false) 
+
+            if (strpos($config, '%root%') !== false)
                 $config = str_replace('%root%', $root, $config);
-            
+
             return;
         }
-        
+
         if (is_array($config)) {
-            foreach ($config as $key => &$val) 
-                static::_bindConfig($val, $root); 
+            foreach ($config as $key => &$val)
+                static::_bindConfig($val, $root);
         }
     }
 }

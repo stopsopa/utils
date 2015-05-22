@@ -7,6 +7,7 @@ namespace Stopsopa\UtilsBundle\Lib;
  * and open the template in the editor.
  */
 use Symfony\Component\HttpFoundation\Response as Base;
+use Stopsopa\UtilsBundle\Lib\Json\Conditionally\Json;
 
 /**
  * Description of Response.
