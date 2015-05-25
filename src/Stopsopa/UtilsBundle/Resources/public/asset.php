@@ -14,19 +14,50 @@ $mimelist = array(
   'gif'   => 'image/gif'
 );
 
+$allowedpaths = array(
+    '#^/bundles#'
+);
+
+// specjalna lista jeśli jakiś element pasuje to bezwzględnie zabraniamy
+$forbidden = array(
+    '#\.\.#'
+);
+
 
 $s = $_SERVER;
 //print_r($s);
 
 $block = '';
-$target = substr($s['REQUEST_URI'], strlen($s['SCRIPT_NAME'])); 
+$target = substr($s['REQUEST_URI'], strlen($s['SCRIPT_NAME']));
 $webdir = substr($s['SCRIPT_FILENAME'], 0, strlen($s['SCRIPT_FILENAME'])-strlen($s['SCRIPT_NAME']));
 if (strpos($target, '=') !== false) {
   $target = explode('=', $target);
   $block  = $target[0];
   $target = '/'.$target[1];
 }
+
+$access = false;
+// check access
+foreach ($allowedpaths as &$allowed) {
+    if (preg_match($allowed, $target)) {
+        $access = true;
+        break;
+    }
+}
+foreach ($forbidden as &$forbid) {
+    if (preg_match($forbid, $target)) {
+        $access = false;
+        break;
+    }
+}
+
+if (!$access) {
+    header("HTTP/1.1 401 Unauthorized");
+    die("Unauthorized access to: '$target'");
+}
+
 $asset  = $webdir.$target;
+
 
 if (strpos($asset, '?')) {
   $asset = explode('?', $asset);
@@ -44,7 +75,7 @@ if (strpos($asset, '?')) {
 if (file_exists($asset)) {
   // ustawiam mime
   $ext   = trim(strtolower(pathinfo($asset, PATHINFO_EXTENSION)));
-  if ($ext && array_key_exists($ext, $mimelist)) {  
+  if ($ext && array_key_exists($ext, $mimelist)) {
     header("Content-type: $mimelist[$ext]");
     header('Cache-Control: no-cache, no-store, max-age=0, must-revalidate');
     header('Pragma: no-cache');
@@ -52,22 +83,22 @@ if (file_exists($asset)) {
 //    header("Content-Length: $size");
     // http://traxter-online.net/webmaster/naglowki-etag-i-expires-czyli-cachowanie-elementow-strony-w-przegladarce/
   }
-  
-  if (!is_readable($asset)) 
+
+  if (!is_readable($asset))
       throw new Exception("Plik $asset nie ma uprawnień do odczytu...");
-  
+
   readfile($asset);
-  
+
   if ($ext == 'js') {
-      
+
     $log = ": $target";
-    
-    if (strlen($block)) 
+
+    if (strlen($block))
       $log = "$block : $target";
-    
+
     echo "\n;console && console.log && console.log('asset.php $log');";
   }
-  
+
   return;
 }
 echo "File does not exist '$asset'";
