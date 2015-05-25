@@ -248,7 +248,7 @@ class UtilArray
 
         return true;
     }
-    public static function readAccosStringToArray($string, $freeToVal = true)
+    public static function readAssocStringToArray($string, $freeToVal = true)
     {
         $string = $string.'';
 
