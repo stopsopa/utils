@@ -31,7 +31,7 @@ try {
             $console->add($cmd);
     }
 } catch (NoFrameworkException $ex) {
-
+    throw $ex;
     if ($ex->getCode() === NoFrameworkException::INAPPROPRIATE_USE) {
         die("Używaj konsoli z poziomu Symfony2: php console stpa:install\n");
     }

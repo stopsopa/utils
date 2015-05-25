@@ -71,7 +71,7 @@ class AbstractApp
                 try {
                     $kernel = static::getKernel();
                 } catch (NoFrameworkException $ex) {
-                    throw new NoFrameworkException("Jeśli projekt został załączony do infrastruktury symfony to uruchamiaj mechanizmy UtilBundle z poziomu symfony, nie standalone", NoFrameworkException::INAPPROPRIATE_USE);
+                    throw new NoFrameworkException("Jeśli UtilBundle jest załączony do infrastruktury Symfony2 to używaj wbudowanej komendy w symfony 'php app/console' ", NoFrameworkException::INAPPROPRIATE_USE);
                 }
             }
         }

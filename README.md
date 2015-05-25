@@ -15,7 +15,7 @@ Jeśli w ramach Symfony2 to dodać do AppKernel.php
 
         $bundles = array(
             ...
-            new Stopsopa\UtilsBundle\UtilsBundle()
+            new Stopsopa\UtilsBundle\StopsopaUtilsBundle()
         );
 
 
