@@ -12,6 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\ProgressHelper;
 
 /**
  * Cms\BaseBundle\Command\AbstractCommand
@@ -177,6 +178,19 @@ abstract class AbstractCommand extends Command {
      */
     protected $_i = 0;
     public function viewProgress($num, $length = 75, $signs = '[#-]') {
+        
+//        $progress = $this->getHelperSet()->get('progress'); 
+//        $progress->setFormat(ProgressHelper::FORMAT_VERBOSE_NOMAX); 
+//        $progress->start($output, $count); 
+//        
+//        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+//            $progress->advance();                                     
+//        }
+        
+        
+        
+        
+        
         if ($this->_i > 100000000) $this->_i = 0;
             $this->_i++;
 
