@@ -12,7 +12,7 @@ class SmsMultipleOptimizer extends Sms {
     const LOCKLIMIT = 100; // wyrażane w
     const LOCKEXPIRE = 86400; // wyrażane w sekundach (60*60*24 = 1 dzień)
     protected $lockfile;
-    public function __construct($url, $user, $pass) {
+    public function __construct($url, $user, $pass, $veryfirst) {
         $this->lockfile = App::getRootDir().static::LOCKFILE;
 
         if (!file_exists($this->lockfile))
@@ -24,12 +24,8 @@ class SmsMultipleOptimizer extends Sms {
         if (!is_writable($this->lockfile))
             $this->_throw("File {$this->lockfile} is not writtable");
 
-        $this->veryfirst = [
-            '698404897', // szymon
-            '669955237', // pawel
-            //'607181010', // kasia
-            '517236126', // hejda
-        ];
+        $this->veryfirst = $veryfirst;
+        
         parent::__construct($url, $user, $pass);
     }
     protected function checkLock($idx) {
