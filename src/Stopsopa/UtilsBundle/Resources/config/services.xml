@@ -7,6 +7,8 @@
   <parameters>
     <parameter key="twig.loader.filesystem.class">Stopsopa\UtilsBundle\Lib\TwigFilesystemLoader</parameter>
 
+    <!--<parameter key="app.country.jirarestservice">AppBundle\Services\JiraRestService</parameter>-->
+
     <!--<parameter key="site_basic.service.message.class">Cms\BaseBundle\Services\Messages</parameter>-->
     <!--<parameter key="site_basic.service.matcher.class">Site\BaseBundle\Services\Matcher</parameter>-->
     <!--<parameter key="app_dev_controller">app_dev.php</parameter>-->
@@ -64,6 +66,24 @@
     </parameters>
 
   <!--<services>-->
+
+<!--        <service id="jirarest" class="%app.country.jirarestservice%">
+            <argument>%jirarest%</argument>
+            <call method="setRouter">
+                <argument type="service" id="router" />
+            </call>
+            <call method="setTwigEngine">
+                <argument type="service" id="templating"/>
+            </call>
+            <call method="setEntityManager">
+                <argument type="service" id="doctrine.orm.entity_manager"/>
+            </call>
+            <call method="setSourceManager">
+                <argument type="service" id="app.source.manager"/>
+            </call>
+        </service>-->
+
+        
 <!--        <service id="cmsbase.dballight.service" class="%cmsbase.dballight.class%" />
 
         <service id="cms.base.cmstree.manager" class="%cms.base.cmstree.entitymanager%">

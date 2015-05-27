@@ -1,0 +1,20 @@
+.btn span {
+    display: inline-block;
+    transition: all 0.2s linear;
+    -webkit-transition: all 0.2s linear;
+    -moz-transition: all 0.2s linear;
+    -o-transition: all 0.2s linear;
+    -ms-transition: all 0.2s linear;
+    opacity: 0;
+    width: 0;
+    margin: 0;
+    padding: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+.btn:hover span {
+    width: 40px;
+    opacity: 1;
+    padding-left: 4px;
+    padding-right: 4px;
+}
