@@ -58,7 +58,6 @@ if (!$access) {
 
 $asset  = $webdir.$target;
 
-
 if (strpos($asset, '?')) {
   $asset = explode('?', $asset);
   $asset = $asset[0];
@@ -104,9 +103,3 @@ if (file_exists($asset)) {
 echo "File does not exist '$asset'";
 
 header("HTTP/1.0 404 Not Found");
-
-
-
-
-
-

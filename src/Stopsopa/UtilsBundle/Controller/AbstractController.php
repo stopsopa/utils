@@ -101,4 +101,22 @@ abstract class AbstractController extends Controller {
 
         return $response;
     }
+    /**
+     * @return 
+     */
+    protected function getToken() {
+        return $this->getSecurity()->getToken();
+    }
+    /**
+     * Uzytkownik aktualnie zalogowany
+     * @return User|null
+     */
+    public function getUser() {
+      $user = $this->getToken()->getUser();
+
+      if(is_object($user))
+            return $user;
+
+      return null;
+    }
 }
