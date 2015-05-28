@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "czyszczenie katalogów cache & logs"
+
+kill -9 $(ps aux | grep 'gulp' | grep -v grep | awk '{print $2}' &> /dev/null) && echo -e "\e[32mProcess not exists\e[0m" || echo -e "\e[31mAlready stopped\e[0m"
+
+rm -rf var/cache/profiler/*
+rm -rf var/logs/*
+
+git branch
+
+git checkout .
+
+# if [ "$(whoami)" == "area.test.absolvent.pl" ]; then
+#     git clean -df
+# else
+    git reset --hard HEAD
+# fi
+
+git pull
+
+/bin/bash clean.sh
+

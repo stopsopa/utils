@@ -8,6 +8,7 @@ use Doctrine\DBAL\Connection;
 use PDO;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Exception;
+use Doctrine\DBAL\Query\QueryBuilder;
 
 abstract class AbstractManager {
 
@@ -119,6 +120,50 @@ SELECT count(*) c FROM $table
 
     public function findAll() {
         return $this->repository->findAll();
+    }
+
+    /**
+     * @param type $ids
+     * @param false|true|QueryBuilder $qb
+     *      false(default)  - tworzy qb, zwraca listę encji
+     *      string          - tworzy qb, zwraca qb, z podanego stringu tworzy alias
+     *      QueryBuilder    - ustawia odpowiedni warunek i zwraca obiekt z powrotem
+     * @return type
+     * @throws Exception
+     */
+    public function findByIds($ids, $qb = false) {
+
+        if (!is_array($ids)) {
+            $ids = array($ids);
+        }
+
+        $alias = 'x';
+
+        if (is_string($qb)) {
+            $alias = $qb;
+        }
+
+        $fid = $this->getClassMetadata()->getIdentifier();
+
+        if (isset($fid[0])) {
+
+            if ($qb instanceof QueryBuilder) {
+                $b = $qb;
+            }
+            else {
+                $b = $this->createQueryBuilder($alias);
+            }
+
+            $b->andWhere($b->expr()->in($alias.".".$fid[0], $ids));
+
+            if ($qb) {
+                return $b;
+            }
+
+            return $b->getQuery()->getResult();
+        }
+
+        throw new Exception("Entity {$this->class} has no identifier field");
     }
 
     public function findOneBy($values) {
