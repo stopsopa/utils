@@ -98,4 +98,7 @@ class Request extends CoreRequest
 
         return isset($_SERVER['HTTP_X_REQUESTED_WITH']) ? true : false;
     }
+    public function getHostname() {
+        return getHost();
+    }
 }

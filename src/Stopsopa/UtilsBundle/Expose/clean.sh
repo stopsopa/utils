@@ -71,7 +71,7 @@ if [ "$(argExist $LOCK $@)" == "true" ]; then # to już jest funkcja wywołana w
         # fi
 
 cd web
-kill $(ps aux | grep 'gulp' | grep -v grep | awk '{print $2}') || echo 'nie jest odpalony gulp' && node node_modules/gulp/bin/gulp.js serve &
+kill -9 $(ps aux | grep 'gulp' | grep -v grep | awk '{print $2}') || echo 'nie jest odpalony gulp' && node node_modules/gulp/bin/gulp.js serve &
 
 echo "sleep -----------'
 sleep 4;
