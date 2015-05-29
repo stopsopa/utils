@@ -1,6 +1,7 @@
 <?php
 
 namespace Stopsopa\UtilsBundle\Lib\Standalone;
+use Traversable;
 
 /**
  * Stopsopa\UtilsBundle\Lib\UtilArray.
@@ -287,5 +288,13 @@ class UtilArray
         }
 
         return $list;
+    }
+    /**
+     * Sprawdza czy obiekt można przejść foreach
+     * @param ArrayAccess $object
+     * @return boolean
+     */
+    public static function isForeachable($object) {
+      return is_array($object) || $object instanceof Traversable;
     }
 }
