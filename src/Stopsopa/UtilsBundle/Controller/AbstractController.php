@@ -6,8 +6,27 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Stopsopa\UtilsBundle\Lib\Json\Conditionally\Json;
 use Stopsopa\UtilsBundle\Lib\Response;
 use Stopsopa\UtilsBundle\Lib\UtilArray;
+use Symfony\Component\HttpFoundation\Request;
 
 abstract class AbstractController extends Controller {
+    /**
+     *
+     * @param Request $request
+     * @param type $msg
+     *
+     *
+//    {% for flashMessage in app.session.flashbag.get('notice') %}
+//        <div class="flash-message">
+//            <em>Notice</em>: {{ flashMessage }}
+//        </div>
+//    {% endfor %}
+     */
+    protected function setNotification(Request $request, $msg) {
+        $request->getSession()->getFlashBag()->set('notice', $msg);
+
+        return $this;
+    }
+
     /**
      * Security Context mozna uzyc w sprawdzaniu uprawnien
      * @return \Symfony\Component\Security\Core\SecurityContext
@@ -102,7 +121,7 @@ abstract class AbstractController extends Controller {
         return $response;
     }
     /**
-     * @return 
+     * @return
      */
     protected function getToken() {
         return $this->getSecurity()->getToken();

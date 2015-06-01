@@ -126,7 +126,7 @@ class UtilString
             'м' => 'm','М' => 'M',
         );
 
-        return strtr($str, $rep);
+        $str = strtr($str, $rep);
 
         return Urlizer::urlize($str, $delimiter);
 

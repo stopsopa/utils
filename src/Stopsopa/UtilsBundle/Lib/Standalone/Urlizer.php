@@ -320,7 +320,7 @@ class Urlizer
      */
     public static function urlizeTrim($text, $separator = '-')
     {
-        return trim(self::urlize(UtilString::toSlugg($text), $separator), '-_');
+        return trim(self::urlize(UtilString::toSlugg($text), $separator), $separator);
     }
 
     /**
