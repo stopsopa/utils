@@ -9,6 +9,10 @@ use DateTime;
 use DomainException;
 use Exception;
 use Symfony\Component\Security\Core\Util\ClassUtils;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilString;
+use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use PDO;
 //use FOS\UserBundle\Entity\Group;
 
 /**
@@ -156,5 +160,28 @@ abstract class AbstractEntity {
             $classNamespace = preg_replace('#^[^\\\\]+\\\\[^\\\\]+\\\\(.*)$#', '$1', $classNamespace);
 
         return $classNamespace;
+    }
+    public function generateSlug($table, $column, $title, $dbal = 'default') {
+
+        $slug = Urlizer::urlizeTrim($title);
+
+        $dbal = AbstractApp::getDbal($dbal);
+
+        $stmt = $dbal->prepare("SELECT count(*) c FROM $table WHERE $column = :slug");
+
+        $i = 0;
+        do {
+            if ($i) {
+                $slug = UtilString::incrementString($slug, '-', 1);
+            }
+
+            ++$i;
+
+            $stmt->bindValue('slug', $slug);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        } while ($row['c']);
+
+        return $slug;
     }
 }
