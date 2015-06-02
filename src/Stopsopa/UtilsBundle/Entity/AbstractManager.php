@@ -178,13 +178,36 @@ SELECT count(*) c FROM $table
      * @throws Exception
      */
     public function __call($method, $args) {
-      $obj = $this;
-      set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line, array $err_context) use ($obj, $method) {
-            throw new Exception("Method '$method' doesn't exist in object '".$this->class."'");
-      });
-      $data =  call_user_func_array(array($this->repository, $method), $args);
-      restore_error_handler();
-      return $data;
+
+        $key = 'OrThrow';
+
+        if (strpos($method, $key) === strlen($method) - strlen($key)) {
+            $throw      = true;
+            $method     = substr($method, 0, -strlen($key));
+        }
+        else {
+            $throw      = false;
+        }
+
+
+        $obj = $this;
+        set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line, array $err_context) use ($obj, $method) {
+              throw new Exception("Method '$method' doesn't exist in object '".$this->class."'");
+        });
+        $data =  call_user_func_array(array($this->repository, $method), $args);
+        restore_error_handler();
+
+
+        if ($throw) {
+            if (is_array($data) && !count($data)) {
+                throw new NotFoundHttpException("Entities '{$this->class}' not found by method '$method' and criteria: ".json_encode ($args));
+            }
+            elseif (!$data) {
+                throw new NotFoundHttpException("Entity '{$this->class}' not found by method '$method' and criteria: ".json_encode ($args));
+            }
+        }
+
+        return $data;
     }
 
     /**
