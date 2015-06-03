@@ -149,14 +149,16 @@ abstract class AbstractEntity {
         }
 
         return static::cleanClassNamespace($class);
-    }    /**
-    * Jeśli jest to klasa proxy to trzeba przerobić ścieżkę na właściwą klasę
-    *
-    * @param string $classNamespace
-    * @return string
-    */
+    }
+    /**
+     * Jeśli jest to klasa proxy to trzeba przerobić ścieżkę na właściwą klasę
+     *
+     * @param string $classNamespace
+     * @return string
+     */
     public static function cleanClassNamespace($classNamespace) {
-        if ( strpos( $classNamespace, "\\" . preg_quote(ClassUtils::MARKER) . "\\" ) )
+
+        if ( strpos( $classNamespace, "\\" . preg_quote(ClassUtils::MARKER) . "\\" ) !== false )
             $classNamespace = preg_replace('#^[^\\\\]+\\\\[^\\\\]+\\\\(.*)$#', '$1', $classNamespace);
 
         return $classNamespace;
