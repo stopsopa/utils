@@ -25,16 +25,12 @@ $forbidden = array(
 
 
 $s = $_SERVER;
+$g = $_GET;
 //print_r($s);
 
 $block = '';
-$target = substr($s['REQUEST_URI'], strlen($s['SCRIPT_NAME']));
+$target = '/'.$g['asset'];
 $webdir = substr($s['SCRIPT_FILENAME'], 0, strlen($s['SCRIPT_FILENAME'])-strlen($s['SCRIPT_NAME']));
-if (strpos($target, '=') !== false) {
-  $target = explode('=', $target);
-  $block  = $target[0];
-  $target = '/'.$target[1];
-}
 
 $access = false;
 // check access
@@ -62,14 +58,6 @@ if (strpos($asset, '?')) {
   $asset = explode('?', $asset);
   $asset = $asset[0];
 }
-//print_r($target);
-//echo "\n";
-//print_r($webdir);
-//echo "\n";
-//print_r($asset);
-//echo "\n";
-//print_r($block);
-//echo "\n";
 
 if (file_exists($asset)) {
   // ustawiam mime

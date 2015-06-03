@@ -102,7 +102,9 @@ class TwigFilesystemLoader extends FilesystemLoader {
 //                    ));
 
                     foreach ($l as $k => $e) {
-                        $l[$k] = $match[1].$match[3].$loader.$output."=".$e.$match[4];
+//[m1]        [m3]<link rel="stylesheet" href="[l]/bundles/stopsopautils/asset.php?build=[o]asset/sp.css=[e]bundles/app/theme/theme/bootstrap/dist/css/bootstrap.css[m4]" type="text/css"/>
+//[m1]        [m3]<link rel="stylesheet" href="[l]/bundles/stopsopautils/asset.php/[o]asset/sp.css=[e]bundles/app/theme/theme/jquery.gritter/css/jquery.gritter.css[m4]" type="text/css"/>
+                        $l[$k] = $match[1].$match[3].$loader.$output."&asset=".$e.$match[4];
                     }
 
                     return join("\n", $l)."\n";
