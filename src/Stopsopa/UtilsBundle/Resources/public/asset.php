@@ -23,10 +23,8 @@ $forbidden = array(
     '#\.\.#'
 );
 
-
 $s = $_SERVER;
 $g = $_GET;
-//print_r($s);
 
 $block = '';
 $target = '/'.$g['asset'];
