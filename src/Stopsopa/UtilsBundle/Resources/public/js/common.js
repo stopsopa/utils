@@ -189,4 +189,8 @@ else {
 }
 
 
+if ('sweetAlert' in window) {
+    swal = sweetAlert
+}
+
 

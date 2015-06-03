@@ -8,6 +8,7 @@ namespace Stopsopa\UtilsBundle\Lib;
  */
 use Symfony\Component\HttpFoundation\Response as Base;
 use Stopsopa\UtilsBundle\Lib\Json\Conditionally\Json;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 
 /**
  * Description of Response.
