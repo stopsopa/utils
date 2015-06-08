@@ -24,7 +24,7 @@ abstract class AbstractEntity {
      * Dla obsługi eventów doctrine2 livecycle events
      * @var boolean
      */
-    public $_lcet;
+//    public $_lcet;
 
     /**
      * Zwraca domyślny manager dla encji,
@@ -185,5 +185,13 @@ abstract class AbstractEntity {
         } while ($row['c']);
 
         return $slug;
+    }
+    public function set(array $data = array()) {
+
+        foreach ($data as $key => &$d) {
+            call_user_func_array(array($this, 'set'.ucfirst($key)), $d);
+        }
+
+        return $this;
     }
 }

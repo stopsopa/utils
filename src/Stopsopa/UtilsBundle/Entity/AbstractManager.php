@@ -121,6 +121,23 @@ SELECT count(*) c FROM $table
     public function findAll() {
         return $this->repository->findAll();
     }
+    public function findOneByOrCreate($data, $update = false) {
+
+        $entity = $this->findOneBy($data);
+
+        if (!$entity) {
+            /* @var $entity EmployerForm */
+            $entity = $this->createEntity();
+
+            $entity->set($data);
+
+            if ($update) {
+                $this->update($entity);
+            }
+        }
+
+        return $entity;
+    }
 
     /**
      * @param type $ids
@@ -233,5 +250,11 @@ SELECT count(*) c FROM $table
     }
     public function getTableNameByClass($class = null) {
         return $this->getClassMetadata($class)->getTableName();
+    }
+    /**
+     * @return Connection
+     */
+    public function getDbal() {
+        return $this->dbal;
     }
 }
