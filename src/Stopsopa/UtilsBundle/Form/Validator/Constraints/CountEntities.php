@@ -11,12 +11,16 @@ use Symfony\Component\Validator\Constraint;
  */
 class CountEntities extends Constraint
 {
+    const TOO_SHORT_ERROR = 1;
+    const TOO_LONG_ERROR = 2;
+    
     public $maxMessage      = 'Choose max {{ max }} entities from list';
     public $minMessage      = 'Choose min {{ min }} entities from list';
+    public $message         = 'Choose min {{ min }} and max {{ max }} entities from list';
     public $exactMessage    = 'Choose exactly {{ min }} entities from list';
     public $min;
     public $max;
-    
+
     public function __construct($options = null) {
 
         if (null !== $options && !is_array($options)) {

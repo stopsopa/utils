@@ -467,7 +467,7 @@ class Urlizer
      *
      * @return string
      */
-    private static function postProcessText($text, $separator)
+    protected static function postProcessText($text, $separator)
     {
         if (function_exists('mb_strtolower')) {
             $text = mb_strtolower($text);
@@ -483,6 +483,13 @@ class Urlizer
                            preg_replace('/([a-z\d])([A-Z])/', '\1_\2',
                            preg_replace('/([A-Z]+)([A-Z][a-z])/', '\1_\2',
                            preg_replace('/::/', '/', $text)))));
+
+        return trim($text, $separator);
+    }
+    public static function urlizeCaseSensitiveTrim($text, $separator = '-') {
+        $text = static::unaccent($text);
+
+        $text = preg_replace('/[^A-Z^a-z^0-9^\/]+/', $separator, $text);
 
         return trim($text, $separator);
     }
