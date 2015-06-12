@@ -1,0 +1,47 @@
+{% extends "StopsopaUtilsBundle:upload:base.html.twig" %}
+
+{% block css %}
+    {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <a href="{{ path('test-upload-create') }}" class="r">create</a>
+    <div class="clear"></div>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>name</th>
+                <th>surname</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+                <tr>
+                    <td>
+                        {{ u.id }}
+                    </td>
+                    <td>
+                        {{ u.name }}
+                    </td>
+                    <td>
+                        {{ u.surname }}
+                    </td>
+                    <td>
+                        <a href="{{ path('test-upload-edit', {id: u.id}) }}">edit</a>
+                        <a href="{{ path('test-upload-delete', {id: u.id}) }}">delete</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">No entities</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

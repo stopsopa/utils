@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    {% block css %}
+        <style type="text/css">
+            .container {
+                width: 500px;
+                margin: auto;
+            }
+            table {
+                width: 100%;
+            }
+            td {
+               border: 1px solid gray;
+            }
+            .r {
+                float: right;
+            }
+            .clear {
+                clear: both;
+            }
+            .alert {
+                border: 1px solid black;
+                text-align: center;
+            }
+        </style>
+    {% endblock %}
+</head>
+<body>
+    <div class="container">
+        {% for message in app.session.flashbag.get('notice') %}
+            <div class="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <a href="{{ path('test-upload') }}">
+            {% if app.request.get('_route') == 'test-upload' %}
+                refresh
+            {% else %}
+                index
+            {% endif %}
+        </a>
+        {% block body %}
+        {% endblock %}
+    </div>
+
+    {% block js %}
+    {% endblock %}
+
+    {% include 'StopsopaUtilsBundle::browsersync.html.twig' %}
+</body>
+</html>

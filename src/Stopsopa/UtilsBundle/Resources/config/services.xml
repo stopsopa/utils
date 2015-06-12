@@ -6,6 +6,12 @@
 
   <parameters>
         <parameter key="twig.loader.filesystem.class">Stopsopa\UtilsBundle\Services\TwigFilesystemLoader</parameter>
+
+        <parameter key="test.user.entitymanager">Stopsopa\UtilsBundle\Entity\TestUserManager</parameter>
+        <parameter key="test.user.entity">Stopsopa\UtilsBundle\Entity\TestUser</parameter>
+
+        <parameter key="test.comment.entitymanager">Stopsopa\UtilsBundle\Entity\TestCommentManager</parameter>
+        <parameter key="test.comment.entity">Stopsopa\UtilsBundle\Entity\TestComment</parameter>
         <!--<parameter key="twig.loader.filesystem.class">Symfony\Bundle\TwigBundle\Loader\FilesystemLoader</parameter> oryginalny zapis-->
 
     <!--<parameter key="app.country.jirarestservice">AppBundle\Services\JiraRestService</parameter>-->
@@ -66,7 +72,17 @@
 
     </parameters>
 
-  <!--<services>-->
+  <services>
+
+        <service id="test.user.manager" class="%test.user.entitymanager%">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>%test.user.entity%</argument>
+        </service>
+
+        <service id="test.comment.manager" class="%test.comment.entitymanager%">
+            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>%test.comment.entity%</argument>
+        </service>
 
 <!--        <service id="jirarest" class="%app.country.jirarestservice%">
             <argument>%jirarest%</argument>
@@ -218,6 +234,6 @@
         <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest"/>
       </service>-->
 
-  <!--</services>-->
+  </services>
 
 </container>
