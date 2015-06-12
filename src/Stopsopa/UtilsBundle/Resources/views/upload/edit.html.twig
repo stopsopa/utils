@@ -6,9 +6,149 @@
 
 {% block body %}
     <h3>Edit of {{ entity.name }} {{ entity.surname }}</h3>
-    {{ form(form) }}
+
+    {% form_theme form 'AppBundle::own_address.html.twig' %}
+
+    {{ form_start(form) }}
+
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+        {{ form_errors(form.name) }}
+
+        {{ form_row(form.surname) }}
+
+
+
+        <div class="header">
+            <a href="/test" data-form-collection="data-collation-list">add</a>
+            <table>
+                <tbody class="no-border-y" data-collation-list="data-collation-tmp">
+                    {% for c in form.comments %}
+        {#                {% form_theme a 'AppBundle::own_address.html.twig' %}#}
+
+                        {{ block('row') }}
+
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+
+        <script type="text/tmp" data-collation-tmp>
+            {% set c = form.comments.vars.prototype %}
+            {{ block('row') }}
+        </script>
+
+
+    {{ form_end(form) }}
+
+
+
+
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+    $(function () {
+        /**
+         * Znaczenie mają atrybuty w html:
+         * [data-form-collection]
+         * [data-title]
+         * [data-delete]
+         */
+        (function (l) {
 
+            function log(l) {try{console.log(l);}catch (e) {}};
+
+            function getKey(data) {
+                var key = data.split('-');
+                key.shift();
+                return key.join('-');
+            }
+            function findPrefix(k) {
+                return k.replace(/^[.\s\S]*?id\s*=\s*["']([^"']+?)__name__[^"']+["'][.\s\S]*$/, '$1');
+            }
+            function getTitle(el) {
+                if (el.is('input') || el.is('textarea')) {
+                    return el.val();
+                }
+                return el.text();
+            }
+
+            var iter = $('['+l+']');
+
+            iter.each(function () {
+                var t = $(this);
+
+                var tdata = t.data(getKey(l));
+
+                var listselector = '['+tdata+']';
+
+                var list = $(listselector);
+
+                var tmp  = $('['+list.data(getKey(tdata))+']').html();
+
+                var id = findPrefix(tmp);
+
+                var reg = new RegExp('^'+id+'(\\d+).*$');
+
+                t.on('click', function (e) {
+                    e.preventDefault();
+
+                    var max = 0;
+                    list.find('[id^="'+id+'"]').each(function () {
+                        var id = $(this).attr('id');
+                        log('attr id')
+                        log(id)
+                        id = parseInt(id.replace(reg, '$1'));
+                        if (id > max) {
+                            max = id
+                        }
+                    });
+
+                    max += 1;
+
+                    $('<div></div>').html(tmp.replace(/__name__/g, max)).find('> *').appendTo(list);
+                });
+
+                list.on('click', '[data-delete]', function (e) {
+                    e.preventDefault();
+
+                    var t = $(this).parents(listselector+' *').last();
+
+                    var name = getTitle(t.find('[data-title]'));
+
+                    if (confirm('Usunąć element "'+name+'"?')) {
+                        t.remove();
+                    }
+
+                    return;
+                    
+                    swal.confirm('Usunąć element "'+name+'"?', function () {
+                        t.remove();
+                    });
+                })
+            });
+        })('data-form-collection');
+
+    })
+</script>
+{% endblock %}
+
+
+{% block row %}
+    <tr>
+        <td class="width-30">
+            {{ form_widget(c.comment, {attr: {'data-title' : ''}}) }}
+            {{ form_errors(c.comment) }}
+        </td>
+        <td>
+            {{ form_widget(c.createdAt) }}
+            {{ form_errors(c.createdAt) }}
+        </td>
+        <td>
+            <a href="/test" data-delete>delete</a>
+        </td>
+    </tr>
 {% endblock %}

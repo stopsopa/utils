@@ -2,14 +2,12 @@
 
 namespace Stopsopa\UtilsBundle\Entity;
 
-
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
- * TestUser
+ * User
  */
-class TestUser extends AbstractEntity
+class User extends AbstractEntity
 {
     /**
      * @var integer
@@ -27,6 +25,7 @@ class TestUser extends AbstractEntity
     private $surname;
 
     /**
+     * reutrn ArrayCollection
      */
     protected $comments;
 
@@ -48,7 +47,7 @@ class TestUser extends AbstractEntity
      * Set name
      *
      * @param string $name
-     * @return TestUser
+     * @return User
      */
     public function setName($name)
     {
@@ -71,7 +70,7 @@ class TestUser extends AbstractEntity
      * Set surname
      *
      * @param string $surname
-     * @return TestUser
+     * @return User
      */
     public function setSurname($surname)
     {
@@ -89,15 +88,14 @@ class TestUser extends AbstractEntity
     {
         return $this->surname;
     }
-
-    public function addTestComment(TestComment $testcomment) {
-        $testcomment->setUser($this);
-        $this->comments->add($testcomment);
+    public function addComment(Comment $comment) {
+        $comment->setUser($this);
+        $this->comments->add($comment);
         return $this;
     }
-    public function removeTestComment(TestComment $testcomment) {
-        $testcomment->setUser(null);
-        $this->comments->removeElement($testcomment);
+    public function removeComment(Comment $comment) {
+        $comment->setUser(null);
+        $this->comments->removeElement($comment);
         return $this;
     }
     /**
@@ -119,4 +117,5 @@ class TestUser extends AbstractEntity
 
         return $this;
     }
+
 }

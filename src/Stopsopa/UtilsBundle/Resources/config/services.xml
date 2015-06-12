@@ -7,11 +7,11 @@
   <parameters>
         <parameter key="twig.loader.filesystem.class">Stopsopa\UtilsBundle\Services\TwigFilesystemLoader</parameter>
 
-        <parameter key="test.user.entitymanager">Stopsopa\UtilsBundle\Entity\TestUserManager</parameter>
-        <parameter key="test.user.entity">Stopsopa\UtilsBundle\Entity\TestUser</parameter>
+        <parameter key="test.user.entitymanager">Stopsopa\UtilsBundle\Entity\UserManager</parameter>
+        <parameter key="test.user.entity">Stopsopa\UtilsBundle\Entity\User</parameter>
 
-        <parameter key="test.comment.entitymanager">Stopsopa\UtilsBundle\Entity\TestCommentManager</parameter>
-        <parameter key="test.comment.entity">Stopsopa\UtilsBundle\Entity\TestComment</parameter>
+        <parameter key="test.comment.entitymanager">Stopsopa\UtilsBundle\Entity\CommentManager</parameter>
+        <parameter key="test.comment.entity">Stopsopa\UtilsBundle\Entity\Comment</parameter>
         <!--<parameter key="twig.loader.filesystem.class">Symfony\Bundle\TwigBundle\Loader\FilesystemLoader</parameter> oryginalny zapis-->
 
     <!--<parameter key="app.country.jirarestservice">AppBundle\Services\JiraRestService</parameter>-->

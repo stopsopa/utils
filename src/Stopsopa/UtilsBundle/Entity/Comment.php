@@ -2,13 +2,12 @@
 
 namespace Stopsopa\UtilsBundle\Entity;
 
-
-use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
- * TestComment
+ * Comment
  */
-class TestComment extends AbstractEntity
+class Comment extends AbstractEntity
 {
     /**
      * @var integer
@@ -21,11 +20,12 @@ class TestComment extends AbstractEntity
     private $comment;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     private $createdAt;
+
     /**
-     * @var TestUser
+     * @var User
      */
     protected $user;
 
@@ -45,7 +45,7 @@ class TestComment extends AbstractEntity
      * Set comment
      *
      * @param string $comment
-     * @return TestComment
+     * @return Comment
      */
     public function setComment($comment)
     {
@@ -67,8 +67,8 @@ class TestComment extends AbstractEntity
     /**
      * Set createdAt
      *
-     * @param \DateTime $createdAt
-     * @return TestComment
+     * @param DateTime $createdAt
+     * @return Comment
      */
     public function setCreatedAt($createdAt)
     {
@@ -80,12 +80,13 @@ class TestComment extends AbstractEntity
     /**
      * Get createdAt
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {
         return $this->createdAt;
     }
+
     /**
      * @return Punkt
      */
@@ -93,7 +94,7 @@ class TestComment extends AbstractEntity
         return $this->user;
     }
 
-    public function setUser(TestUser $user) {
+    public function setUser(User $user) {
         $this->user = $user;
         return $this;
     }

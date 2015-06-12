@@ -4,9 +4,9 @@ namespace Stopsopa\UtilsBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 use Stopsopa\UtilsBundle\Lib\Request;
-use Stopsopa\UtilsBundle\Entity\TestUserManager;
-use Stopsopa\UtilsBundle\Entity\TestCommentManager;
-use Stopsopa\UtilsBundle\Form\TestUserType;
+use Stopsopa\UtilsBundle\Entity\UserManager;
+use Stopsopa\UtilsBundle\Entity\CommentManager;
+use Stopsopa\UtilsBundle\Form\UserType;
 
 /**
  * @Route("/test/upload")
@@ -17,8 +17,8 @@ class TestUploadController extends AbstractController {
      */
     public function upload(Request $request) {
 
-        /* @var $man TestUserManager */
-        $man = $this->get(TestUserManager::SERVICE);
+        /* @var $man UserManager */
+        $man = $this->get(UserManager::SERVICE);
 
         return $this->render('StopsopaUtilsBundle:upload:index.html.twig', array(
             'users' => $man->findAll()
@@ -29,13 +29,13 @@ class TestUploadController extends AbstractController {
      */
     public function createAction(Request $request) {
 
-        /* @var $man TestUserManager */
-        $man = $this->get(TestUserManager::SERVICE);
+        /* @var $man UserManager */
+        $man = $this->get(UserManager::SERVICE);
 
-        /* @var $entity TestUser */
+        /* @var $entity User */
         $entity = $man->createEntity();
 
-        $type = new TestUserType();
+        $type = new UserType();
 
         $form = $this->createForm($type, $entity, array(
             'action' => $this->generateUrl($request->get('_route')),
@@ -67,13 +67,13 @@ class TestUploadController extends AbstractController {
      */
     public function editAction(Request $request, $id) {
 
-        /* @var $man TestUserManager */
-        $man = $this->get(TestUserManager::SERVICE);
+        /* @var $man UserManager */
+        $man = $this->get(UserManager::SERVICE);
 
-        /* @var $entity TestUser */
+        /* @var $entity User */
         $entity = $man->findOrThrow($id);
 
-        $type = new TestUserType();
+        $type = new UserType();
 
         $editurl = $this->generateUrl($request->get('_route'), array(
             'id' => $entity->getId()
@@ -107,10 +107,10 @@ class TestUploadController extends AbstractController {
      */
     public function deleteAction(Request $request, $id) {
 
-        /* @var $man TestUserManager */
-        $man = $this->get(TestUserManager::SERVICE);
+        /* @var $man UserManager */
+        $man = $this->get(UserManager::SERVICE);
 
-        /* @var $entity TestUser */
+        /* @var $entity User */
         $entity = $man->findOrThrow($id);
 
         $man->remove($entity);

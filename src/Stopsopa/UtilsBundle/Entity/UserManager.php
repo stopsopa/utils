@@ -4,8 +4,8 @@ namespace Stopsopa\UtilsBundle\Entity;
 use Stopsopa\UtilsBundle\Entity\AbstractManager;
 
 /**
- * Stopsopa\UtilsBundle\Entity\TestUserManager
+ * Stopsopa\UtilsBundle\Entity\UserManager
  */
-class TestUserManager extends AbstractManager {
+class UserManager extends AbstractManager {
     const SERVICE = 'test.user.manager';
 }

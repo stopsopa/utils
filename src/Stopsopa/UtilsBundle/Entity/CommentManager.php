@@ -4,8 +4,8 @@ namespace Stopsopa\UtilsBundle\Entity;
 use Stopsopa\UtilsBundle\Entity\AbstractManager;
 
 /**
- * Stopsopa\UtilsBundle\Entity\TestCommentManager
+ * Stopsopa\UtilsBundle\Entity\CommentManager
  */
-class TestCommentManager extends AbstractManager {
+class CommentManager extends AbstractManager {
     const SERVICE = 'test.comment.manager';
 }
