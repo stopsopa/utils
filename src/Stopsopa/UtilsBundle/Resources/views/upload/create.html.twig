@@ -6,9 +6,92 @@
 
 {% block body %}
     <h3>Create user</h3>
-    {{ form(form) }}
+
+    {% form_theme form 'AppBundle::own_address.html.twig' %}
+
+    {{ form_start(form) }}
+
+        {{ form_label(form.name) }}
+        {{ form_widget(form.name) }}
+        {{ form_errors(form.name) }}
+
+        {{ form_row(form.surname) }}
+
+        <div class="header">
+            <a href="/test" data-form-collection="data-collation-list">add</a>
+            <table>
+                <tbody class="no-border-y" data-collation-list="data-collation-tmp">
+                    {% for c in form.comments %}
+        {#                {% form_theme a 'AppBundle::own_address.html.twig' %}#}
+
+                        {{ block('row') }}
+
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <script type="text/tmp" data-collation-tmp>
+            {% set c = form.comments.vars.prototype %}
+            {{ block('row') }}
+        </script>
+
+
+<hr />
+        {{ form_row(form.file) }}
+<hr />
+
+
+
+    {{ form_end(form) }}
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+    function log(l) {try{console.log(l);}catch (e) {}};
 
+    $(function () {
+        $.formcollection('data-form-collection', {
+            confirm: function (confirmed, name) {
+                if (confirm('Usunąć element "'+name+'"?')) {
+                    confirmed();
+                }
+//                return;
+//
+//                swal.confirm('Usunąć element "'+name+'"?', function () {
+//                    t.remove();
+//                });
+
+            },
+            add: function (row, list) {
+
+            },
+            remove: function (row, list, callback) {
+                //setTimeout(callback, 1000);
+                callback();
+            }
+        })
+    })
+</script>
+{% endblock %}
+
+
+{% block row %}
+    <tr>
+        <td class="width-30">
+            {{ form_widget(c.comment, {attr: {'data-title' : ''}}) }}
+            {{ form_errors(c.comment) }}
+        </td>
+        <td>
+            {{ form_widget(c.createdAt) }}
+            {{ form_errors(c.createdAt) }}
+        </td>
+        <td>
+            {{ form_widget(c.file) }}
+            {{ form_errors(c.file) }}
+        </td>
+        <td>
+            <a href="javascript:void(0);" data-delete>delete</a>
+        </td>
+    </tr>
 {% endblock %}

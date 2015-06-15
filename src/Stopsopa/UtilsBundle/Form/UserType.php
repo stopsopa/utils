@@ -11,25 +11,36 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class UserType extends AbstractType {
+    protected $create = true;
+    public function __construct($create = true) {
+        $this->create = $create;
+    }
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $notblank       = new Assert\NotBlank();
         $builder
             ->add('name', null, array(
-                'constraints' => array(
+                'constraints'           => array(
                     $notblank
                 ),
             ))
             ->add('surname', null, array(
-                'constraints' => array(
+                'constraints'           => array(
                     $notblank
                 ),
             ))
+            ->add('file', null, $this->create ? array(
+                'constraints' => array(
+                    $notblank
+                ),
+//                'file_path' => 'webPath',
+//                'file_name' => 'name'
+            ) : array())
             ->add('comments', 'collection', [
-                'type' => new CommentType(false),
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'cascade_validation' => true,
+                'type'                  => new CommentType(false, false),
+                'allow_add'             => true,
+                'allow_delete'          => true,
+                'by_reference'          => false,
+//                'cascade_validation'    => true,
             ])
             ->add('submit', 'submit')
         ;

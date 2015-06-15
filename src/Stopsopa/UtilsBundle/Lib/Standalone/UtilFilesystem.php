@@ -99,4 +99,65 @@ class UtilFilesystem
 
         return true;
     }
+    public static function removeDirIfEmpty($dir) {
+
+        if (static::isEmptyDir($dir)) {
+            rmdir($dir);
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function isEmptyDir($dir) {
+        if (!file_exists($dir)) {
+            return;
+        }
+
+        if (!is_readable($dir)) {
+            return NULL;
+        }
+
+        return (count(scandir($dir)) == 2);
+    }
+    /**
+     * Usuwa puste katalogi przy parametrach
+     *
+     *
+     * ze stanu :
+        .
+        `-- user
+            |-- d3
+            |   `-- 5d
+            `-- e8
+                `-- d9
+                    `-- Clipboard02-kopiajfdksla-fds-afjdksla-fdsa-f-d-safdsa-f-d-sa-fd-s-af-d-sa-f-ds-a-fdusa-f-dsa-f-ds-a-fd-sa.bmpddd
+
+     * removeEmptyDirsToPath('/var/docker/www/main/web/media/uploads/d3/5d', '/var/docker/www/main/web/media/uploads')
+     *
+     * do stanu
+        .
+        `-- user
+            `-- e8
+                `-- d9
+                    `-- Clipboard02-kopiajfdksla-fds-afjdksla-fdsa-f-d-safdsa-f-d-sa-fd-s-af-d-sa-f-ds-a-fdusa-f-dsa-f-ds-a-fd-sa.bmpddd
+     *
+     *
+     *
+     * @param type $dir
+     * @param type $path
+     */
+    public static function removeEmptyDirsToPath($dir, $path) {
+
+        $dir    = rtrim($dir, DIRECTORY_SEPARATOR);
+        $path   = rtrim($path, DIRECTORY_SEPARATOR);
+
+        while ($dir != $path) {
+            if (!static::removeDirIfEmpty($dir)) {
+                break;
+            }
+
+            $dir = pathinfo($dir, PATHINFO_DIRNAME);
+        }
+    }
 }

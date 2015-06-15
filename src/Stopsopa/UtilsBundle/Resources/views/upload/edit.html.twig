@@ -17,8 +17,6 @@
 
         {{ form_row(form.surname) }}
 
-
-
         <div class="header">
             <a href="/test" data-form-collection="data-collation-list">add</a>
             <table>
@@ -31,14 +29,20 @@
                     {% endfor %}
                 </tbody>
             </table>
-
         </div>
-
 
         <script type="text/tmp" data-collation-tmp>
             {% set c = form.comments.vars.prototype %}
             {{ block('row') }}
         </script>
+
+
+<hr />
+        {{ form_row(form.file) }}
+
+        <img src="{{ entity.webPath }}" width="100" />
+<hr />
+
 
 
     {{ form_end(form) }}
@@ -51,87 +55,26 @@
 {% block js %}
 <script type="text/javascript">
     $(function () {
-        /**
-         * Znaczenie mają atrybuty w html:
-         * [data-form-collection]
-         * [data-title]
-         * [data-delete]
-         */
-        (function (l) {
-
-            function log(l) {try{console.log(l);}catch (e) {}};
-
-            function getKey(data) {
-                var key = data.split('-');
-                key.shift();
-                return key.join('-');
-            }
-            function findPrefix(k) {
-                return k.replace(/^[.\s\S]*?id\s*=\s*["']([^"']+?)__name__[^"']+["'][.\s\S]*$/, '$1');
-            }
-            function getTitle(el) {
-                if (el.is('input') || el.is('textarea')) {
-                    return el.val();
+        $.formcollection('data-form-collection', {
+            confirm: function (confirmed, name) {
+                if (confirm('Usunąć element "'+name+'"?')) {
+                    confirmed();
                 }
-                return el.text();
+//                return;
+//
+//                swal.confirm('Usunąć element "'+name+'"?', function () {
+//                    t.remove();
+//                });
+
+            },
+            add: function (row, list) {
+
+            },
+            remove: function (row, list, callback) {
+                //setTimeout(callback, 1000);
+                callback();
             }
-
-            var iter = $('['+l+']');
-
-            iter.each(function () {
-                var t = $(this);
-
-                var tdata = t.data(getKey(l));
-
-                var listselector = '['+tdata+']';
-
-                var list = $(listselector);
-
-                var tmp  = $('['+list.data(getKey(tdata))+']').html();
-
-                var id = findPrefix(tmp);
-
-                var reg = new RegExp('^'+id+'(\\d+).*$');
-
-                t.on('click', function (e) {
-                    e.preventDefault();
-
-                    var max = 0;
-                    list.find('[id^="'+id+'"]').each(function () {
-                        var id = $(this).attr('id');
-                        log('attr id')
-                        log(id)
-                        id = parseInt(id.replace(reg, '$1'));
-                        if (id > max) {
-                            max = id
-                        }
-                    });
-
-                    max += 1;
-
-                    $('<div></div>').html(tmp.replace(/__name__/g, max)).find('> *').appendTo(list);
-                });
-
-                list.on('click', '[data-delete]', function (e) {
-                    e.preventDefault();
-
-                    var t = $(this).parents(listselector+' *').last();
-
-                    var name = getTitle(t.find('[data-title]'));
-
-                    if (confirm('Usunąć element "'+name+'"?')) {
-                        t.remove();
-                    }
-
-                    return;
-                    
-                    swal.confirm('Usunąć element "'+name+'"?', function () {
-                        t.remove();
-                    });
-                })
-            });
-        })('data-form-collection');
-
+        })
     })
 </script>
 {% endblock %}
@@ -148,7 +91,16 @@
             {{ form_errors(c.createdAt) }}
         </td>
         <td>
-            <a href="/test" data-delete>delete</a>
+            {{ form_widget(c.file) }}
+            {{ form_errors(c.file) }}
+        </td>
+        <td>
+            {% if c.vars.value %}
+                <img src="{{ c.vars.value.getWebPath() }}" width="100" />
+            {% endif %}
+        </td>
+        <td>
+            <a href="javascript:void(0);" data-delete>delete</a>
         </td>
     </tr>
 {% endblock %}

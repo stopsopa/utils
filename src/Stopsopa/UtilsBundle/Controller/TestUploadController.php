@@ -7,6 +7,8 @@ use Stopsopa\UtilsBundle\Lib\Request;
 use Stopsopa\UtilsBundle\Entity\UserManager;
 use Stopsopa\UtilsBundle\Entity\CommentManager;
 use Stopsopa\UtilsBundle\Form\UserType;
+use Symfony\Component\Form\FormView;
+use Stopsopa\UtilsBundle\Entity\User;
 
 /**
  * @Route("/test/upload")
@@ -73,7 +75,7 @@ class TestUploadController extends AbstractController {
         /* @var $entity User */
         $entity = $man->findOrThrow($id);
 
-        $type = new UserType();
+        $type = new UserType(false);
 
         $editurl = $this->generateUrl($request->get('_route'), array(
             'id' => $entity->getId()
@@ -89,6 +91,10 @@ class TestUploadController extends AbstractController {
 
             if ($form->isValid()) {
 
+                $entity->preUpload();
+                foreach ($entity->getComments() as $c) {
+                    $c->preUpload();
+                }
                 $man->update($entity);
 
                 $this->setNotification($request, 'Edited');
@@ -96,6 +102,14 @@ class TestUploadController extends AbstractController {
                 return $this->redirect($editurl);
             }
         }
+
+        $view = $form->createView();
+
+        foreach ($view['comments'] as &$c) {
+            /* @var $c FormView */
+//            niechginie($c->vars['value']->getWebPath());
+        }
+//        niechginie($form->createView()->vars);
 
         return $this->render('StopsopaUtilsBundle:upload:edit.html.twig', array(
             'form'   => $form->createView(),

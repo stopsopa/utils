@@ -12,8 +12,10 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class CommentType extends AbstractType {
     protected $submit = true;
-    public function __construct($submit = true) {
+    protected $create = true;
+    public function __construct($submit = true, $create = true) {
         $this->submit = $submit;
+        $this->create = $create;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
@@ -36,6 +38,11 @@ class CommentType extends AbstractType {
                     'placeholder' => 'YYYY-MM-DD'
                 ),
             ))
+            ->add('file', null, $this->create ? array(
+                'constraints' => array(
+                    $notblank
+                ),
+            ) : array())
         ;
         if ($this->submit) {
             $builder
