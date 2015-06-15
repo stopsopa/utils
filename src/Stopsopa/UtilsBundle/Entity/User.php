@@ -240,6 +240,14 @@ class User extends AbstractEntity
             } while (file_exists($absolutedir . '/' . $this->path));
 
             $this->path = $dir . '/' . $this->path;
+
+
+            // tu jest dosyć ważny kawałek kodu
+            // tu jest dosyć ważny kawałek kodu
+            // tu jest dosyć ważny kawałek kodu
+            foreach ($this->getComments() as $c) {
+                $c->preUpload();
+            }
         }
     }
     public function upload() {

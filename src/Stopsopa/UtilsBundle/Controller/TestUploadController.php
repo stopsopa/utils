@@ -91,10 +91,10 @@ class TestUploadController extends AbstractController {
 
             if ($form->isValid()) {
 
+
                 $entity->preUpload();
-                foreach ($entity->getComments() as $c) {
-                    $c->preUpload();
-                }
+
+
                 $man->update($entity);
 
                 $this->setNotification($request, 'Edited');
