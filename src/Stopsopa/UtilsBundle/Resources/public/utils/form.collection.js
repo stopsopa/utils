@@ -26,8 +26,9 @@
      *    edit.html.twig
      */
     $[name] = function (dataattr, opt) {
-
         opt = $.extend({
+            title   : '[data-title]',
+            del     : '[data-delete]',
             confirm : function (confirmed, name) {
                 if (confirm('Usunąć element "'+name+'"?')) {
                     confirmed();
@@ -85,12 +86,12 @@
                 opt.add(element, list);
             });
 
-            list.on('click', '[data-delete]', function (e) {
+            list.on('click', opt.del, function (e) {
                 e.preventDefault();
 
                 var t = $(this).parents(listselector+' *').last();
 
-                var name = getTitle(t.find('[data-title]'));
+                var name = getTitle(t.find(opt.title));
 
                 opt.confirm(function () {
                     opt.remove(t, list, function () {

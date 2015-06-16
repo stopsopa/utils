@@ -1,0 +1,1 @@
+Wygląda na to że pozostałe pliki poza plikami w katalogu js z jQuery-File-Upload-9.10.0 nie są konieczne, to nie będę zaśmiecał bundle

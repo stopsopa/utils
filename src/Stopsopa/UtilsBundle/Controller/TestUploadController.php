@@ -91,9 +91,13 @@ class TestUploadController extends AbstractController {
 
             if ($form->isValid()) {
 
-
+                // ręcznie trzeba wywołać
+                // ręcznie trzeba wywołać
+                // ręcznie trzeba wywołać
                 $entity->preUpload();
-
+                foreach ($entity->getComments() as $c) {
+                    $c->preUpload();
+                }
 
                 $man->update($entity);
 

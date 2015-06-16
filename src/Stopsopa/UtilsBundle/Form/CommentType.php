@@ -68,7 +68,7 @@ class CommentType extends AbstractType {
     }
 
     public function getName() {
-        return 'test_comment';
+        return 'comment';
     }
 
 }

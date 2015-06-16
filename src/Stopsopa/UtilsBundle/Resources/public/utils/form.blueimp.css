@@ -1,0 +1,78 @@
+[data-progress] {
+    width: 100px;
+    border: 1px solid gray;
+    height: 10px;
+    position: relative;
+}
+[data-bar],
+[data-allbar] {
+    display: inline-block;
+    height: 10px;
+    width: 0;
+    background-color: gray;
+    position: absolute;
+}
+[data-label],
+[data-alllabel] {
+    color: #2a2a2a;
+    display: inline-block;
+    font-family: tahoma;
+    font-size: 13px;
+    height: 10px;
+    line-height: 9px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    z-index: 1;
+}
+[data-dropzone] {
+    position: relative;
+    width: 500px;
+    overflow: hidden;
+
+
+    background-color: white;
+    border-radius: 13px;
+    margin: 5px;
+    padding: 5px;
+}
+[data-dropzone],
+[data-dropzone] * {
+    transition: border-color 0.5s ease-in-out 0s;
+}
+[data-dropzone] > div {
+    border: 5px dashed #D3D3D3;
+    border-radius: 10px;
+    line-height: 4em;
+    text-align: center;
+}
+[data-dropzone].active > div {
+    border-color: #939393;
+}
+[data-dropzone] {
+    text-align: center;
+}
+[data-dropzone] span {
+    line-height: 44px;
+    font-family: tahoma;
+    color: #D3D3D3;
+}
+[data-dropzone].active > div span {
+    color: #939393;
+}
+[data-dropzone] input[type="file"] {
+    position: absolute;
+    width: 1000%;
+    height: 100%;
+    top: 0;
+    right: 0;
+    /*opacity: 0.3;*/
+    opacity: 0;
+
+    background-color: green;
+    color: green;
+    cursor: pointer;
+}
+[data-upload] .control {
+    border: 1px solid gray;
+}

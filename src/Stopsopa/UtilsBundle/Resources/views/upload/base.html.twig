@@ -6,7 +6,7 @@
     {% block css %}
         <style type="text/css">
             .container {
-                width: 500px;
+                width: 1000px;
                 margin: auto;
             }
             table {
@@ -51,9 +51,51 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="//jquery.com/jquery-wp-content/themes/jquery/js/jquery-1.11.2.min.js"><\/script>')</script>
 
-    <script src="/bundles/stopsopautils/forms/form.collection.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+    <script src="/bundles/stopsopautils/js/jQuery-File-Upload-9.10.0/js/vendor/jquery.ui.widget.js"></script>
+    <script src="/bundles/stopsopautils/js/jQuery-File-Upload-9.10.0/js/jquery.iframe-transport.js"></script>
+    <script src="/bundles/stopsopautils/js/jQuery-File-Upload-9.10.0/js/jquery.fileupload.js"></script>
+
+    <script src="/bundles/stopsopautils/utils/form.collection.js"></script>
+    <script src="/bundles/stopsopautils/utils/form.blueimp.js"></script>
+    <link rel="stylesheet" type="text/css" href="/bundles/stopsopautils/utils/form.blueimp.css" />
 
     {% block js %}
+        <script type="text/javascript">
+            $(function () {
+
+                $.formcollection('data-form-collection', {
+                    confirm: function (confirmed, name) {
+                        if (confirm('Usunąć element "'+name+'"?')) {
+                            confirmed();
+                        }
+        //                return;
+        //
+        //                swal.confirm('Usunąć element "'+name+'"?', function () {
+        //                    t.remove();
+        //                });
+
+                    },
+                    add: function (row, list) {
+                        row.blueimp({
+                            tmpready            : '[data-tmp-ready-comment]',
+                            tmpdone             : '[data-tmp-done-comment]',
+                            tmperror            : '[data-tmp-error-comment]',
+                            multiple            : false
+                        });
+
+                    },
+                    remove: function (row, list, callback) {
+                        //setTimeout(callback, 1000);
+                        callback();
+                    }
+                })
+
+
+
+            })
+        </script>
     {% endblock %}
 
     {% include 'StopsopaUtilsBundle::browsersync.html.twig' %}

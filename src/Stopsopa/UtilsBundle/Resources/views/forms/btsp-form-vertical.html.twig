@@ -1,0 +1,387 @@
+{#
+      nadanie konretnego wyglądu pojedynczemu formularzowi
+      {% form_theme form 'CmsSecurityBundle:FormThemes:btsp-form-vertical.html.twig' %}
+      {{ form_row(form.surname) }}
+      {{ form_row(form.surname) }}
+renderowanie całego formularza
+{{ form(form,{attr:{'novalidate':'novalidate','class':'btsp'}}) }}
+
+jak wyświetlane są poszczególne elementy formularza (np:  {{ form_start(form, {'method': 'GET'}) }}):
+http://symfony.com/doc/current/reference/forms/twig_reference.html
+
+{{ form|niechginie(null,4) }}  - dostarcza bardzo wielu informacji
+#}
+
+
+{#
+  http://symfony.com/doc/current/cookbook/form/form_customization.html
+  plik rozszerzany form_div_layout.html.twig
+  ustawienie globalnego zestawu templatek dla pól formularzy http://symfony.com/doc/current/cookbook/form/form_customization.html#making-application-wide-customizations
+  ręczna zmiana pojedynczego pola {{ form_widget(form.name, { 'attr': {'class': 'foo'} }) }}  http://symfony.com/doc/current/cookbook/form/form_customization.html#using-form-variables
+#}
+
+
+{#
+warto przyjrzeć się i wdrożyć wtyczki:
+http://jstepper.emkay.dk/<default class="aspx"></default>
+#}
+
+{% block form_start %}
+    {% set method = method|upper %}
+    {% if method in ["GET", "POST"] %}
+        {% set form_method = method %}
+    {% else %}
+        {% set form_method = "POST" %}
+    {% endif %}
+
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' btsp btsp-form-vertical')|trim}) %}
+    {% set attr = attr|merge({'novalidate':'novalidate'}) %}
+    <div class="btsp">
+      <form name="{{ form.vars.name }}" method="{{ form_method|lower }}" action="{{ action }}"{% for attrname, attrvalue in attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}{% if multipart %} enctype="multipart/form-data"{% endif %}>
+      {% spaceless %}
+        {% if form_method != method %}
+            <input type="hidden" name="_method" value="{{ method }}" />
+        {% endif %}
+      {% endspaceless %}
+{% endblock form_start %}
+
+
+{% block form_widget_compound %}
+{% spaceless %}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' btsp')|trim})  %}
+    <div {{ block('widget_container_attributes') }}>
+        {% if form.parent is empty %}
+            {{ form_errors(form) }}
+        {% endif %}
+        {{ block('form_rows') }}
+        {{ form_rest(form) }}
+    </div>
+{% endspaceless %}
+{% endblock form_widget_compound %}
+
+
+
+{% block form_end %}
+{% spaceless %}
+      {% if not render_rest is defined or render_rest %}
+          {{ form_rest(form) }}
+      {% endif %}
+
+      </form>
+    </div>
+{% endspaceless %}
+{% endblock form_end %}
+
+{% block form_label %}
+{% spaceless %}
+    {% if label is not sameas(false) %}
+        {% if not compound %}
+            {% set label_attr = label_attr|merge({'for': id}) %}
+        {% endif %}
+        {% if required %}
+            {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% endif %}
+        {% if label is empty %}
+            {% set label = name|humanize %}
+        {% endif %}
+        {% set label_attr = label_attr|merge({'class': (label_attr.class|default('') ~ ' control-label btsp')|trim}) %}
+
+        <label{% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}>
+          {{ label }}
+          <sup class="asterisk">{% if required %}&#9733;{% else %}&nbsp;{% endif %}</sup>
+        </label>
+    {% endif %}
+{% endspaceless %}
+{% endblock form_label %}
+
+{% block submit_widget %}
+{% spaceless %}
+    {% set asterisk = false %}
+
+    {% for _child in form.parent.children %}
+      {% if _child.vars.required is defined and _child.vars.required %}
+        {% set asterisk = true %}
+      {% endif %}
+    {% endfor %}
+
+    {% if asterisk %}
+      <p class="asterisk-box"><sup class="asterisk">&#9733;</sup> Pola oznaczone gwiazdką są obowiązkowe</p>
+    {% endif %}
+
+    {% set type = type|default('submit') %}
+    <div class="btsp">
+        <div class="btsp form-actions form-group">
+          {{ block('submit_button_widget') }}
+          {% if cms.errors is defined and cms.errors %}
+            <span data-loader="true"></span>           {# aby właczyć nadać klasę 'on' #}
+            <span data-message="true" class="core-form-errors inactive btsp js-hide"> {# aby włączyć trzeba nadać klasę 'on' #}
+              <i class="glyphicon glyphicon-exclamation-sign"></i>{{ 'form.submitfixerrors' }}
+            </span>
+          {% endif %}
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock submit_widget %}
+
+{% block submit_button_widget %}
+{% spaceless %}
+    {% set attr = attr|merge({
+        'class': (attr.class|default('') ~ ' btsp btn btn-success')|trim,
+        'autocomplete' : 'off'
+     })  %}
+    {% if label is empty %}
+        {% set label = name|humanize %}
+    {% endif %}
+    <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>
+        <i class="glyphicon glyphicon-ok"></i>
+        {{ label }}
+    </button>
+{% endspaceless %}
+{% endblock submit_button_widget %}
+
+{% block button_widget %}
+{% spaceless %}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' btn btn-primary')|trim})  %}
+    {% if label is empty %}
+        {% set label = name|humanize %}
+    {% endif %}
+    <button type="{{ type|default('button') }}" {{ block('button_attributes') }}>{{ label }}</button>
+{% endspaceless %}
+{% endblock button_widget %}
+
+{% block form_row %}
+    {% spaceless %}
+        <div class="form-group btsp{% if errors|default([])|length > 0 %} error{% endif %}">
+            {{ form_label(form) }}
+            <div class="controls btsp">
+                {{ form_widget(form) }}
+                {{ form_errors(form) }}
+            </div>
+        </div>
+    {% endspaceless %}
+{% endblock form_row %}
+
+
+{% block form_errors %}
+    {% spaceless %}
+        <div class="btsp inputerrors js-hide" data-errorid="{{ id }}">
+            {% if errors|length > 0 %}
+              <ul class="btspa">
+                {% for error in errors %}
+                  <li>{{ error.message }}</li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+        </div>
+    {% endspaceless %}
+{% endblock form_errors %}
+
+
+
+
+{% block form_widget_simple %}
+{% spaceless %}
+    {% set type = type|default('text') %}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control')|trim}) %}
+    <input type="{{ type }}" {{ block('widget_attributes') }} {% if value is not empty %}value="{{ value }}" {% endif %}/>
+{% endspaceless %}
+{% endblock form_widget_simple %}
+
+{% block textarea_widget %}
+{% spaceless %}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control')|trim}) %}
+    <textarea {{ block('widget_attributes') }}>{{ value }}</textarea>
+{% endspaceless %}
+{% endblock textarea_widget %}
+
+
+{% block choice_widget_collapsed %}
+{% spaceless %}
+    {% if required and empty_value is none and not empty_value_in_choices %}
+        {% set required = false %}
+    {% endif %}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' form-control input-sm')|trim}) %}
+    <select {{ block('widget_attributes') }}{% if multiple %} multiple="multiple"{% endif %}>
+        {% if empty_value is not none %}
+            <option value=""{% if required and value is empty %} selected="selected"{% endif %}>{{ empty_value }}</option>
+        {% endif %}
+        {% if preferred_choices|length > 0 %}
+            {% set options = preferred_choices %}
+            {{ block('choice_widget_options') }}
+            {% if choices|length > 0 and separator is not none %}
+                <option disabled="disabled">{{ separator }}</option>
+            {% endif %}
+        {% endif %}
+        {% set options = choices %}
+        {{ block('choice_widget_options') }}
+    </select>
+{% endspaceless %}
+{% endblock choice_widget_collapsed %}
+
+
+{% block widget_attributes %}
+{% spaceless %}
+    id="{{ id }}" name="{{ full_name }}"
+    {%- if read_only %} readonly="readonly"{% endif -%}
+    {%- if disabled %} disabled="disabled"{% endif -%}
+    {%- if required %} required="required"{% endif -%}
+    {%- if max_length %} maxlength="{{ max_length }}"{% endif -%}
+    {%- if pattern %} pattern="{{ pattern }}"{% endif -%}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' btsp')|trim}) %}
+    {%- for attrname, attrvalue in attr -%}
+        {{- " " -}}
+        {%- if attrname in ['placeholder', 'title'] -%}
+            {{- attrname }}="{{ attrvalue }}"
+        {%- elseif attrvalue is sameas(true) -%}
+            {{- attrname }}="{{ attrname }}"
+        {%- elseif attrvalue is not sameas(false) -%}
+            {{- attrname }}="{{ attrvalue }}"
+        {%- endif -%}
+    {%- endfor -%}
+{% endspaceless %}
+{% endblock widget_attributes %}
+
+
+{% block date_widget %}
+{% spaceless %}
+    {% if widget == 'single_text' %}
+        {% set type = 'text' %}
+        {{ block('form_widget_simple') }}
+    {% else %}
+        <div {{ block('widget_container_attributes') }}>
+            {{ date_pattern|replace({
+                '{{ year }}':  form_widget(form.year),
+                '{{ month }}': form_widget(form.month),
+                '{{ day }}':   form_widget(form.day),
+            })|raw }}
+        </div>
+    {% endif %}
+{% endspaceless %}
+{% endblock date_widget %}
+
+{% block captcha_widget %}
+  {% spaceless %}
+      {% if form.vars.captcha_enabled %}
+
+          {% set __id = '__recaptcha_'~("now"|date('U')) %}
+
+          {#
+          <noscript>
+              <iframe src="{{ form.vars.url_noscript }}" height="300" width="500"></iframe><br/>
+              <textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+              <input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
+          </noscript>
+          #}
+          <script type="text/javascript">
+              $(function () {
+                function log(l) {try{console.log(l)}catch(e){}};
+
+                var id = '{{ __id }}';
+
+                (function loop() {
+                    var obj = $('#'+id);
+                    if (obj.length && obj.is(':visible')) {
+                        return setTimeout(function () {
+
+                            {% if attr.options is defined %}
+                              var RecaptchaOptions = {{ attr.options|json_encode|raw }}
+                            {% endif %}
+                            $.jqScript([
+                                {
+                                  object : 'Recaptcha',
+                                  src    : '{{ form.vars.url_ajax }}', // http://www.google.com/jsapi
+                                }
+                              ],
+                              function () {
+                                //window.RecaptchaStr_{{ core.lang }} = {};
+                                //RecaptchaStr_{{ core.lang }}.instructions_visual = "{{ 'captcha.typeboth' }}";
+                                //RecaptchaStr_{{ core.lang }}.refresh_btn         = "{{ 'captcha.unreadable' }}";
+                                Recaptcha.create("{{ form.vars.public_key }}", id, {
+                                  theme: "clean",
+                                  lang : '{{ core.lang }}',
+                                  callback : function () {
+                                    $('#recaptcha_response_field').attr('required','required').addClass('form-control');
+                                  }
+                                });
+
+                          //      Recaptcha.reload();
+                //              $('#form').submit(function (e) {
+                //                e.preventDefault();
+                //                $.ajax('test_challenge.php',{
+                //                  type: 'post',
+                //                  data: $('#form').serialize()
+                //                })
+                //                .done(function (data) {
+                //                  eval(data);
+                //                });
+                //              });
+                              },
+                              function (e) {
+                                console && console.log && console.log('Wystąpił błąd podczas ładowania biblioteki recaptcha');;
+                                console && console.dir && console.dir(e.object);
+                              }
+                            );
+
+                        }, 500);
+                    }
+                    setTimeout(loop, 500);
+                })();
+              });
+          </script>
+          <div id="{{ __id }}" class="btspa"></div>
+      {% endif %}
+  {% endspaceless %}
+{% endblock captcha_widget %}
+
+
+
+{% block multitree_widget %}
+{% spaceless %}
+    {% set unique = core.uniq %}
+    {% set type = 'hidden' %}
+    {% set attr = attr|merge({'class': (attr.class|default('') ~ ' multitree')|trim}) %}
+    {% set attr = attr|merge({'data-id': unique}) %}
+    {{ block('form_label') }}
+    {{ block('form_widget_simple') }}
+    <div id="{{ unique }}" class="{{ attr.class }}">
+        <table>
+            <tbody>
+                <tr>
+                    <td class="left">
+                        <div class="label">label</div>
+                        <div class="list">
+                            <ul>
+
+                            </ul>
+                            <script type="text/tmp" class="tmp-row">
+                                <li data-id="<%= id %>"><a href="javascript:void(0);" class="handle">-</a> <%= name %></li>
+                            </script>
+                            <script type="text/tmp" class="tmp-level">
+                                <div class="title">
+                                    <i class="minus"></i>
+                                    <i class="ico">+</i>
+                                    <span class="label"><%= name %></span>
+                                </div>
+                                <div class="level"></div>
+                            </script>
+                            <div class="clear"></div>
+                        </div>
+
+                    </td>
+                    <td class="right">
+                        <div class="label">label</div>
+                        <div class="list-out">
+                            <div class="list-in">
+
+                                <div class="level"></div>
+
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clear"></div>
+{% endspaceless %}
+{% endblock multitree_widget %}

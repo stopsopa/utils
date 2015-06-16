@@ -1,0 +1,78 @@
+
+{% block row %}
+    <tr>
+        <td class="width-30">
+            {{ form_widget(c.comment, {attr: {'data-title' : ''}}) }}
+            {{ form_errors(c.comment) }}
+        </td>
+        <td>
+            {{ form_widget(c.createdAt) }}
+            {{ form_errors(c.createdAt) }}
+        </td>
+        <td>
+            <div data-dropzone data-pastezone data-sizelimit="268435456">
+                <div>
+                    {#<input type="file" name="file[]" multiple data-sizelimit="<?php echo $uploader->getServerLimit() ?>">#}
+                    {% form_theme c.file 'StopsopaUtilsBundle:upload:blueimp.html.twig' %}
+                    {{ form_widget(c.file, {attr:{'data-dropzone':''}}) }}
+                    <span>Click or drop file here</span>
+                </div>
+            </div>
+            {{ form_errors(c.file) }}
+        </td>
+        <td>
+            <div data-list>
+                {% if c.vars.value %}
+                    <img src="{{ c.vars.value.getWebPath() }}" width="100" />
+                {% endif %}
+            </div>
+        </td>
+        <td>
+            <a href="javascript:void(0);" data-delete>delete</a>
+        </td>
+    </tr>
+{% endblock %}
+
+
+{% block collectionandblueimptemplates %}
+
+<!-- templatki dla zagnieżdżonego uploadu, po jednym pliku -->
+    <!-- ta jest do obsługi samego collection z form -->
+        <script type="text/tmp" data-collation-tmp>
+            {% set c = form.comments.vars.prototype %}
+            {{ block('row') }}
+        </script>
+
+    <!-- te są już konkretnie do bluimp -->
+        <script type="text/tmp" data-tmp-ready-comment>
+            <div class="ready">
+                <span><%= name %></span>
+                <span><%= human %></span>
+
+                <div data-progress>
+                    <div data-bar></div>
+                    <div data-label></div>
+                </div>
+
+                <!-- <button data-startone type="button">upload</button> -->
+                <button data-cancelone type="button">cancel</button>
+            </div>
+        </script>
+
+        <script type="text/tmp" data-tmp-done-comment>
+            <div class="done">
+                <a href="<%= url %>" target="_blank">
+                    <img src="<%= thumbnailUrl %>" width="50"/>
+                </a>
+                <span><%= name %></span>
+                <button data-delete="<%= deleteUrl %>" type="button">delete</button>
+                <%= hidden %>
+            </div>
+        </script>
+        <script type="text/tmp" data-tmp-error-comment>
+            <div class="error">
+                <span><%= name %></span>
+                <div>Błąd: <%= error %></div>
+            </div>
+        </script>
+{% endblock %}
