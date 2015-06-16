@@ -114,6 +114,9 @@ class TestUploadController extends AbstractController {
 
                     return $this->redirect($editurl);
                 }
+                else {
+                    // not valid , to trzeba tutaj utworzyć Comments i dorzucić do klekcji
+                }
             }
             else { // tylko upload pliku
                 if ($request->files->all()) { // jeśli w ogóle coś jest {
