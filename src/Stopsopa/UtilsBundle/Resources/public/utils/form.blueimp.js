@@ -177,7 +177,7 @@
 
     function renderError(error, file, list, tmperror, o) {
         file.error = error;
-        $('<div></div>').html(tmperror(wrap(file))).find('> *').attr(o.oneattr, '').prependTo(list)
+        $('<div></div>').html(tmperror(wrap(file))).find('> *').attr(o.oneattr, '')[o.insertMethod](list)
     }
     function getKey(data) {
         var key = data.split('-');
@@ -200,9 +200,9 @@
             return false;
         }
 
-        if (typeof param == 'function') {
-            var a = Array.prototype.slice.call( arguments, 0 );
-            return param.apply(a[0], a.slice(2));
+        if (typeof param === 'function') {
+            var a = Array.prototype.slice.call( arguments, 1 );
+            return param.apply($(a[0]), a.slice(1));
         }
 
         return param;
@@ -279,12 +279,15 @@
 
                 action              : false, // weźnie automatycznie z action z formularza
                 maxsize             : 'data-sizelimit', // lub podać liczbę w bajtach
+                insertMethod        : 'prependTo',
 
                 multiple            : function (main) {
-                    var i = main.find('input:file');
+                    log('inside multip;le')
+                    log(arguments)
+                    var i = main.find('input:file').addClass('red');
 
                     if (i.length) {
-                        return !i.prop('multiple');
+                        return i.prop('multiple');
                     }
 
                     return true;
@@ -346,7 +349,10 @@
 
             sendall.addClass('red');
 
-            var multiple = get(o.multiple, main, main)
+            var multiple = get(o.multiple, main, main);
+            log('mul z get: ')
+            log(multiple)
+
             var limitfiles = false;
             if (!multiple) {
                 limitfiles = 1;
@@ -386,13 +392,17 @@
                         if (filecounter > limitfiles) {
                             return log('error, max filecounter: '+filecounter)
                         }
+                        if (limitfiles === 1) {
+                            // jeśli limit jest na jeden plik to przed wrzucaniem kolejnoego czyszczę listę
+                            list.empty();
+                        }
                     }
 
 
                     var file = data.files[0]; // ???
 
                     if (maxsize > file.size) {
-                        data.context = $('<div></div>').html(tmpready(wrap(file))).find('> *').attr(o.oneattr, '').prependTo(list);
+                        data.context = $('<div></div>').html(tmpready(wrap(file))).find('> *').attr(o.oneattr, '')[o.insertMethod](list);
 
                         data.context.data(bagname, file);
 
@@ -441,7 +451,15 @@
                         var f = data.context.data(bagname);
                         pall.step(100, f);
 
-                        file.hidden = '<input type="hidden" name="__attachfile[]" value="'+'id'+'" />';
+                        var name = find(data.context, 'input:file').attr('name');
+
+//                        name = name.split('[')
+//                        var t = name[0];
+//                        name[0] = '';
+//
+//                        name = '_blueimp['+t+']'+name.join('[');
+
+                        file.hidden = '<input type="hidden" name="'+ name +'" value="'+ file.hidden +'" />';
 
                         var tmp = $('<div></div>').html(tmpdone(file)).find('> *').attr(o.oneattr, '');
                         data.context.replaceWith(tmp);
@@ -481,8 +499,12 @@
             };
 
             if (limitfiles) {
+                log('multiple '+limitfiles)
                 opt.limitMultiFileUploads = limitfiles;
                 opt.maxNumberOfFiles = limitfiles;
+            }
+            else {
+                log('multiple true')
             }
 
             main.fileupload(opt);

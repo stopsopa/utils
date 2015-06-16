@@ -23,7 +23,8 @@
         <td>
             <div data-list>
                 {% if c.vars.value %}
-                    <img src="{{ c.vars.value.getWebPath() }}" width="100" />
+                    {% set c = c.vars.value %}
+                    {{ block('tmpdone') }}
                 {% endif %}
             </div>
         </td>
@@ -60,14 +61,22 @@
         </script>
 
         <script type="text/tmp" data-tmp-done-comment>
-            <div class="done">
-                <a href="<%= url %>" target="_blank">
-                    <img src="<%= thumbnailUrl %>" width="50"/>
-                </a>
-                <span><%= name %></span>
-                <button data-delete="<%= deleteUrl %>" type="button">delete</button>
-                <%= hidden %>
-            </div>
+{#                comment: '<%= comment %>',#}
+{#                deleteUrl: '<%= deleteUrl %>',#}
+            {% set c = {
+                hidden: '<%= hidden %>',
+                webPath: '<%= webPath %>'
+            } %}
+            {% block tmpdone %}
+                <div class="done">
+                    <a href="{{ c.webPath|raw }}" target="_blank">
+                        <img src="{{ c.webPath|raw }}" width="50"/>
+                    </a>
+                    <!-- <span>{ { c.name|raw } }</span> -->
+                    <button data-delete="{{ c.deleteUrl|default('no link')|raw }}" type="button">delete</button>
+                    {{ c.hidden|default('<!-- no hidden -->')|raw }}
+                </div>
+            {% endblock %}
         </script>
         <script type="text/tmp" data-tmp-error-comment>
             <div class="error">

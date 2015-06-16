@@ -63,6 +63,9 @@
 
     {% block js %}
         <script type="text/javascript">
+
+            function log(l) {try{console.log(l);}catch (e) {}};
+
             $(function () {
 
                 $.formcollection('data-form-collection', {
@@ -78,13 +81,19 @@
 
                     },
                     add: function (row, list) {
+
+                    },
+                    exists: function (row, list) {
+
+                    },
+                    addandexists: function (row, list, addflat) {
+                        log('exists: '+addflat);
                         row.blueimp({
                             tmpready            : '[data-tmp-ready-comment]',
                             tmpdone             : '[data-tmp-done-comment]',
                             tmperror            : '[data-tmp-error-comment]',
-                            multiple            : false
+                            //multiple            : false // koniecznie to dodawać
                         });
-
                     },
                     remove: function (row, list, callback) {
                         //setTimeout(callback, 1000);

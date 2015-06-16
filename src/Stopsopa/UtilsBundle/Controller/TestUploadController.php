@@ -87,24 +87,51 @@ class TestUploadController extends AbstractController {
 
         if ($request->isPost()) {
 
+//            nieginie($_SERVER, 2);
+//            nieginie($_POST, 2);
+//            nieginie($_GET, 2);
+//            nieginie($_FILES, 2);
+//            return $this->getJsonResponse($_POST);
+//            return $this->getJsonResponse($request->request->get('_blueimp'));
+
             $form->handleRequest($request);
 
-            if ($form->isValid()) {
+            if ($form->get('submit')->isClicked()) {
 
-                // ręcznie trzeba wywołać
-                // ręcznie trzeba wywołać
-                // ręcznie trzeba wywołać
-                $entity->preUpload();
-                foreach ($entity->getComments() as $c) {
-                    $c->preUpload();
+                if ($form->isValid()) {
+
+                    // ręcznie trzeba wywołać
+                    // ręcznie trzeba wywołać
+                    // ręcznie trzeba wywołać
+                    $entity->preUpload();
+                    foreach ($entity->getComments() as $c) {
+                        $c->preUpload();
+                    }
+
+                    $man->update($entity);
+
+                    $this->setNotification($request, 'Edited');
+
+                    return $this->redirect($editurl);
                 }
-
-                $man->update($entity);
-
-                $this->setNotification($request, 'Edited');
-
-                return $this->redirect($editurl);
             }
+            else { // tylko upload pliku
+                if ($request->files->all()) { // jeśli w ogóle coś jest {
+
+
+
+                    return $this->getJsonResponse(array(
+                        'files' => array(
+                            array(
+                                'hidden' => 'nazwapliku',
+                                'webPath' => 'webPath',
+                                'data' => $request->files->all()
+                            )
+                        )
+                    ));
+                }
+            }
+
         }
 
         $view = $form->createView();

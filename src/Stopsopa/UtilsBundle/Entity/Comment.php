@@ -149,22 +149,22 @@ class Comment extends AbstractEntity
         return null === $this->path ? null : $this->getUploadDir().'/'.$this->path;
     }
 
-    protected function getUploadRootDir()
+    protected function getUploadRootDir($temp = false)
     {
         // the absolute directory path where uploaded
         // documents should be saved
-        $dir = __DIR__.'/../../../../../../../web'.$this->getUploadDir();
+        $dir = __DIR__.'/../../../../../../../web'. ($temp ? $this->getUploadTmpDir() : $this->getUploadDir());
 
         return $dir;
     }
 
     protected function getUploadDir()
     {
-        // get rid of the __DIR__ so it doesn't screw up
-        // when displaying uploaded doc/image in the view.
         return '/media/uploads/comments';
     }
-
+    protected function getUploadTmpDir() {
+        return '/media/uploads/comments_tmp';
+    }
 
 
 

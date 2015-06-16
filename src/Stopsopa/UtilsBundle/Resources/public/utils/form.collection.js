@@ -27,8 +27,9 @@
      */
     $[name] = function (dataattr, opt) {
         opt = $.extend({
-            title   : '[data-title]',
-            del     : '[data-delete]',
+            title           : '[data-title]',
+            del             : '[data-delete]',
+            insertMethod    : 'prependTo',
             confirm : function (confirmed, name) {
                 if (confirm('Usunąć element "'+name+'"?')) {
                     confirmed();
@@ -42,6 +43,12 @@
 
             },
             add: function (row, list) {
+
+            },
+            exists: function (row, list) {
+
+            },
+            addandexists: function (row, list, addflat) { // addflat - czy odpalnoy na add czy był obiekt statycznie
 
             },
             remove: function (row, list, callback) {
@@ -81,9 +88,10 @@
 
                 max += 1;
 
-                var element = $('<div></div>').html(tmp.replace(/__name__/g, max)).find('> *').appendTo(list);
+                var element = $('<div></div>').html(tmp.replace(/__name__/g, max)).find('> *')[opt.insertMethod](list);
 
                 opt.add(element, list);
+                opt.addandexists(element, list, true);
             });
 
             list.on('click', opt.del, function (e) {
@@ -98,7 +106,13 @@
                         t.remove();
                     });
                 }, name);
-            })
+            });
+
+            list.find('> *').each(function () {
+                var t = $(this);
+                opt.exists(t, list);
+                opt.addandexists(t, list);
+            });
         });
     };
 })(jQuery, 'formcollection');
