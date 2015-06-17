@@ -12,6 +12,12 @@ use Stopsopa\UtilsBundle\Entity\User;
 
 /**
  * @Route("/test/upload")
+
+routing.yml
+
+stopsopautils:
+    resource: "@StopsopaUtilsBundle/Controller/"
+    type:     annotation
  */
 class TestUploadController extends AbstractController {
     /**
@@ -86,7 +92,6 @@ class TestUploadController extends AbstractController {
         ));
 
         if ($request->isPost()) {
-
 //            nieginie($_SERVER, 2);
 //            nieginie($_POST, 2);
 //            nieginie($_GET, 2);

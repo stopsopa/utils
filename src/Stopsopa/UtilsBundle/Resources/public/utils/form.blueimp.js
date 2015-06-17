@@ -453,11 +453,11 @@
 
                         var name = find(data.context, 'input:file').attr('name');
 
-//                        name = name.split('[')
-//                        var t = name[0];
-//                        name[0] = '';
+                        name = name.split('[')
+                        var t = name[0];
+                        name[0] = '';
 //
-//                        name = '_blueimp['+t+']'+name.join('[');
+                        name = '_blueimp['+t+']'+name.join('[');
 
                         file.hidden = '<input type="hidden" name="'+ name +'" value="'+ file.hidden +'" />';
 

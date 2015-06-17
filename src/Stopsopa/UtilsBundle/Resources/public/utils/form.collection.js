@@ -42,13 +42,13 @@
 //                });
 
             },
-            add: function (row, list) {
+            added: function (row, list) {
 
             },
-            exists: function (row, list) {
+            existing: function (row, list) {
 
             },
-            addandexists: function (row, list, addflat) { // addflat - czy odpalnoy na add czy był obiekt statycznie
+            addedandexisting: function (row, list, addflat) { // addflat - czy odpalnoy na add czy był obiekt statycznie
 
             },
             remove: function (row, list, callback) {
@@ -90,8 +90,8 @@
 
                 var element = $('<div></div>').html(tmp.replace(/__name__/g, max)).find('> *')[opt.insertMethod](list);
 
-                opt.add(element, list);
-                opt.addandexists(element, list, true);
+                opt.added(element, list);
+                opt.addedandexisting(element, list, true);
             });
 
             list.on('click', opt.del, function (e) {
@@ -110,8 +110,8 @@
 
             list.find('> *').each(function () {
                 var t = $(this);
-                opt.exists(t, list);
-                opt.addandexists(t, list);
+                opt.existing(t, list);
+                opt.addedandexisting(t, list);
             });
         });
     };
