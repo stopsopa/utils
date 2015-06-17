@@ -8,6 +8,11 @@ use Stopsopa\UtilsBundle\Lib\Response;
 use Stopsopa\UtilsBundle\Lib\UtilArray;
 use Symfony\Component\HttpFoundation\Request;
 
+
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\FormError;
+
 abstract class AbstractController extends Controller {
     /**
      *
@@ -137,5 +142,57 @@ abstract class AbstractController extends Controller {
             return $user;
 
       return null;
+    }
+    /**
+     * Możliwe że później trzeba będzie rozbudować tą metodę o obsługę
+     * zagnieżdżonych formularzy
+     * @param bool $wrapped - wsadza w dodatkowy poziom tablicy z kluczem którego spodziewa się skrypt obsługi formularzy
+     * @param Form $entity
+     */
+    public function getErrors(Form $form, $wrapped = false) {
+        $view = $form->createView();
+        $errors = $this->_getChildrenErrors($view->children);
+//        niechginie($view,2);
+        if ($wrapped) {
+            return array(
+                is_string($wrapped) ? $wrapped : 'error' => $errors
+            );
+        }
+
+        return $errors;
+    }
+    protected function _getChildrenErrors($list) {
+        $errors = array();
+
+        if (@count($list)) {
+            foreach ($list as $k => $formview) {
+                /* @var $formview FormView */
+                $vars = $formview->vars;
+                if (@count($vars['errors'])) {
+                    $ee = array();
+                    foreach ($vars['errors'] as $e) {
+                        /* @var $e FormError */
+                        $ee[] = $e->getMessage();
+                    }
+                    $errors[$vars['id']] = $ee;
+                }
+              $errors = $this->_merget($errors, $this->_getChildrenErrors($formview->children));
+            }
+        }
+
+        return $errors;
+    }
+    protected function _merget ($a1, $a2) {
+        foreach ($a2 as $k => $d) {
+            if (@is_array($a1[$k])) {
+                foreach ($d as $k1 => $d1) {
+                    $a1[$k][] = $d1;
+                }
+            }
+            else {
+                $a1[$k] = $d;
+            }
+        }
+        return $a1;
     }
 }

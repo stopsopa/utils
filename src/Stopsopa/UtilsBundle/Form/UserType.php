@@ -3,21 +3,21 @@
 namespace Stopsopa\UtilsBundle\Form;
 
 use Stopsopa\UtilsBundle\Entity\User;
-use Doctrine\ORM\EntityRepository;
+use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class UserType extends AbstractType {
-    protected $create = true;
-    public function __construct($create = true) {
-        $this->create = $create;
+    protected $validateuploads = true;
+    public function __construct($validateuploads = true) {
+        $this->validateuploads = $validateuploads;
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $notblank       = new Assert\NotBlank();
         $builder
@@ -31,15 +31,8 @@ class UserType extends AbstractType {
                     $notblank
                 ),
             ))
-            ->add('file', null, $this->create ? array(
-                'constraints' => array(
-                    $notblank
-                ),
-//                'file_path' => 'webPath',
-//                'file_name' => 'name'
-            ) : array())
             ->add('comments', 'collection', [
-                'type'                  => new CommentType(false, false),
+                'type'                  => new CommentType($this->validateuploads, false),
                 'allow_add'             => true,
                 'allow_delete'          => true,
                 'by_reference'          => false,
@@ -47,6 +40,22 @@ class UserType extends AbstractType {
             ])
             ->add('submit', 'submit')
         ;
+
+        $subscriber = new UploadSubscriber($this->validateuploads, function ($isfileuploaded, $builder) {
+            $builder
+                ->add('file', null, $isfileuploaded ? array(
+                    'constraints' => array(
+                        new Assert\NotBlank(array(
+                            'groups' => array('upload')
+                        ))
+                    ),
+    //                'file_path' => 'webPath',
+    //                'file_name' => 'name'
+                ) : array())
+            ;
+        });
+
+        $builder->addEventSubscriber($subscriber);
 
 //form.pre_set_data
 //form.post_set_data
@@ -62,24 +71,29 @@ class UserType extends AbstractType {
 //X-form.pre_bind: 3
 //X-form.bind: 5
 //X-form.post_bind: 7
-
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-        });
-
-        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
-        });
-
-        $builder->addEventListener(FormEvents::PRE_BIND, function (FormEvent $event) {
-        });
-
-        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
-        });
-
-        $builder->addEventListener(FormEvents::BIND, function (FormEvent $event) {
-        });
-
-        $builder->addEventListener(FormEvents::POST_BIND, function (FormEvent $event) {
-        });
+//
+//        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+//            $entity     = $event->getData();
+//            $form       = $event->getForm();
+//            if (!$entity || null === $entity->getId()) {
+//                $form->add('name', 'text');
+//            }
+//        });
+//
+//        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) {
+//        });
+//
+//        $builder->addEventListener(FormEvents::PRE_BIND, function (FormEvent $event) {
+//        });
+//
+//        $builder->addEventListener(FormEvents::SUBMIT, function (FormEvent $event) {
+//        });
+//
+//        $builder->addEventListener(FormEvents::BIND, function (FormEvent $event) {
+//        });
+//
+//        $builder->addEventListener(FormEvents::POST_BIND, function (FormEvent $event) {
+//        });
     }
     public function configureOptions(OptionsResolver $resolver)
     {

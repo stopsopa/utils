@@ -131,6 +131,15 @@ class Comment extends AbstractEntity
 
 
 
+
+
+
+
+    /**
+     * @Assert\File(maxSize="6000000")
+     */
+    protected $file;
+    public $tempdir;
     /**
      * http://symfony.com/doc/current/cookbook/doctrine/file_uploads.html
      */
@@ -149,30 +158,20 @@ class Comment extends AbstractEntity
         return null === $this->path ? null : $this->getUploadDir().'/'.$this->path;
     }
 
-    protected function getUploadRootDir($temp = false)
+    protected function getUploadRootDir()
     {
         // the absolute directory path where uploaded
         // documents should be saved
-        $dir = __DIR__.'/../../../../../../../web'. ($temp ? $this->getUploadTmpDir() : $this->getUploadDir());
-
-        return $dir;
+        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir();
     }
 
     protected function getUploadDir()
     {
-        return '/media/uploads/comments';
+//        if ($this->tempdir) {
+//            niechginie($this->tempdir);
+//        }
+        return str_replace('*', $this->tempdir ? '_temp' : '', '/media/uploads/comments*');
     }
-    protected function getUploadTmpDir() {
-        return '/media/uploads/comments_tmp';
-    }
-
-
-
-
-    /**
-     * @Assert\File(maxSize="6000000")
-     */
-    private $file;
 
     /**
      * Sets file.
@@ -231,8 +230,6 @@ class Comment extends AbstractEntity
         }
     }
     public function upload() {
-
-        header('X-test'.uniqid().': 1');
 
         if (null === $this->getFile()) {
             return;

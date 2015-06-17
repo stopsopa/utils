@@ -11,7 +11,7 @@
 
 {#    {% form_theme form 'AppBundle::own_address.html.twig' %}#}
 
-    {{ form_start(form) }}
+    {{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
 
         {{ form_label(form.name) }}
         {{ form_widget(form.name) }}

@@ -14,9 +14,9 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-        <field name="comment" type="text"/>
-        <field name="createdAt" type="datetime"/>
-        <field name="updatedAt" type="datetime"/>
+        <field name="comment" type="text" nullable="true"/>
+        <field name="createdAt" type="datetime" nullable="true"/>
+        <field name="updatedAt" type="datetime" nullable="true"/>
         <field name="path" type="string" length="255" nullable="true"/>
         <many-to-one field="user" target-entity="User" inversed-by="comments">
             <join-column name="userId" referenced-column-name="id" />

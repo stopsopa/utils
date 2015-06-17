@@ -14,10 +14,10 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
-        <field name="name" type="string" length="255" />
-        <field name="surname" type="string" length="255" />
+        <field name="name" type="string" length="255" nullable="true"/>
+        <field name="surname" type="string" length="255" nullable="true"/>
         <field name="path" type="string" length="255" nullable="true"/>
-        <field name="updatedAt" type="datetime"/>
+        <field name="updatedAt" type="datetime" nullable="true"/>
         <one-to-many field="comments" target-entity="Comment" mapped-by="user" >
             <cascade>
                 <cascade-persist/>

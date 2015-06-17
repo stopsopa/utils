@@ -9,13 +9,14 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
 
 class CommentType extends AbstractType {
     protected $submit = true;
-    protected $create = true;
-    public function __construct($submit = true, $create = true) {
+    protected $validateuploads = true;
+    public function __construct($validateuploads = true, $submit = true) {
         $this->submit = $submit;
-        $this->create = $create;
+        $this->validateuploads = $validateuploads;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
@@ -38,17 +39,29 @@ class CommentType extends AbstractType {
                     'placeholder' => 'YYYY-MM-DD'
                 ),
             ))
-            ->add('file', null, $this->create ? array(
-                'constraints' => array(
-                    $notblank
-                ),
-            ) : array())
+//            ->add('file', null, UploadSubscriber::isFileInRequest($this->validateuploads, $builder, 'file') ? array(
         ;
         if ($this->submit) {
             $builder
                 ->add('submit', 'submit')
             ;
         }
+
+        $subscriber = new UploadSubscriber($this->validateuploads, function ($isfileuploaded, $builder) {
+            $builder
+                ->add('file', null, $isfileuploaded ? array(
+                    'constraints' => array(
+                        new Assert\NotBlank(array(
+                            'groups' => array('upload')
+                        ))
+                    ),
+    //                'file_path' => 'webPath',
+    //                'file_name' => 'name'
+                ) : array())
+            ;
+        });
+
+        $builder->addEventSubscriber($subscriber);
     }
     public function configureOptions(OptionsResolver $resolver)
     {

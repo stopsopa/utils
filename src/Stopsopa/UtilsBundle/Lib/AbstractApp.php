@@ -30,8 +30,8 @@ class AbstractApp
 //    const SERVICE_EM             = 'doctrine.orm.default_entity_manager';
 //    const SERVICE_DBAL           = 'doctrine.dbal.default_connection';
 //    const SERVICE_TRANSLATOR     = 'translator';
-//    const SERVICE_ROUTER         = 'router';
-//    const SERVICE_REQUEST        = 'request';
+    const SERVICE_ROUTER         = 'router';
+    const SERVICE_REQUEST        = 'request';
 //    CONST SERVICE_ENGINE         = 'site.engine';
     CONST SERVICE_TEMPLATING     = 'templating';
 //    CONST SERVICE_VERSIONED      = 'service.cmsbase.versioned.service';
@@ -250,9 +250,9 @@ class AbstractApp
     /**
      * @return Router
      */
-//    public static function getRouter() {
-//        return static::get('router');
-//    }
+    public static function getRouter() {
+        return static::get('router');
+    }
 //
 //    /**
 //     * @return SecurityContext
@@ -276,9 +276,9 @@ class AbstractApp
     /**
      * @return Request
      */
-//    public static function getRequest() {
-//      return static::get(static::SERVICE_REQUEST);
-//    }
+    public static function getRequest() {
+      return static::get(static::SERVICE_REQUEST);
+    }
 //    public static function isGoogleBoot($request = null) {
 //      /* @var $request Request */
 //      if (!$request)
@@ -371,12 +371,12 @@ class AbstractApp
 //    public static function getServiceVersioned() {
 //      return static::get(static::SERVICE_VERSIONED);
 //    }
-//    /**
-//     * @return TwigEngine
-//     */
-//    public static function getServiceTemplating() {
-//      return static::get(static::SERVICE_TEMPLATING);
-//    }
+    /**
+     * @return TwigEngine
+     */
+    public static function getServiceTemplating() {
+      return static::get(static::SERVICE_TEMPLATING);
+    }
 //    /**
 //     * @return DumperService
 //     */
