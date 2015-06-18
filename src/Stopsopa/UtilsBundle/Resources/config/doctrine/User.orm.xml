@@ -18,7 +18,7 @@
         <field name="surname" type="string" length="255" nullable="true"/>
         <field name="path" type="string" length="255" nullable="true"/>
         <field name="updatedAt" type="datetime" nullable="true"/>
-        <one-to-many field="comments" target-entity="Comment" mapped-by="user" >
+        <one-to-many field="comments" target-entity="Comment" mapped-by="user">
             <cascade>
                 <cascade-persist/>
                 <cascade-remove/>

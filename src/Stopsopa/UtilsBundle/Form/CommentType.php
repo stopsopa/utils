@@ -28,10 +28,10 @@ class CommentType extends AbstractType {
                 ),
             ))
             ->add('createdAt', 'date', array(
-                'widget' => 'single_text',
-                'empty_value' => '',
-                'trim' => true,
-                'format' => 'yyyy-MM-dd', // http://symfony.com/doc/master/reference/forms/types/date.html#format
+                'widget'        => 'single_text',
+                'empty_value'   => '',
+                'trim'          => true,
+                'format'        => 'yyyy-MM-dd', // http://symfony.com/doc/master/reference/forms/types/date.html#format
                 'constraints' => array(
                     $notblank
                 ),

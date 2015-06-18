@@ -288,5 +288,11 @@ class User extends AbstractEntity
             $this->getUploadRootDir()
         );
     }
-
+    public function setPath($path) {
+        $this->path = $path;
+        return $this;
+    }
+    function getPath() {
+        return $this->path;
+    }
 }

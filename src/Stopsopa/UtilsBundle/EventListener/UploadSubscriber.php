@@ -2,14 +2,12 @@
 
 namespace Stopsopa\UtilsBundle\EventListener;
 
-use Stopsopa\UtilsBundle\Form\Test;
+use Doctrine\Common\Collections\ArrayCollection;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilNested;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Stopsopa\UtilsBundle\Lib\AbstractApp;
-use Symfony\Component\Form\FormBuilderInterface;
-
-use Symfony\Component\Validator\Constraints as Assert;
 /**
  *
 X-preSetData: 0
@@ -78,15 +76,19 @@ class UploadSubscriber implements EventSubscriberInterface
         return static::$lastentity;
     }
     public static function bindHiddens($entity, $dataset = null) {
-        $request = AbstractApp::getRequest();
 
+//        return;
         if (!$dataset) {
-            $dataset = $request->request->get('_blueimp', array());
+            $dataset = AbstractApp::getRequest()->request->get('_blueimp', array());
         }
+
+        $etmp = $entity;
+
+//        nieginie($dataset, 2);
 //(
 //    [user] => Array
-//        (
-//            [comments] => Array
+//        ( -- $fieldsarray
+//            [comments] => Array -- childentity
 //                (
 //                    [2] => Array
 //                        (
@@ -99,23 +101,54 @@ class UploadSubscriber implements EventSubscriberInterface
 //
 //)
 
-        foreach ($dataset as $user => &$comments) {
-            if (is_array($comments)) {
-                foreach ($comments as $filedata) {
-                    if (is_array($filedata)) {
-                        foreach ($filedata as $i => &$d) {
-                            if (!empty($d['file'])) {
+        foreach ($dataset as $user => &$fieldsarray) {
+            if (is_array($fieldsarray)) {
 
+                if (!empty($fieldsarray['file'])) {
+                    $etmp->setPath($fieldsarray['file']);
+                    continue;
+                }
 
-
-
+                foreach ($fieldsarray as $field => &$fieldval) {
+                    $etmp = UtilNested::get($etmp, $field); // niby comments tutaj mam
+                    //
+                    if ($etmp instanceof ArrayCollection) {
+                        /* @var $etmp ArrayCollection */
+                        $etmp = $etmp->toArray();
+                    }
+//                    niechginie($etmp);
+                    if (is_array($fieldval) && !isset($fieldval['file'])) {
+//                        $etmp = static::_filterEmpty($etmp);
+                        // w takim razie mamy do czynienia z listą
+//                        niechginie($fieldval);
+                        foreach ($fieldval as $index => &$d) {
+                            if (isset($d['file'])) {
+                                $etmp[$index-1]->setPath($d['file']);
+//                                $eetmp = array_shift($etmp);
+//                                $eetmp->setPath($d['file']);
                             }
                         }
+                    }
+                    else {
+                        static::bindHiddens($etmp, $fieldval);
+                        // tu jest pojedyncza encja
+
                     }
                 }
             }
         }
-        die('koniec');
+//        niechginie($entity, 3);
+//        die('koniec');
+    }
+    protected static function _filterEmpty($list) {
+        $ret = array();
+        foreach ($list as &$element) {
+            $path = UtilNested::get($element, 'path');
+            if (!$path) {
+                $ret[] = $element;
+            }
+        }
+        return $ret;
     }
 
 

@@ -25,6 +25,8 @@
                 {% if c.vars.value %}
                     {% set c = c.vars.value %}
                     {{ block('tmpdone') }}
+                {% else %}
+                    <input type="hidden" name="__name__" value="" />
                 {% endif %}
             </div>
         </td>
@@ -64,19 +66,11 @@
 {#                comment: '<%= comment %>',#}
 {#                deleteUrl: '<%= deleteUrl %>',#}
             {% set c = {
+                twigforjs     : true,
                 hidden: '<%= hidden %>',
                 webPath: '<%= webPath %>'
             } %}
-            {% block tmpdone %}
-                <div class="done">
-                    <a href="{{ c.webPath|raw }}" target="_blank">
-                        <img src="{{ c.webPath|raw }}" width="50"/>
-                    </a>
-                    <!-- <span>{ { c.name|raw } }</span> -->
-                    <button data-delete="{{ c.deleteUrl|default('no link')|raw }}" type="button">delete</button>
-                    {{ c.hidden|default('<!-- no hidden -->')|raw }}
-                </div>
-            {% endblock %}
+            {{ block('tmpdone') }}
         </script>
         <script type="text/tmp" data-tmp-error-comment>
             <div class="error">
@@ -84,4 +78,27 @@
                 <div>Błąd: <%= error %></div>
             </div>
         </script>
+{% endblock %}
+
+
+{% block tmpdone %}
+    <div class="done">
+        {% if c.webPath %}
+
+            <a href="{{ c.webPath|raw }}" target="_blank">
+                <img src="{{ c.webPath|raw }}" width="50"/>
+            </a>
+            <!-- <span>{ { c.name|raw } }</span> -->
+            <button data-delete="{{ c.deleteUrl|default('no link')|raw }}" type="button">delete</button>
+
+
+            {% if c.twigforjs is defined %}
+                {{ c.hidden|default('<!-- no hidden -->')|raw }}
+            {% else %}
+                <input type="hidden" name="__name__" value="" />
+            {% endif %}
+        {% else %}
+            <input type="hidden" name="__name__" value="" />
+        {% endif %}
+    </div>
 {% endblock %}

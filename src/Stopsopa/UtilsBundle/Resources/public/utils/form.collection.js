@@ -68,6 +68,8 @@
             var list = $(listselector);
 
             var tmp  = $('['+list.data(getKey(tdata))+']').html();
+            log('tmp')
+            log(tmp)
 
             var id = findPrefix(tmp);
 

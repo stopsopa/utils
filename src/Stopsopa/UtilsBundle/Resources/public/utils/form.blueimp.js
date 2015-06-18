@@ -444,6 +444,20 @@
 
                 },
                 done: function (e, data) {
+
+                    $('[name="__name__"]').each(function () {
+                        var tt = $(this);
+                        var p = tt.closest('.js')
+                        var name = p.find('input:file').attr('name');
+                        var k = name.split('[')
+                        var t = k[0];
+                        k[0] = '';
+//
+                        k = '_blueimp['+t+']'+k.join('[');
+
+                        tt.attr('name', k);
+                    });
+
                     // ta pętla w sumie nie ma sensu bo tutaj będzie zawsze obsługa jednego pliku
                     // ale upakowane jest to tak żę wygląda jakby mogła tu przyjśc lista danych
                     $.each(data.result.files, function (index, file) {
@@ -451,17 +465,16 @@
                         var f = data.context.data(bagname);
                         pall.step(100, f);
 
-                        var name = find(data.context, 'input:file').attr('name');
-
-                        name = name.split('[')
-                        var t = name[0];
-                        name[0] = '';
+                        var name = data.context.closest('.js').find('input:file').attr('name');
+                        var k = name.split('[')
+                        var t = k[0];
+                        k[0] = '';
 //
-                        name = '_blueimp['+t+']'+name.join('[');
+                        k = '_blueimp['+t+']'+k.join('[');
 
-                        file.hidden = '<input type="hidden" name="'+ name +'" value="'+ file.hidden +'" />';
+                        file.hidden = '<input type="hidden" name="'+ k +'" value="'+ file.hidden +'" />';
 
-                        var tmp = $('<div></div>').html(tmpdone(file)).find('> *').attr(o.oneattr, '');
+                        var tmp = $('<div></div>').html(tmpdone(file)).find('> *').attr(o.oneattr, '').attr('x'+$.now(), 'tst');
                         data.context.replaceWith(tmp);
                         data.context = tmp;
 
