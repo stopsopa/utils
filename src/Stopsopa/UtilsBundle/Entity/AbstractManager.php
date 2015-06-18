@@ -257,4 +257,10 @@ SELECT count(*) c FROM $table
     public function getDbal() {
         return $this->dbal;
     }
+    /**
+     * @return EntityManager
+     */
+    public function getEntityManager() {
+        return $this->em;
+    }
 }
