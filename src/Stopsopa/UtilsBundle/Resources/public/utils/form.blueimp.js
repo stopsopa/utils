@@ -219,6 +219,38 @@
       };
     };
 
+    function fix() {
+        return;
+        $('[name="__tmp__"]').each(function () {
+            var tt = $(this);
+            var p = tt.closest('.js')
+            var name = p.find('input:file').attr('name');
+            if (typeof name === 'string') {
+                log('name');
+                log(name);
+                var k = name.split(/\[/)
+                var t = k[0];
+                k[0] = '';
+    //
+//                k = '_blueimp['+t+']'+k.join('[');
+                var hidden = name.replace(/^(.*\[)file(\])$/, '$1path$2');
+
+                tt.attr('name', hidden);
+
+
+//                p.find('input:hidden').each(function () {
+//                    var t = $(this);
+//                    if (t.attr('name') === hidden) {
+//                        t.attr('name', hidden);
+//                        p.find('[data-hidden]').remove();
+//                    }
+//                });
+//
+//                p.find('[data-hidden]').attr('name', hidden);
+            }
+        });
+    }
+
     $.fn.blueimp = function (oo) {
 
         return $(this).each(function () {
@@ -445,18 +477,7 @@
                 },
                 done: function (e, data) {
 
-                    $('[name="__name__"]').each(function () {
-                        var tt = $(this);
-                        var p = tt.closest('.js')
-                        var name = p.find('input:file').attr('name');
-                        var k = name.split('[')
-                        var t = k[0];
-                        k[0] = '';
-//
-                        k = '_blueimp['+t+']'+k.join('[');
-
-                        tt.attr('name', k);
-                    });
+                    fix();
 
                     // ta pętla w sumie nie ma sensu bo tutaj będzie zawsze obsługa jednego pliku
                     // ale upakowane jest to tak żę wygląda jakby mogła tu przyjśc lista danych
@@ -464,13 +485,14 @@
 
                         var f = data.context.data(bagname);
                         pall.step(100, f);
-
-                        var name = data.context.closest('.js').find('input:file').attr('name');
+                        var p = data.context.closest('.js');
+                        var name = p.find('input:file').attr('name');
                         var k = name.split('[')
                         var t = k[0];
                         k[0] = '';
 //
-                        k = '_blueimp['+t+']'+k.join('[');
+//                        k = '_blueimp['+t+']'+k.join('[');
+                        k = name.replace(/^(.*\[)file(\])$/, '$1path$2');
 
                         file.hidden = '<input type="hidden" name="'+ k +'" value="'+ file.hidden +'" />';
 
@@ -583,7 +605,7 @@
 //                .on('dragleave', leave)
                 .on('drop', bag.leave)
 //                drag, dragdrop, dragend, dragenter, dragexit, draggesture, dragleave, dragover, dragstart, drop
-
+            fix();
             return main.data(bagname, bag);
         });
     }

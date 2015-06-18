@@ -42,23 +42,9 @@ class UploadSubscriber implements EventSubscriberInterface
     }
     public function preSetData(FormEvent $event) {
 //        header('X-preSetData: '.Test::get());
-        $entity = $event->getData();
-        $form = $event->getForm();
-
-        if ($entity && $entity->getFile()) {
-            static::$lastentity = $entity;
-        }
-
-        $method = $this->callback;
-        if ($method) {
-            $method($entity ? $entity->getFile() : false, $form);
-        }
-
+        $this->_run($event->getData(), $event->getForm());
     }
-    public function bind(FormEvent $event) {
-//        header('X-bind: '.Test::get());
-        $entity = $event->getData();
-        $form = $event->getForm();
+    protected function _run($entity, $form) {
 
         $entity->tempdir = $this->temp;
 
@@ -70,6 +56,15 @@ class UploadSubscriber implements EventSubscriberInterface
         if ($method) {
             $method($entity ? $entity->getFile() : false, $form);
         }
+        if ($entity->getPath()) {
+            $form->add('path', 'hidden');
+        }
+
+    }
+
+    public function bind(FormEvent $event) {
+//        header('X-bind: '.Test::get());
+        $this->_run($event->getData(), $event->getForm());
     }
 
     public static function getLastEntity() {
@@ -109,7 +104,9 @@ class UploadSubscriber implements EventSubscriberInterface
                     continue;
                 }
 
+
                 foreach ($fieldsarray as $field => &$fieldval) {
+                    $fieldval = static::reindex($fieldval);
                     $etmp = UtilNested::get($etmp, $field); // niby comments tutaj mam
                     //
                     if ($etmp instanceof ArrayCollection) {
@@ -122,8 +119,8 @@ class UploadSubscriber implements EventSubscriberInterface
                         // w takim razie mamy do czynienia z listą
 //                        niechginie($fieldval);
                         foreach ($fieldval as $index => &$d) {
-                            if (isset($d['file'])) {
-                                $etmp[$index-1]->setPath($d['file']);
+                            if (!empty($d['file'])) {
+                                $etmp[$index]->setPath($d['file']);
 //                                $eetmp = array_shift($etmp);
 //                                $eetmp->setPath($d['file']);
                             }
@@ -140,6 +137,37 @@ class UploadSubscriber implements EventSubscriberInterface
 //        niechginie($entity, 3);
 //        die('koniec');
     }
+    /**
+     * @param type $list
+     * @return type
+     */
+    protected static function reindex($list) {
+//        nieginie($list);
+        if (is_array($list)) {
+            $sort = true;
+
+            foreach ($list as &$el) {
+                if (!isset($tmp)) {
+                    $tmp = $el;
+                }
+                else {
+                    if ($el < $tmp) {
+                        $sort = false;
+                    }
+                    break;
+                }
+
+            }
+//            nieginie($sort);
+            ksort($list);
+            $list = array_values($list);
+            if (!$sort) {
+                $list = array_reverse($list);
+            }
+        }
+        return $list;
+    }
+
     protected static function _filterEmpty($list) {
         $ret = array();
         foreach ($list as &$element) {

@@ -52,6 +52,7 @@ class UserType extends AbstractType {
     //                'file_path' => 'webPath',
     //                'file_name' => 'name'
                 ) : array())
+                ->add('path', 'hidden')
             ;
         });
 

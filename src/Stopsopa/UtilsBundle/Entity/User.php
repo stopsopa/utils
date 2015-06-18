@@ -290,6 +290,14 @@ class User extends AbstractEntity
     }
     public function setPath($path) {
         $this->path = $path;
+        $k = $this->getUploadDir(true);
+        if (strpos($this->path, $k) === 0) {
+            $this->path = substr($this->path, 0, strlen($k));
+        }
+        $k = $this->getUploadDir(false);
+        if (strpos($this->path, $k) === 0) {
+            $this->path = substr($this->path, 0, strlen($k));
+        }
         return $this;
     }
     function getPath() {

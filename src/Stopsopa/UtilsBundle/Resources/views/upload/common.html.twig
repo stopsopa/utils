@@ -23,10 +23,11 @@
         <td>
             <div data-list>
                 {% if c.vars.value %}
+                    render
                     {% set c = c.vars.value %}
                     {{ block('tmpdone') }}
                 {% else %}
-                    <input type="hidden" name="__name__" value="" />
+                    <input type="hidden" name="__tmp__" value="" />
                 {% endif %}
             </div>
         </td>
@@ -85,6 +86,7 @@
     <div class="done">
         {% if c.webPath %}
 
+
             <a href="{{ c.webPath|raw }}" target="_blank">
                 <img src="{{ c.webPath|raw }}" width="50"/>
             </a>
@@ -95,10 +97,13 @@
             {% if c.twigforjs is defined %}
                 {{ c.hidden|default('<!-- no hidden -->')|raw }}
             {% else %}
-                <input type="hidden" name="__name__" value="" />
+                <input type="hidden" name="__tmp__" value="" />
+            {% endif %}
+            {% if c.path|default(null) %}
+                <input type="hidden" data-hidden value="{{ c.path }}" />
             {% endif %}
         {% else %}
-            <input type="hidden" name="__name__" value="" />
+            <input type="hidden" name="__tmp__" value="" />
         {% endif %}
     </div>
 {% endblock %}

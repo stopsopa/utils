@@ -155,6 +155,16 @@ class Comment extends AbstractEntity
 
     public function getWebPath()
     {
+        $k = $this->getUploadDir(true);
+        if (strpos($this->path, $k) === 0) {
+            return $this->path;
+        }
+
+        $k = $this->getUploadDir(false);
+        if (strpos($this->path, $k) === 0) {
+            return $this->path;
+        }
+
         return null === $this->path ? null : $this->getUploadDir().'/'.$this->path;
     }
 
@@ -165,8 +175,11 @@ class Comment extends AbstractEntity
         return __DIR__ . '/../../../../../../../web' . $this->getUploadDir();
     }
 
-    protected function getUploadDir()
+    protected function getUploadDir($tmp = null)
     {
+        if ($tmp !== null) {
+            return str_replace('*', $tmp ? '_temp' : '', '/media/uploads/comments*');
+        }
 //        if ($this->tempdir) {
 //            niechginie($this->tempdir);
 //        }
@@ -180,6 +193,7 @@ class Comment extends AbstractEntity
      */
     public function setFile(UploadedFile $file = null)
     {
+//        niechginie('a co tutaj robimy?');
         $this->file = $file;
         // check if we have an old image path
         if (is_file($this->getAbsolutePath())) {
@@ -203,6 +217,7 @@ class Comment extends AbstractEntity
     public function preUpload()
     {
         if (null !== $this->getFile()) {
+//            niechginie('tutaj też nie powinno nas być');
             // do whatever you want to generate a unique name
 
             $file = $this->getFile();
@@ -231,6 +246,7 @@ class Comment extends AbstractEntity
     }
     public function upload() {
 
+//        niechginie('ani tutaj upload');
         if (null === $this->getFile()) {
             return;
         }
@@ -270,12 +286,17 @@ class Comment extends AbstractEntity
             pathinfo($file, PATHINFO_DIRNAME),
             $this->getUploadRootDir()
         );
-    }
+    }/**
+     * Przenieść później tą logikę do formtype subscrybera
+     * @param type $path
+     * @return \Stopsopa\UtilsBundle\Entity\Comment
+     */
     public function setPath($path) {
         $this->path = $path;
         return $this;
     }
     function getPath() {
+//        niechginie($this->path);
         return $this->path;
     }
 }

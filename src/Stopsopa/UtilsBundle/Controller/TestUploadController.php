@@ -148,6 +148,9 @@ class TestUploadController extends AbstractController {
             }
 
         }
+//        nieginie($request->request->all(), 2);
+//        niechginie($entity, 3);
+//        niechginie('koniec');
 
         return $this->render('StopsopaUtilsBundle:upload:create.html.twig', array(
             'form' => $form->createView(),
