@@ -169,7 +169,7 @@ class TestUploadController extends AbstractController {
 
         $type = new UserType(false);
 
-        $editurl = $this->generateUrl($request->get('_route'), array(
+        $editurl = $this->generateUrl($request, array(
             'id' => $entity->getId()
         ));
 

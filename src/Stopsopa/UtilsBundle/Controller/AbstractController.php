@@ -7,6 +7,7 @@ use Stopsopa\UtilsBundle\Lib\Json\Conditionally\Json;
 use Stopsopa\UtilsBundle\Lib\Response;
 use Stopsopa\UtilsBundle\Lib\UtilArray;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 use Symfony\Component\Form\Form;
@@ -30,6 +31,35 @@ abstract class AbstractController extends Controller {
         $request->getSession()->getFlashBag()->set('notice', $msg);
 
         return $this;
+    }
+
+    public function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH) {
+
+        if ($route instanceof Request) {
+            $route = $route->get('_route', 'error_no_route_specified');
+        }
+
+//        try {
+            return parent::generateUrl($route, $parameters, $referenceType);
+//        } catch (Exception $ex) {
+//
+//        }
+    }
+    public function redirect($url, $status = 302) {
+
+        if ($url instanceof Request) {
+            $url = $this->generateUrl($url);
+        }
+
+        return parent::redirect($url, $status);
+    }
+    public function redirectToRoute($route, array $parameters = array(), $status = 302) {
+
+        if ($route instanceof Request) {
+            $route = $route->get('_route', 'error_no_route_specified');
+        }
+
+        return parent::redirectToRoute($route, $parameters, $status);
     }
 
     /**
