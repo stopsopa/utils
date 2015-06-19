@@ -8,11 +8,10 @@ use Stopsopa\UtilsBundle\Lib\Response;
 use Stopsopa\UtilsBundle\Lib\UtilArray;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
-
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 
 abstract class AbstractController extends Controller {
     /**
@@ -36,14 +35,17 @@ abstract class AbstractController extends Controller {
     public function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH) {
 
         if ($route instanceof Request) {
-            $route = $route->get('_route', 'error_no_route_specified');
+            $name = $route->get('_route', 'error_no_route_specified');
         }
 
-//        try {
-            return parent::generateUrl($route, $parameters, $referenceType);
-//        } catch (Exception $ex) {
-//
-//        }
+        try {
+            return parent::generateUrl($name, $parameters, $referenceType);
+        } catch (MissingMandatoryParametersException $ex) {
+            if ($route instanceof Request) {
+                return $route->getRequestUri();
+            }
+            throw $ex;
+        }
     }
     public function redirect($url, $status = 302) {
 
