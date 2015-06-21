@@ -382,8 +382,6 @@
             sendall.addClass('red');
 
             var multiple = get(o.multiple, main, main);
-            log('mul z get: ')
-            log(multiple)
 
             var limitfiles = false;
             if (!multiple) {
@@ -477,7 +475,14 @@
                 },
                 done: function (e, data) {
 
-                    fix();
+                    $('[name="__name__"]').each(function () {
+                        var tt = $(this);
+                        var p = tt.closest('.js')
+                        var name = p.find('input:file').attr('name');
+                        var path = name.replace(/^(.*\[)[^\]]+(\])$/, '$1path$2');
+
+                        tt.attr('name', path);
+                    });
 
                     // ta pętla w sumie nie ma sensu bo tutaj będzie zawsze obsługa jednego pliku
                     // ale upakowane jest to tak żę wygląda jakby mogła tu przyjśc lista danych
@@ -487,14 +492,9 @@
                         pall.step(100, f);
                         var p = data.context.closest('.js');
                         var name = p.find('input:file').attr('name');
-                        var k = name.split('[')
-                        var t = k[0];
-                        k[0] = '';
-//
-//                        k = '_blueimp['+t+']'+k.join('[');
-                        k = name.replace(/^(.*\[)file(\])$/, '$1path$2');
+                        var path = name.replace(/^(.*\[)[^\]]+(\])$/, '$1path$2');
 
-                        file.hidden = '<input type="hidden" name="'+ k +'" value="'+ file.hidden +'" />';
+                        file.hidden = '<input type="hidden" name="'+ path +'" value="'+ file.hidden +'" />';
 
                         var tmp = $('<div></div>').html(tmpdone(file)).find('> *').attr(o.oneattr, '').attr('x'+$.now(), 'tst');
                         data.context.replaceWith(tmp);

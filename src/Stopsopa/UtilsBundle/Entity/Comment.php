@@ -35,11 +35,6 @@ class Comment extends AbstractEntity
     protected $user;
 
     /**
-     * @var string
-     */
-    public $path;
-
-    /**
      * reutrn DateTime
      */
     protected $updatedAt;
@@ -135,6 +130,19 @@ class Comment extends AbstractEntity
 
 
 
+
+    /**
+     * W tym polu faktycznie będzie trzymany fragment ścieżki do pliku
+     * @var string
+     */
+    public $path;
+    public function setPath($path) {
+        $this->path = $path;
+        return $this;
+    }
+    function getPath() {
+        return $this->path;
+    }
     /**
      * @Assert\File(maxSize="6000000")
      */
@@ -144,46 +152,39 @@ class Comment extends AbstractEntity
      * http://symfony.com/doc/current/cookbook/doctrine/file_uploads.html
      */
 
-    public function getAbsolutePath($path = null)
+    public function getAbsolutePath($path = null, $tmp = null)
     {
         if ($path) {
-            return null === $path ? null : $this->getUploadRootDir().'/'.$path;
+            return null === $path ? null : $this->getUploadRootDir($tmp).'/'.$path;
         }
 
-        return null === $this->path ? null : $this->getUploadRootDir().'/'.$this->path;
+        return null === $this->path ? null : $this->getUploadRootDir($tmp).'/'.$this->path;
     }
 
     public function getWebPath()
     {
-        $k = $this->getUploadDir(true);
-        if (strpos($this->path, $k) === 0) {
-            return $this->path;
+        if ($this->path) {
+            $file = $this->getAbsolutePath().'/'.$this->path;
+            if (file_exists($file)) {
+                return $this->getUploadDir().'/'.$this->path;
+            }
+            else {
+                return $this->getUploadDir(null, true).'/'.$this->path;
+            }
         }
-
-        $k = $this->getUploadDir(false);
-        if (strpos($this->path, $k) === 0) {
-            return $this->path;
-        }
-
-        return null === $this->path ? null : $this->getUploadDir().'/'.$this->path;
+        return null;
     }
 
-    protected function getUploadRootDir()
+    protected function getUploadRootDir($tmp = null)
     {
         // the absolute directory path where uploaded
         // documents should be saved
-        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir();
+        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir($tmp);
     }
 
     protected function getUploadDir($tmp = null)
     {
-        if ($tmp !== null) {
-            return str_replace('*', $tmp ? '_temp' : '', '/media/uploads/comments*');
-        }
-//        if ($this->tempdir) {
-//            niechginie($this->tempdir);
-//        }
-        return str_replace('*', $this->tempdir ? '_temp' : '', '/media/uploads/comments*');
+        return str_replace('*', ($this->tempdir || $tmp) ? '_temp' : '', '/media/uploads/comments*');
     }
 
     /**
@@ -200,6 +201,7 @@ class Comment extends AbstractEntity
             // store the old name to delete after the update
             $this->temp = $this->getAbsolutePath();
         } else {
+            // tutaj można wykonać przypisanie czegoś domyślnego
             $this->path = 'initial';
         }
     }
@@ -224,7 +226,8 @@ class Comment extends AbstractEntity
 
             $this->path = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
 
-            $ext = $file->guessExtension();
+            $ext = $file->guessExtension()
+                    ;
 
             if (!$ext) {
                 $ext = 'bin';
@@ -239,15 +242,19 @@ class Comment extends AbstractEntity
 
                 $absolutedir = $this->getAbsolutePath($dir);
 
-            } while (file_exists($absolutedir . '/' . $this->path));
+                $tmpabsolutedir = $this->getAbsolutePath($dir, true);
+
+            } while (file_exists($absolutedir . '/' . $this->path) || file_exists($tmpabsolutedir . '/' . $this->path));
 
             $this->path = $dir . '/' . $this->path;
         }
     }
     public function upload() {
-
-//        niechginie('ani tutaj upload');
         if (null === $this->getFile()) {
+            $tmp = $this->getAbsolutePath(null, true);
+            if (file_exists($tmp)) {
+
+            }
             return;
         }
 
@@ -265,10 +272,6 @@ class Comment extends AbstractEntity
         );
 
         $this->setFile(null);
-    }
-    public function storeFilenameForRemove()
-    {
-        $this->temp = $this->getAbsolutePath();
     }
 
     public function removeUpload()
@@ -291,12 +294,4 @@ class Comment extends AbstractEntity
      * @param type $path
      * @return \Stopsopa\UtilsBundle\Entity\Comment
      */
-    public function setPath($path) {
-        $this->path = $path;
-        return $this;
-    }
-    function getPath() {
-//        niechginie($this->path);
-        return $this->path;
-    }
 }

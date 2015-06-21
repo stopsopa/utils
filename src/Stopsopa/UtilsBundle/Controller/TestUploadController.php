@@ -59,15 +59,8 @@ class TestUploadController extends AbstractController {
         ));
 
         if ($request->isPost()) {
-//            nieginie($_SERVER, 2);
-//            nieginie($_POST, 2);
-//            nieginie($_GET, 2);
-//            nieginie($_FILES, 2);
-//            return $this->getJsonResponse($_POST);
-//            return $this->getJsonResponse($request->request->get('_bldueimp'));
 
             $form->handleRequest($request);
-            UploadSubscriber::bindHiddens($entity);
 
             if ($form->get('submit')->isClicked()) {
 
@@ -86,9 +79,6 @@ class TestUploadController extends AbstractController {
                     $this->setNotification($request, 'Created');
 
                     return $this->redirect($action);
-                }
-                else {
-                    // not valid , to trzeba tutaj utworzyć Comments i dorzucić do kolekcji
                 }
             }
             else { // tylko upload pliku
@@ -115,7 +105,7 @@ class TestUploadController extends AbstractController {
                             $response = $this->getJsonResponse(array(
                                 'files' => array(
                                     array(
-                                        'hidden'    => $uploadedEntity->getWebPath(),
+                                        'hidden'    => $uploadedEntity->getPath(),
                                         'webPath'   => $uploadedEntity->getWebPath()
                                     )
                                 )
@@ -124,15 +114,6 @@ class TestUploadController extends AbstractController {
                         $dbal->rollback();
 
                         return $response;
-                    }
-                    else {
-
-//                        niechginie($request->request->all(), 2);
-//                        niechginie($request->files->all(), 2);
-//                        niechginie($this->getErrors($form, true), 2);
-//                        niechginie($form);
-//                        niechginie($form->getErrors(true, false)->, 2);
-//                        return $this->getJsonResponse();
                     }
 
                     return $this->getJsonResponse(array(
@@ -146,7 +127,6 @@ class TestUploadController extends AbstractController {
                     ));
                 }
             }
-
         }
 //        nieginie($request->request->all(), 2);
 //        niechginie($entity, 3);

@@ -219,6 +219,11 @@ class User extends AbstractEntity
 
     public function preUpload()
     {
+        if ($this->path) {
+//            if ($this->) {
+//
+//            }
+        }
         if (null !== $this->getFile()) {
             // do whatever you want to generate a unique name
 
@@ -239,6 +244,7 @@ class User extends AbstractEntity
 
                 $dir[2] = '/';
 
+                $absolutedir = $this->getAbsolutePath($dir);
                 $absolutedir = $this->getAbsolutePath($dir);
 
             } while (file_exists($absolutedir . '/' . $this->path));
