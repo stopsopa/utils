@@ -13,9 +13,9 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserType extends AbstractType {
-    protected $validateuploads = true;
-    public function __construct($validateuploads = true) {
-        $this->validateuploads = $validateuploads;
+    protected $workintmpdir = true;
+    public function __construct($workintmpdir = false) {
+        $this->workintmpdir = $workintmpdir;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
@@ -32,16 +32,29 @@ class UserType extends AbstractType {
                 ),
             ))
             ->add('comments', 'collection', [
-                'type'                  => new CommentType($this->validateuploads, false),
+                'type'                  => new CommentType($this->workintmpdir, false),
                 'allow_add'             => true,
                 'allow_delete'          => true,
                 'by_reference'          => false,
 //                'cascade_validation'    => true,
             ])
+//            ->add('file', null, array(
+//                'constraints' => array(
+//                    new Assert\NotBlank(array(
+//                        'groups' => array('upload')
+//                    ))
+//                ),
+////                'file_path' => 'webPath',
+////                'file_name' => 'name'
+//            ))
+//            ->add('path', 'hidden')
             ->add('submit', 'submit')
         ;
 
-        $subscriber = new UploadSubscriber($this->validateuploads, function ($isfileuploaded, $builder) {
+        $builder->add('path', 'hidden');
+
+        $subscriber = new UploadSubscriber($this->workintmpdir, function ($isfileuploaded, $builder) {
+//            niechginie($isfileuploaded);
             $builder
                 ->add('file', null, $isfileuploaded ? array(
                     'constraints' => array(
@@ -49,14 +62,11 @@ class UserType extends AbstractType {
                             'groups' => array('upload')
                         ))
                     ),
-    //                'file_path' => 'webPath',
-    //                'file_name' => 'name'
                 ) : array())
-                ->add('path', 'hidden')
             ;
-        });
+        }, 'user');
 
-        $builder->addEventSubscriber($subscriber);
+        $builder->addEventSubscriber($subscriber->execute(false, $builder));
 
 //form.pre_set_data
 //form.post_set_data

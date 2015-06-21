@@ -131,6 +131,11 @@ class Comment extends AbstractEntity
 
 
 
+    protected function getUploadDir($tmp = null)
+    {
+        return str_replace('*', ($this->tempdir || $tmp) ? '_temp' : '', '/media/uploads/comments*');
+    }
+
     /**
      * W tym polu faktycznie będzie trzymany fragment ścieżki do pliku
      * @var string
@@ -165,11 +170,12 @@ class Comment extends AbstractEntity
     {
         if ($this->path) {
             $file = $this->getAbsolutePath().'/'.$this->path;
+
             if (file_exists($file)) {
                 return $this->getUploadDir().'/'.$this->path;
             }
             else {
-                return $this->getUploadDir(null, true).'/'.$this->path;
+                return $this->getUploadDir(true).'/'.$this->path;
             }
         }
         return null;
@@ -182,11 +188,6 @@ class Comment extends AbstractEntity
         return __DIR__ . '/../../../../../../../web' . $this->getUploadDir($tmp);
     }
 
-    protected function getUploadDir($tmp = null)
-    {
-        return str_replace('*', ($this->tempdir || $tmp) ? '_temp' : '', '/media/uploads/comments*');
-    }
-
     /**
      * Sets file.
      *
@@ -194,7 +195,6 @@ class Comment extends AbstractEntity
      */
     public function setFile(UploadedFile $file = null)
     {
-//        niechginie('a co tutaj robimy?');
         $this->file = $file;
         // check if we have an old image path
         if (is_file($this->getAbsolutePath())) {
@@ -216,8 +216,20 @@ class Comment extends AbstractEntity
         return $this->file;
     }
 
-    public function preUpload()
+    public function preUpload($moveFromTmp = false)
     {
+        if ($moveFromTmp && $this->path) {
+            $tmp = $this->getAbsolutePath(null, true);
+            if (file_exists($tmp)) {
+                $target = $this->getAbsolutePath();
+                UtilFilesystem::rename($tmp, $this->getAbsolutePath());
+                UtilFilesystem::removeEmptyDirsToPath(
+                    pathinfo($tmp, PATHINFO_DIRNAME),
+                    $this->getUploadRootDir(true)
+                );
+            }
+        }
+
         if (null !== $this->getFile()) {
 //            niechginie('tutaj też nie powinno nas być');
             // do whatever you want to generate a unique name
@@ -226,8 +238,7 @@ class Comment extends AbstractEntity
 
             $this->path = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
 
-            $ext = $file->guessExtension()
-                    ;
+            $ext = $file->guessExtension();
 
             if (!$ext) {
                 $ext = 'bin';
@@ -249,12 +260,9 @@ class Comment extends AbstractEntity
             $this->path = $dir . '/' . $this->path;
         }
     }
-    public function upload() {
-        if (null === $this->getFile()) {
-            $tmp = $this->getAbsolutePath(null, true);
-            if (file_exists($tmp)) {
 
-            }
+    public function upload($mode) {
+        if (null === $this->getFile()) {
             return;
         }
 
@@ -272,6 +280,13 @@ class Comment extends AbstractEntity
         );
 
         $this->setFile(null);
+    }
+    /**
+     * Livecycle callback
+     */
+    public function storeFilenameForRemove()
+    {
+        $this->temp = $this->getAbsolutePath();
     }
 
     public function removeUpload()

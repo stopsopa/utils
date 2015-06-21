@@ -50,7 +50,7 @@ class TestUploadController extends AbstractController {
         /* @var $entity User */
         $entity = $man->createEntity();
 
-        $type = new UserType(false);
+        $type = new UserType();
 
         $action = $this->generateUrl('test-upload-create');
 
@@ -67,11 +67,9 @@ class TestUploadController extends AbstractController {
                 if ($form->isValid()) {
 
                     // ręcznie trzeba wywołać
-                    // ręcznie trzeba wywołać
-                    // ręcznie trzeba wywołać
-                    $entity->preUpload();
+                    $entity->preUpload(true);
                     foreach ($entity->getComments() as $c) {
-                        $c->preUpload();
+                        $c->preUpload(true);
                     }
 
                     $man->update($entity);
@@ -80,6 +78,9 @@ class TestUploadController extends AbstractController {
 
                     return $this->redirect($action);
                 }
+//                else {
+//                    niechginie($entity->getComments());
+//                }
             }
             else { // tylko upload pliku
                 if ($request->files->count()) { // jeśli w ogóle coś jest {
@@ -98,6 +99,7 @@ class TestUploadController extends AbstractController {
                         $dbal = $man->getDbal();
                         $dbal->beginTransaction(); // suspend auto-commit
 
+//                        nieginie($entity->getComments());
                             $man->update($entity);
 
                             $uploadedEntity = UploadSubscriber::getLastEntity();
@@ -115,22 +117,13 @@ class TestUploadController extends AbstractController {
 
                         return $response;
                     }
-
-                    return $this->getJsonResponse(array(
-                        'files' => array(
-                            array(
-                                'hidden' => 'nazwapliku',
-                                'webPath' => 'webPath',
-                                'data' => $request->files->count()
-                            )
-                        )
-                    ));
+                    else {
+                        niechginie($this->getErrors($form));
+                        die('not valid');
+                    }
                 }
             }
         }
-//        nieginie($request->request->all(), 2);
-//        niechginie($entity, 3);
-//        niechginie('koniec');
 
         return $this->render('StopsopaUtilsBundle:upload:create.html.twig', array(
             'form' => $form->createView(),
@@ -147,7 +140,7 @@ class TestUploadController extends AbstractController {
         /* @var $entity User */
         $entity = $man->findOrThrow($id);
 
-        $type = new UserType(false);
+        $type = new UserType();
 
         $editurl = $this->generateUrl($request, array(
             'id' => $entity->getId()
@@ -158,12 +151,6 @@ class TestUploadController extends AbstractController {
         ));
 
         if ($request->isPost()) {
-//            nieginie($_SERVER, 2);
-//            nieginie($_POST, 2);
-//            nieginie($_GET, 2);
-//            nieginie($_FILES, 2);
-//            return $this->getJsonResponse($_POST);
-//            return $this->getJsonResponse($request->request->get('_bluedimp'));
 
             $form->handleRequest($request);
 
@@ -172,11 +159,9 @@ class TestUploadController extends AbstractController {
                 if ($form->isValid()) {
 
                     // ręcznie trzeba wywołać
-                    // ręcznie trzeba wywołać
-                    // ręcznie trzeba wywołać
-                    $entity->preUpload();
+                    $entity->preUpload(true);
                     foreach ($entity->getComments() as $c) {
-                        $c->preUpload();
+                        $c->preUpload(true);
                     }
 
                     $man->update($entity);
@@ -184,9 +169,6 @@ class TestUploadController extends AbstractController {
                     $this->setNotification($request, 'Edited');
 
                     return $this->redirect($editurl);
-                }
-                else {
-                    // not valid , to trzeba tutaj utworzyć Comments i dorzucić do kolekcji
                 }
             }
             else { // tylko upload pliku
@@ -208,45 +190,19 @@ class TestUploadController extends AbstractController {
                         return $this->getJsonResponse(array(
                             'files' => array(
                                 array(
-                                    'wysyłanie tylko pliku po update',
-                                    'hidden' => 'nazwapliku',
-                                    'webPath' => 'webPath',
-                                    'data' => $request->files->count()
+                                    'hidden'    => $uploadedEntity->getPath(),
+                                    'webPath'   => $uploadedEntity->getWebPath()
                                 )
                             )
                         ));
                     }
                     else {
-
-//                        niechginie($request->request->all(), 2);
-//                        niechginie($request->files->all(), 2);
-//                        niechginie($this->getErrors($form, true), 2);
-//                        niechginie($form);
-//                        niechginie($form->getErrors(true, false)->, 2);
-//                        return $this->getJsonResponse();
+                        niechginie($this->getErrors($form));
+                        die('not valid');
                     }
-
-                    return $this->getJsonResponse(array(
-                        'files' => array(
-                            array(
-                                'hidden' => 'nazwapliku',
-                                'webPath' => 'webPath',
-                                'data' => $request->files->count()
-                            )
-                        )
-                    ));
                 }
             }
-
         }
-
-//        $view = $form->createView();
-//
-//        foreach ($view['comments'] as &$c) {
-//            /* @var $c FormView */
-////            niechginie($c->vars['value']->getWebPath());
-//        }
-//        niechginie($form->createView()->vars);
 
         return $this->render('StopsopaUtilsBundle:upload:edit.html.twig', array(
             'form'   => $form->createView(),

@@ -2,9 +2,8 @@
 
 namespace Stopsopa\UtilsBundle\EventListener;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Stopsopa\UtilsBundle\Lib\AbstractApp;
-use Stopsopa\UtilsBundle\Lib\Standalone\UtilNested;
+use Exception;
+use Stopsopa\UtilsBundle\Lib\AbstractException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -20,12 +19,14 @@ X-postBind: 4
  */
 class UploadSubscriber implements EventSubscriberInterface
 {
-    protected $temp;
+    protected $workintmpdir;
     protected $callback;
+    protected $name;
     protected static $lastentity;
-    public function __construct($temp, $callback) {
-        $this->temp = $temp;
+    public function __construct($workintmpdir, $callback, $name) {
+        $this->workintmpdir = $workintmpdir;
         $this->callback = $callback;
+        $this->name = $name;
     }
 
     public static function getSubscribedEvents() {
@@ -40,31 +41,46 @@ class UploadSubscriber implements EventSubscriberInterface
 //            FormEvents::POST_BIND       => 'postBind'
         );
     }
-    public function preSetData(FormEvent $event) {
-//        header('X-preSetData: '.Test::get());
-        $this->_run($event->getData(), $event->getForm());
-    }
-    protected function _run($entity, $form) {
-
-        $entity->tempdir = $this->temp;
-
-        if ($entity && $entity->getFile()) {
-            static::$lastentity = $entity;
-        }
-
+    public function execute($isfileuploaded, $builder = null) {
         $method = $this->callback;
         if ($method) {
-            $method($entity ? $entity->getFile() : false, $form);
+            $method($isfileuploaded, $builder);
         }
-        if ($entity->getPath()) {
-            $form->add('path', 'hidden');
-        }
+        return $this;
+    }
 
+    public function preSetData(FormEvent $event) {
+//        header('X-preSetData: '.Test::get());
+        $this->_run($event, 'pre');
     }
 
     public function bind(FormEvent $event) {
 //        header('X-bind: '.Test::get());
-        $this->_run($event->getData(), $event->getForm());
+        $this->_run($event, 'bind');
+    }
+    protected function _run(FormEvent $event, $type) {
+
+        $entity = $event->getData();
+        $form = $event->getForm();
+
+        AbstractException::setErrorHandler();
+
+        if ($entity) {
+            try {
+
+                if ($entity->getFile()) {
+                    static::$lastentity = $entity;
+                    $entity->tempdir = $this->workintmpdir;
+                }
+
+                $this->execute($entity ? $entity->getFile() : false, $form);
+
+            } catch (Exception $ex) {
+                throw $ex;
+            }
+        }
+
+        AbstractException::delErrorHandler();
     }
 
     public static function getLastEntity() {
@@ -91,7 +107,7 @@ class UploadSubscriber implements EventSubscriberInterface
 //            nieginie($entity);
 //        }
 ////        niechginie($entity);
-////        $entity->tempdir = $this->temp;
+////        $entity->tempdir = $this->workintmpdir;
 //    }
 //    public function preBind(FormEvent $event) {
 ////        header('X-preBind: '.Test::get());
@@ -102,7 +118,7 @@ class UploadSubscriber implements EventSubscriberInterface
 //            nieginie($entity);
 //        }
 ////        niechginie($entity);
-//        $entity->tempdir = $this->temp;
+//        $entity->tempdir = $this->workintmpdir;
 //    }
 //    public function submit(FormEvent $event) { // nie zawsze się odpala
 ////        header('X-submit: '.Test::get());
@@ -113,7 +129,7 @@ class UploadSubscriber implements EventSubscriberInterface
 //            nieginie($entity);
 //        }
 ////        niechginie($entity);
-//        $entity->tempdir = $this->temp;
+//        $entity->tempdir = $this->workintmpdir;
 //    }
 //    public function postBind(FormEvent $event) {
 ////        header('X-postBind: '.Test::get());
@@ -125,7 +141,7 @@ class UploadSubscriber implements EventSubscriberInterface
 //            nieginie($entity);
 //        }
 ////        niechginie($entity);
-//        $entity->tempdir = $this->temp;
+//        $entity->tempdir = $this->workintmpdir;
 //    }
 //
 ////    public static function isFileInRequest($validate = false, FormBuilderInterface $context, $field) {

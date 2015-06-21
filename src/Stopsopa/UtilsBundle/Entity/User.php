@@ -39,11 +39,6 @@ class User extends AbstractEntity
      */
     protected $updatedAt;
 
-    /**
-     * @var string
-     */
-    public $path;
-
     public function __construct() {
         $this->comments = new ArrayCollection();
         $this->updatedAt = new DateTime();
@@ -148,8 +143,23 @@ class User extends AbstractEntity
 
 
 
+    protected function getUploadDir($tmp = null)
+    {
+        return str_replace('*', ($this->tempdir || $tmp) ? '_temp' : '', '/media/uploads/user*');
+    }
 
-
+    /**
+     * W tym polu faktycznie będzie trzymany fragment ścieżki do pliku
+     * @var string
+     */
+    public $path;
+    public function setPath($path) {
+        $this->path = $path;
+        return $this;
+    }
+    function getPath() {
+        return $this->path;
+    }
     /**
      * @Assert\File(maxSize="6000000")
      */
@@ -159,36 +169,35 @@ class User extends AbstractEntity
      * http://symfony.com/doc/current/cookbook/doctrine/file_uploads.html
      */
 
-    public function getAbsolutePath($path = null)
+    public function getAbsolutePath($path = null, $tmp = null)
     {
         if ($path) {
-            return null === $path ? null : $this->getUploadRootDir().'/'.$path;
+            return null === $path ? null : $this->getUploadRootDir($tmp).'/'.$path;
         }
 
-        return null === $this->path ? null : $this->getUploadRootDir().'/'.$this->path;
+        return null === $this->path ? null : $this->getUploadRootDir($tmp).'/'.$this->path;
     }
 
     public function getWebPath()
     {
-        return null === $this->path ? null : $this->getUploadDir().'/'.$this->path;
+        if ($this->path) {
+            $file = $this->getAbsolutePath().'/'.$this->path;
+            if (file_exists($file)) {
+                return $this->getUploadDir().'/'.$this->path;
+            }
+            else {
+                return $this->getUploadDir(true).'/'.$this->path;
+            }
+        }
+        return null;
     }
 
-
-    protected function getUploadRootDir()
+    protected function getUploadRootDir($tmp = null)
     {
         // the absolute directory path where uploaded
         // documents should be saved
-        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir();
+        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir($tmp);
     }
-
-    protected function getUploadDir()
-    {
-        return str_replace('*', $this->tempdir ? '_temp' : '', '/media/uploads/user*');
-    }
-
-
-
-
 
     /**
      * Sets file.
@@ -197,12 +206,14 @@ class User extends AbstractEntity
      */
     public function setFile(UploadedFile $file = null)
     {
+//        niechginie('a co tutaj robimy?');
         $this->file = $file;
         // check if we have an old image path
         if (is_file($this->getAbsolutePath())) {
             // store the old name to delete after the update
             $this->temp = $this->getAbsolutePath();
         } else {
+            // tutaj można wykonać przypisanie czegoś domyślnego
             $this->path = 'initial';
         }
     }
@@ -219,19 +230,16 @@ class User extends AbstractEntity
 
     public function preUpload()
     {
-        if ($this->path) {
-//            if ($this->) {
-//
-//            }
-        }
         if (null !== $this->getFile()) {
+//            niechginie('tutaj też nie powinno nas być');
             // do whatever you want to generate a unique name
 
             $file = $this->getFile();
 
             $this->path = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
 
-            $ext = $file->guessExtension();
+            $ext = $file->guessExtension()
+                    ;
 
             if (!$ext) {
                 $ext = 'bin';
@@ -245,16 +253,20 @@ class User extends AbstractEntity
                 $dir[2] = '/';
 
                 $absolutedir = $this->getAbsolutePath($dir);
-                $absolutedir = $this->getAbsolutePath($dir);
 
-            } while (file_exists($absolutedir . '/' . $this->path));
+                $tmpabsolutedir = $this->getAbsolutePath($dir, true);
+
+            } while (file_exists($absolutedir . '/' . $this->path) || file_exists($tmpabsolutedir . '/' . $this->path));
 
             $this->path = $dir . '/' . $this->path;
         }
     }
     public function upload() {
-
         if (null === $this->getFile()) {
+            $tmp = $this->getAbsolutePath(null, true);
+            if (file_exists($tmp)) {
+                UtilFilesystem::rename($tmp, $this->getAbsolutePath());
+            }
             return;
         }
 
@@ -273,6 +285,9 @@ class User extends AbstractEntity
 
         $this->setFile(null);
     }
+    /**
+     * Livecycle callback
+     */
     public function storeFilenameForRemove()
     {
         $this->temp = $this->getAbsolutePath();
@@ -293,20 +308,9 @@ class User extends AbstractEntity
             pathinfo($file, PATHINFO_DIRNAME),
             $this->getUploadRootDir()
         );
-    }
-    public function setPath($path) {
-        $this->path = $path;
-        $k = $this->getUploadDir(true);
-        if (strpos($this->path, $k) === 0) {
-            $this->path = substr($this->path, 0, strlen($k));
-        }
-        $k = $this->getUploadDir(false);
-        if (strpos($this->path, $k) === 0) {
-            $this->path = substr($this->path, 0, strlen($k));
-        }
-        return $this;
-    }
-    function getPath() {
-        return $this->path;
-    }
+    }/**
+     * Przenieść później tą logikę do formtype subscrybera
+     * @param type $path
+     * @return \Stopsopa\UtilsBundle\Entity\Comment
+     */
 }

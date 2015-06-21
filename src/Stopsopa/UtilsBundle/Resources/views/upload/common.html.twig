@@ -23,11 +23,9 @@
         <td>
             <div data-list>
                 {% if c.vars.value %}
-                    render
-                    {% set c = c.vars.value %}
+                    { { render } }
+                    {% set _e = c.vars.value %}
                     {{ block('tmpdone') }}
-                {% else %}
-                    <input type="hidden" name="__tmp__" value="" />
                 {% endif %}
             </div>
         </td>
@@ -66,11 +64,12 @@
         <script type="text/tmp" data-tmp-done-comment>
 {#                comment: '<%= comment %>',#}
 {#                deleteUrl: '<%= deleteUrl %>',#}
-            {% set c = {
+            {% set _e = {
                 twigforjs     : true,
                 hidden: '<%= hidden %>',
                 webPath: '<%= webPath %>'
             } %}
+
             {{ block('tmpdone') }}
         </script>
         <script type="text/tmp" data-tmp-error-comment>
@@ -84,26 +83,19 @@
 
 {% block tmpdone %}
     <div class="done">
-        {% if c.webPath %}
-
-
-            <a href="{{ c.webPath|raw }}" target="_blank">
-                <img src="{{ c.webPath|raw }}" width="50"/>
+        {% if _e.webPath %}
+            <a href="{{ _e.webPath|raw }}" target="_blank">
+                <img src="{{ _e.webPath|raw }}" width="50"/>
             </a>
             <!-- <span>{ { c.name|raw } }</span> -->
-            <button data-delete="{{ c.deleteUrl|default('no link')|raw }}" type="button">delete</button>
+            <button data-delete="{{ _e.deleteUrl|default('no link')|raw }}" type="button">delete</button>
 
+            {% if _e.path is defined %}
+                {{ form_row(c.path) }}
+            {% endif %}
 
-            {% if c.twigforjs is defined %}
-                {{ c.hidden|default('<!-- no hidden -->')|raw }}
-            {% else %}
-                <input type="hidden" name="__tmp__" value="" />
-            {% endif %}
-            {% if c.path|default(null) %}
-                <input type="hidden" data-hidden value="{{ c.path }}" />
-            {% endif %}
         {% else %}
-            <input type="hidden" name="__tmp__" value="" />
+            <!--  nie ma obrazka -->
         {% endif %}
     </div>
 {% endblock %}

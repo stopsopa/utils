@@ -123,6 +123,10 @@ class UtilFilesystem
     /**
      * Usuwa puste katalogi przy parametrach
      *
+                UtilFilesystem::removeEmptyDirsToPath(
+                    pathinfo($file, PATHINFO_DIRNAME),
+                    $this->getUploadRootDir()
+                );
      *
      * ze stanu :
         .
@@ -159,5 +163,19 @@ class UtilFilesystem
 
             $dir = pathinfo($dir, PATHINFO_DIRNAME);
         }
+    }
+    /**
+     * Robi to co zwykły move z tym że tworzy katalogi po drodze jeśli nie istnieją dla ścieżki docelowej
+     * @param type $source
+     * @param type $target
+     */
+    public static function rename($source, $target, $mode = 0770) {
+        $dir = dirname($target);
+
+        if (!file_exists($dir)) {
+            static::mkDir($dir, true, $mode);
+        }
+
+        return rename($source, $target);
     }
 }

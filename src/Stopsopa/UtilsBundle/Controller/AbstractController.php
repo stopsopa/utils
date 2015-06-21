@@ -34,6 +34,7 @@ abstract class AbstractController extends Controller {
 
     public function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH) {
 
+        $name = $route;
         if ($route instanceof Request) {
             $name = $route->get('_route', 'error_no_route_specified');
         }
