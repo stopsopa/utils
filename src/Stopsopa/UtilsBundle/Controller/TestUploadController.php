@@ -23,7 +23,7 @@ use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
 routing.yml
 
 stopsopautils:
-    resource: "@StopsopaUtilsBundle/Controller/"
+    resource: "@ StopsopaUtilsBundle/Controller/"
     type:     annotation
  */
 class TestUploadController extends AbstractController {
