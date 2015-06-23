@@ -31,6 +31,11 @@ abstract class AbstractController extends Controller {
 
         return $this;
     }
+    protected function setError(Request $request, $msg) {
+        $request->getSession()->getFlashBag()->set('error', $msg);
+
+        return $this;
+    }
 
     public function generateUrl($route, $parameters = array(), $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH) {
 
