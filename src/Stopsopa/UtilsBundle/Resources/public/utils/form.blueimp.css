@@ -32,17 +32,19 @@
 
 
     background-color: white;
-    border-radius: 13px;
+    /*border-radius: 13px;*/
     margin: 5px;
     padding: 5px;
 }
 [data-dropzone],
 [data-dropzone] * {
     transition: border-color 0.5s ease-in-out 0s;
+    transition: color 0.5s ease-in-out 0s;
+    transition: text-shadow 0.5s ease-in-out 0s;
 }
 [data-dropzone] > div {
     border: 1px dashed #D3D3D3;
-    border-radius: 10px;
+    /*border-radius: 10px;*/
     line-height: 4em;
     text-align: center;
 }
@@ -50,7 +52,7 @@
     border-color: #939393;
 }
 .dragenter [data-dropzone].dragenter > div {
-    border-color: #757575;
+    border-color: #595959;
 }
 [data-dropzone] {
     text-align: center;
@@ -62,6 +64,10 @@
 }
 .dragenter [data-dropzone] > div span {
     color: #939393;
+}
+.dragenter [data-dropzone].dragenter > div span {
+    color: #595959;
+    text-shadow: 0 0 3px #595959;
 }
 [data-dropzone] input[type="file"] {
     position: absolute;

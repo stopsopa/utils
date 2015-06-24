@@ -2,19 +2,16 @@
 
 namespace Stopsopa\UtilsBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-
 use Stopsopa\UtilsBundle\Lib\Request;
 use Stopsopa\UtilsBundle\Entity\UserManager;
 use Stopsopa\UtilsBundle\Entity\CommentManager;
 use Stopsopa\UtilsBundle\Form\UserType;
 use Symfony\Component\Form\FormView;
 use Stopsopa\UtilsBundle\Entity\User;
-
-
+use DateTime;
 use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormError;
-
 use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
 
 /**
@@ -88,7 +85,6 @@ class TestUploadController extends AbstractController {
                     // tutaj się dzieją ważne rzeczy
                     $type = new UserType(true);
                     $form = $this->createForm($type, $entity, array(
-                        'action'                => $action,
                         'validation_groups'     => array('upload')
                     ));
 
@@ -159,6 +155,7 @@ class TestUploadController extends AbstractController {
                 if ($form->isValid()) {
 
                     // ręcznie trzeba wywołać
+                    // warto także zwrócić uwagę na metodę UserManager->find()
                     $entity->preUpload(true);
                     foreach ($entity->getComments() as $c) {
                         $c->preUpload(true);
@@ -177,7 +174,6 @@ class TestUploadController extends AbstractController {
                     // tutaj się dzieją ważne rzeczy
                     $type = new UserType(true);
                     $form = $this->createForm($type, $entity, array(
-                        'action'                => $editurl,
                         'validation_groups'     => array('upload')
                     ));
 
@@ -186,6 +182,8 @@ class TestUploadController extends AbstractController {
                     if ($form->isValid()) {
 
                         $man->update($entity);
+
+                        $uploadedEntity = UploadSubscriber::getLastEntity();
 
                         return $this->getJsonResponse(array(
                             'files' => array(

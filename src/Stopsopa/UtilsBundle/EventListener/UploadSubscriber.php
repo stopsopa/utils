@@ -67,8 +67,10 @@ class UploadSubscriber implements EventSubscriberInterface
 
         if ($entity) {
             try {
-
                 if ($entity->getFile()) {
+//                    nieginie('jest');
+//                    nieginie(get_class($entity).':'.$entity->getId());
+//                    nieginie($entity, null, 1);
                     static::$lastentity = $entity;
                     $entity->tempdir = $this->workintmpdir;
                 }

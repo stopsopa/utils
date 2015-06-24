@@ -291,12 +291,10 @@
                 dropzone            : '** [data-dropzone]',
                 pastezone           : '** [data-pastezone]',
 
-                action              : false, // weźnie automatycznie z action z formularza
+                action              : false, // weźmie automatycznie z action z formularza
                 maxsize             : 'data-sizelimit', // lub podać liczbę w bajtach
                 insertMethod        : 'prependTo',
-
                 multiple            : function (main) {
-                    log(arguments)
                     var i = main.find('input:file').addClass('red');
 
                     if (i.length) {

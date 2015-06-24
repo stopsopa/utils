@@ -131,9 +131,11 @@ class Comment extends AbstractEntity
 
 
 
-    protected function getUploadDir($tmp = null)
-    {
+    protected function getUploadDir($tmp = null) {
         return str_replace('*', ($this->tempdir || $tmp) ? '_temp' : '', '/media/uploads/comments*');
+    }
+    protected function getUploadRootDir($tmp = null) {
+        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir($tmp);
     }
 
     /**
@@ -181,13 +183,6 @@ class Comment extends AbstractEntity
         return null;
     }
 
-    protected function getUploadRootDir($tmp = null)
-    {
-        // the absolute directory path where uploaded
-        // documents should be saved
-        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir($tmp);
-    }
-
     /**
      * Sets file.
      *
@@ -202,7 +197,7 @@ class Comment extends AbstractEntity
             $this->temp = $this->getAbsolutePath();
         } else {
             // tutaj można wykonać przypisanie czegoś domyślnego
-            $this->path = 'initial';
+//            $this->path = 'initial';
         }
     }
 
@@ -218,7 +213,7 @@ class Comment extends AbstractEntity
 
     public function preUpload($moveFromTmp = false)
     {
-        if ($moveFromTmp && $this->path) {
+        if (gettype($moveFromTmp) === 'boolean' && $moveFromTmp && $this->path) {
             $tmp = $this->getAbsolutePath(null, true);
             if (file_exists($tmp)) {
                 $target = $this->getAbsolutePath();
@@ -305,9 +300,4 @@ class Comment extends AbstractEntity
             $this->getUploadRootDir()
         );
     }
-    /**
-     * Przenieść później tą logikę do formtype subscrybera
-     * @param type $path
-     * @return \Stopsopa\UtilsBundle\Entity\Comment
-     */
 }

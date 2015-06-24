@@ -143,9 +143,11 @@ class User extends AbstractEntity
 
 
 
-    protected function getUploadDir($tmp = null)
-    {
+    protected function getUploadDir($tmp = null) {
         return str_replace('*', ($this->tempdir || $tmp) ? '_temp' : '', '/media/uploads/user*');
+    }
+    protected function getUploadRootDir($tmp = null) {
+        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir($tmp);
     }
 
     /**
@@ -182,6 +184,7 @@ class User extends AbstractEntity
     {
         if ($this->path) {
             $file = $this->getAbsolutePath();
+
             if (file_exists($file)) {
                 return $this->getUploadDir().'/'.$this->path;
             }
@@ -190,13 +193,6 @@ class User extends AbstractEntity
             }
         }
         return null;
-    }
-
-    protected function getUploadRootDir($tmp = null)
-    {
-        // the absolute directory path where uploaded
-        // documents should be saved
-        return __DIR__ . '/../../../../../../../web' . $this->getUploadDir($tmp);
     }
 
     /**
@@ -214,7 +210,7 @@ class User extends AbstractEntity
             $this->temp = $this->getAbsolutePath();
         } else {
             // tutaj można wykonać przypisanie czegoś domyślnego
-            $this->path = 'initial';
+//            $this->path = 'initial';
         }
     }
 
@@ -228,8 +224,18 @@ class User extends AbstractEntity
         return $this->file;
     }
 
-    public function preUpload()
-    {
+    public function preUpload($moveFromTmp = false) {
+        if (gettype($moveFromTmp) === 'boolean' && $moveFromTmp && $this->path) {
+            $tmp = $this->getAbsolutePath(null, true);
+            if (file_exists($tmp)) {
+                $target = $this->getAbsolutePath();
+                UtilFilesystem::rename($tmp, $this->getAbsolutePath());
+                UtilFilesystem::removeEmptyDirsToPath(
+                    pathinfo($tmp, PATHINFO_DIRNAME),
+                    $this->getUploadRootDir(true)
+                );
+            }
+        }
         if (null !== $this->getFile()) {
 //            niechginie('tutaj też nie powinno nas być');
             // do whatever you want to generate a unique name
@@ -263,10 +269,10 @@ class User extends AbstractEntity
     }
     public function upload() {
         if (null === $this->getFile()) {
-            $tmp = $this->getAbsolutePath(null, true);
-            if (file_exists($tmp)) {
-                UtilFilesystem::rename($tmp, $this->getAbsolutePath());
-            }
+//            $tmp = $this->getAbsolutePath(null, true);
+//            if (file_exists($tmp)) {
+//                UtilFilesystem::rename($tmp, $this->getAbsolutePath());
+//            }
             return;
         }
 
@@ -308,9 +314,5 @@ class User extends AbstractEntity
             pathinfo($file, PATHINFO_DIRNAME),
             $this->getUploadRootDir()
         );
-    }/**
-     * Przenieść później tą logikę do formtype subscrybera
-     * @param type $path
-     * @return \Stopsopa\UtilsBundle\Entity\Comment
-     */
+    }
 }
