@@ -169,7 +169,7 @@ class Comment extends AbstractEntity
     public function getWebPath()
     {
         if ($this->path) {
-            $file = $this->getAbsolutePath().'/'.$this->path;
+            $file = $this->getAbsolutePath();
 
             if (file_exists($file)) {
                 return $this->getUploadDir().'/'.$this->path;
@@ -304,7 +304,8 @@ class Comment extends AbstractEntity
             pathinfo($file, PATHINFO_DIRNAME),
             $this->getUploadRootDir()
         );
-    }/**
+    }
+    /**
      * Przenieść później tą logikę do formtype subscrybera
      * @param type $path
      * @return \Stopsopa\UtilsBundle\Entity\Comment

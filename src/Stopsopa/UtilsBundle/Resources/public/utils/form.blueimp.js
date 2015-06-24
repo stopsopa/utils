@@ -218,6 +218,15 @@
         }, delay);
       };
     };
+    function template(tmp, context) {
+
+        if (typeof tmp === 'string' && tmp) {
+            return _.template(tmp);
+        }
+
+        throw "Can't find template: '"+context+"'";
+    }
+
 
     $.fn.blueimp = function (oo) {
 
@@ -236,7 +245,12 @@
                         $(document)
                             .off('dragenter', bag.dragenter)
                             .off('dragover', bag.leave)
-                            .off('drop', bag.leave)
+                            .off('drop', bag.leave);
+
+                        dropzone
+                            .off('dragenter', bag.dropzonedragenter)
+                            .off('dragover', bag.dropzoneleave)
+                            .off('drop', bag.dropzoneleave);
 
 
                         find(main, o.allsend).off('click', bag.sendall);
@@ -282,7 +296,6 @@
                 insertMethod        : 'prependTo',
 
                 multiple            : function (main) {
-                    log('inside multip;le')
                     log(arguments)
                     var i = main.find('input:file').addClass('red');
 
@@ -296,33 +309,10 @@
 
             var processing          = false;
 
-            try {
-                var tmpready            = _.template(find(main, o.tmpready).html());
+            var tmpready            = template(find(main, o.tmpready).html(), o.tmpready);
+            var tmpdone             = template(find(main, o.tmpdone).html(), o.tmpdone);
+            var tmperror            = template(find(main, o.tmperror).html(), o.tmperror);
 
-            }
-            catch (e) {
-                log('find template error: '+o.tmpready)
-                log(find(main, o.tmpready))
-                log(find(main, o.tmpready).length)
-            }
-            try {
-                var tmpdone             = _.template(find(main, o.tmpdone).html());
-
-            }
-            catch (e) {
-                log('find template error: '+o.tmpdone)
-                log(find(main, o.tmpdone))
-                log(find(main, o.tmpdone).length)
-            }
-            try {
-                var tmperror            = _.template(find(main, o.tmperror).html());
-
-            }
-            catch (e) {
-                log('find template error: '+o.tmperror)
-                log(find(main, o.tmperror))
-                log(find(main, o.tmperror).length)
-            }
             var list                = find(main, o.list);
             var progress            = find(main, o.progress);
             var progresslabel       = find(main, o.progresslabel);
@@ -573,20 +563,33 @@
             })();
 
             bag.dragenter = function (e) {
-                dropzone.addClass('active');
+                main.addClass('dragenter');
             };
 
             bag.leave = debounce(function (e) { // https://developer.mozilla.org/en-US/docs/Web/Events/dragleave
                 // https://developer.mozilla.org/en/docs/Using_files_from_web_applications#Selecting_files_using_drag_and_drop
-                dropzone.removeClass('active');
+                main.removeClass('dragenter');
             }, 400);
 
+            bag.dropzonedragenter = function (e) {
+                dropzone.addClass('dragenter');
+            };
+
+            bag.dropzoneleave = debounce(function (e) { // https://developer.mozilla.org/en-US/docs/Web/Events/dragleave
+                // https://developer.mozilla.org/en/docs/Using_files_from_web_applications#Selecting_files_using_drag_and_drop
+                dropzone.removeClass('dragenter');
+            }, 400);
+
+//            drag, dragdrop, dragend, dragenter, dragexit, draggesture, dragleave, dragover, dragstart, drop
             $(document)
                 .on('dragenter', bag.dragenter)
                 .on('dragover', bag.leave)
-//                .on('dragleave', leave)
                 .on('drop', bag.leave)
-//                drag, dragdrop, dragend, dragenter, dragexit, draggesture, dragleave, dragover, dragstart, drop
+
+            dropzone
+                .on('dragenter', bag.dropzonedragenter)
+                .on('dragover', bag.dropzoneleave)
+                .on('drop', bag.dropzoneleave)
 
             return main.data(bagname, bag);
         });

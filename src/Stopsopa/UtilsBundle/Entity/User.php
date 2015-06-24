@@ -181,7 +181,7 @@ class User extends AbstractEntity
     public function getWebPath()
     {
         if ($this->path) {
-            $file = $this->getAbsolutePath().'/'.$this->path;
+            $file = $this->getAbsolutePath();
             if (file_exists($file)) {
                 return $this->getUploadDir().'/'.$this->path;
             }

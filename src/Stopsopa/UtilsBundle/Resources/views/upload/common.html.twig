@@ -23,7 +23,6 @@
         <td>
             <div data-list>
                 {% if c.vars.value %}
-                    { { render } }
                     {% set _e = c.vars.value %}
                     {{ block('tmpdone') }}
                 {% endif %}
