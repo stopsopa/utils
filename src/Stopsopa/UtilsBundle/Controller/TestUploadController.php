@@ -15,7 +15,7 @@ use Symfony\Component\Form\FormError;
 use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
 
 /**
- * @Route("/test/upload")
+ * @Route("/test/upload") 
 
 routing.yml
 
