@@ -15,7 +15,7 @@ use Symfony\Component\Form\FormError;
 use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
 
 /**
- * @Route("/test/upload") 
+ * @Route("/test/upload")
 
 routing.yml
 
@@ -59,65 +59,13 @@ class TestUploadController extends AbstractController {
 
             $form->handleRequest($request);
 
-            if ($form->get('submit')->isClicked()) {
+            if ($form->isValid()) {
 
-                if ($form->isValid()) {
+                $man->update($entity);
 
-                    // ręcznie trzeba wywołać
-                    $entity->preUpload(true);
-                    foreach ($entity->getComments() as $c) {
-                        $c->preUpload(true);
-                    }
+                $this->setNotification($request, 'Created');
 
-                    $man->update($entity);
-
-                    $this->setNotification($request, 'Created');
-
-                    return $this->redirect($action);
-                }
-//                else {
-//                    niechginie($entity->getComments());
-//                }
-            }
-            else { // tylko upload pliku
-                if ($request->files->count()) { // jeśli w ogóle coś jest {
-
-                    // tutaj się dzieją ważne rzeczy
-                    $type = new UserType(true);
-                    $form = $this->createForm($type, $entity, array(
-                        'validation_groups'     => array('upload')
-                    ));
-
-                    $form->handleRequest($request);
-
-                    if ($form->isValid()) {
-
-                        $dbal = $man->getDbal();
-                        $dbal->beginTransaction(); // suspend auto-commit
-
-//                        nieginie($entity->getComments());
-                            $man->update($entity);
-
-                            $uploadedEntity = UploadSubscriber::getLastEntity();
-
-                            $response = $this->getJsonResponse(array(
-                                'files' => array(
-                                    array(
-                                        'hidden'    => $uploadedEntity->getPath(),
-                                        'webPath'   => $uploadedEntity->getWebPath()
-                                    )
-                                )
-                            ));
-
-                        $dbal->rollback();
-
-                        return $response;
-                    }
-                    else {
-                        niechginie($this->getErrors($form));
-                        die('not valid');
-                    }
-                }
+                return $this->redirect($action);
             }
         }
 
@@ -150,55 +98,13 @@ class TestUploadController extends AbstractController {
 
             $form->handleRequest($request);
 
-            if ($form->get('submit')->isClicked()) {
+            if ($form->isValid()) {
 
-                if ($form->isValid()) {
+                $man->update($entity);
 
-                    // ręcznie trzeba wywołać
-                    // warto także zwrócić uwagę na metodę UserManager->find()
-                    $entity->preUpload(true);
-                    foreach ($entity->getComments() as $c) {
-                        $c->preUpload(true);
-                    }
+                $this->setNotification($request, 'Edited');
 
-                    $man->update($entity);
-
-                    $this->setNotification($request, 'Edited');
-
-                    return $this->redirect($editurl);
-                }
-            }
-            else { // tylko upload pliku
-                if ($request->files->count()) { // jeśli w ogóle coś jest {
-
-                    // tutaj się dzieją ważne rzeczy
-                    $type = new UserType(true);
-                    $form = $this->createForm($type, $entity, array(
-                        'validation_groups'     => array('upload')
-                    ));
-
-                    $form->handleRequest($request);
-
-                    if ($form->isValid()) {
-
-                        $man->update($entity);
-
-                        $uploadedEntity = UploadSubscriber::getLastEntity();
-
-                        return $this->getJsonResponse(array(
-                            'files' => array(
-                                array(
-                                    'hidden'    => $uploadedEntity->getPath(),
-                                    'webPath'   => $uploadedEntity->getWebPath()
-                                )
-                            )
-                        ));
-                    }
-                    else {
-                        niechginie($this->getErrors($form));
-                        die('not valid');
-                    }
-                }
+                return $this->redirect($editurl);
             }
         }
 

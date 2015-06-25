@@ -10,14 +10,4 @@ use Stopsopa\UtilsBundle\Entity\AbstractManager;
  */
 class CommentManager extends AbstractManager {
     const SERVICE = 'test.comment.manager';
-
-    public function find($id) {
-        
-        /* @var $entity Comment */
-        $entity = parent::find($id);
-
-        $entity->setUpdatedAt(new DateTime());
-
-        return $entity;
-    }
 }

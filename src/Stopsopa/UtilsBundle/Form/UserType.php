@@ -13,11 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserType extends AbstractType {
-    protected $workintmpdir = true;
-    public function __construct($workintmpdir = false) {
-        $this->workintmpdir = $workintmpdir;
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options) {
         $notblank       = new Assert\NotBlank();
         $builder
@@ -32,41 +27,15 @@ class UserType extends AbstractType {
                 ),
             ))
             ->add('comments', 'collection', [
-                'type'                  => new CommentType($this->workintmpdir, false),
+                'type'                  => new CommentType(false),
                 'allow_add'             => true,
                 'allow_delete'          => true,
                 'by_reference'          => false,
 //                'cascade_validation'    => true,
             ])
-//            ->add('file', null, array(
-//                'constraints' => array(
-//                    new Assert\NotBlank(array(
-//                        'groups' => array('upload')
-//                    ))
-//                ),
-////                'file_path' => 'webPath',
-////                'file_name' => 'name'
-//            ))
-//            ->add('path', 'hidden')
+            ->add('path', 'hidden')
             ->add('submit', 'submit')
         ;
-
-        $builder->add('path', 'hidden');
-
-        $subscriber = new UploadSubscriber($this->workintmpdir, function ($isfileuploaded, $builder) {
-//            niechginie($isfileuploaded);
-            $builder
-                ->add('file', null, $isfileuploaded ? array(
-                    'constraints' => array(
-                        new Assert\NotBlank(array(
-                            'groups' => array('upload')
-                        ))
-                    ),
-                ) : array())
-            ;
-        }, 'user');
-
-        $builder->addEventSubscriber($subscriber->execute(false, $builder));
 
 //form.pre_set_data
 //form.post_set_data

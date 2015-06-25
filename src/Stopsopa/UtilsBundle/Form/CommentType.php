@@ -13,10 +13,8 @@ use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
 
 class CommentType extends AbstractType {
     protected $submit = true;
-    protected $workintmpdir = true;
-    public function __construct($workintmpdir = false, $submit = true) {
+    public function __construct($submit = true) {
         $this->submit = $submit;
-        $this->workintmpdir = $workintmpdir;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options) {
@@ -39,6 +37,7 @@ class CommentType extends AbstractType {
                     'placeholder' => 'YYYY-MM-DD'
                 ),
             ))
+            ->add('path', 'hidden')
 //            ->add('file', null, UploadSubscriber::isFileInRequest($this->validateuploads, $builder, 'file') ? array(
         ;
         if ($this->submit) {
@@ -46,22 +45,6 @@ class CommentType extends AbstractType {
                 ->add('submit', 'submit')
             ;
         }
-
-        $builder->add('path', 'hidden');
-        
-        $subscriber = new UploadSubscriber($this->workintmpdir, function ($isfileuploaded, $builder) {
-            $builder
-                ->add('file', null, $isfileuploaded ? array(
-                    'constraints' => array(
-                        new Assert\NotBlank(array(
-                            'groups' => array('upload')
-                        ))
-                    ),
-                ) : array())
-            ;
-        }, 'comment');
-
-        $builder->addEventSubscriber($subscriber->execute(false, $builder));
     }
     public function configureOptions(OptionsResolver $resolver)
     {
