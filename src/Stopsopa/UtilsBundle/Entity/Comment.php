@@ -7,6 +7,7 @@ use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
 
 /**
  * Comment
@@ -119,4 +120,12 @@ class Comment extends AbstractEntity
     }
 
 
+    function getUpdatedAt() {
+        return $this->updatedAt;
+    }
+
+    function setUpdatedAt($updatedAt) {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
 }

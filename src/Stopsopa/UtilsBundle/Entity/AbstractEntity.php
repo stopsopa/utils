@@ -189,7 +189,7 @@ abstract class AbstractEntity {
     public function set(array $data = array()) {
 
         foreach ($data as $key => &$d) {
-            call_user_func_array(array($this, 'set'.ucfirst($key)), $d);
+            call_user_func(array($this, 'set'.ucfirst($key)), $d);
         }
 
         return $this;
