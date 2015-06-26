@@ -1,21 +1,24 @@
 <?php
 
 namespace Stopsopa\UtilsBundle\Controller;
-
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Stopsopa\UtilsBundle\Entity\Comment;
-use Stopsopa\UtilsBundle\Entity\User;
-use Stopsopa\UtilsBundle\Entity\UserManager;
-use Stopsopa\UtilsBundle\Form\UserType;
-use Stopsopa\UtilsBundle\Lib\AbstractApp;
-use Stopsopa\UtilsBundle\Lib\FileProcessors\CommentFileProcessor;
-use Stopsopa\UtilsBundle\Lib\FileProcessors\UserFileProcessor;
 use Stopsopa\UtilsBundle\Lib\Request;
-use Stopsopa\UtilsBundle\Lib\FileProcessors\Tools\UploadHelper;
+use Stopsopa\UtilsBundle\Entity\UserManager;
+use Stopsopa\UtilsBundle\Entity\CommentManager;
+use Stopsopa\UtilsBundle\Form\UserType;
+use Symfony\Component\Form\FormView;
+use Stopsopa\UtilsBundle\Entity\User;
+use DateTime;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Form\FormErrorIterator;
+use Symfony\Component\Form\FormError;
+use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
+use Stopsopa\UtilsBundle\Entity\Comment;
 use Stopsopa\UtilsBundle\Lib\UtilFormAccessor;
 
 /**
  * @Route("/test/upload")
+
 routing.yml
 
 stopsopautils:
@@ -59,29 +62,22 @@ class TestUploadController extends AbstractController {
             'action' => $this->generateUrl($request),
         ));
 
-        $root = AbstractApp::getRootDir();
+        if ($request->files->count()) {
 
-        $uploadhelper = new UploadHelper($form, $request);
-        $uploadhelper->addProcessor(new UserFileProcessor());
-        $uploadhelper->addProcessor(new CommentFileProcessor());
+            $form->handleRequest($request);
+            
+            $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');
+
+
+            niechginie($request->files->all(), null, 4);
+        }
 
 
         if ($request->isPost()) {
 
             $form->handleRequest($request);
 
-
-            $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');
-            niechginie(UtilFormAccessor::getValue($form, 'user[comments][1][path]'));
-
-//            if ($request->files->count()) { // obsługa asynchroniczna plików
-//
-//                $response = $uploadhelper->handle();
-//
-////                niechginie($request->files->all(), null, 4);
-//            }
-//            else
-                if ($form->isValid()) { // obsługa całego formularza
+            if ($form->isValid()) {
 
                 $man->update($entity);
 
@@ -90,6 +86,9 @@ class TestUploadController extends AbstractController {
                 return $this->redirect($request);
             }
         }
+
+
+
 
         return $this->render('StopsopaUtilsBundle:upload:create.html.twig', array(
             'form' => $form->createView()

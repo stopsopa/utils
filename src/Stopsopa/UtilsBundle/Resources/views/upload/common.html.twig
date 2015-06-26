@@ -13,8 +13,8 @@
             <div data-dropzone data-pastezone data-sizelimit="268435456">
                 <div>
                     {#<input type="file" name="file[]" multiple data-sizelimit="<?php echo $uploader->getServerLimit() ?>">#}
-                   {# {% form_theme c.file 'StopsopaUtilsBundle:upload:blueimp.html.twig' %}
-                    {{ form_widget(c.file, {attr:{'data-dropzone':''}}) }}#}
+                    {% form_theme c.file 'StopsopaUtilsBundle:upload:blueimp.html.twig' %}
+                    {{ form_widget(c.file, {attr:{'data-dropzone':''}}) }}
                     <span>Click or drop file here</span>
                 </div>
             </div>

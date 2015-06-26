@@ -327,6 +327,9 @@ class UtilArray
         }
 
         if ($throwExceptionIfNot) {
+            nieginie($object);
+            nieginie($object[$key]);
+            niechginie($key);
             throw new UtilArrayException("Offset '".$key."' not exist");
         }
 

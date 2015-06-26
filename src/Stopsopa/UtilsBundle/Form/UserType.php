@@ -34,6 +34,7 @@ class UserType extends AbstractType {
 //                'cascade_validation'    => true,
             ])
             ->add('path', 'hidden')
+            ->add('file', 'file')
             ->add('submit', 'submit')
         ;
 

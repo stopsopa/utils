@@ -124,6 +124,8 @@ class User extends AbstractEntity
         return $this;
     }
 
+
+    public $file;
     /**
      * W tym polu faktycznie będzie trzymany fragment ścieżki do pliku
      * @var string

@@ -11,13 +11,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Form\Form;
 
 
-class Test {
-
-    public $test;
-    public function __construct($val) {
-        $this->test = $val;
-    }
-}
 class UtilFormAccessor {
     /**
      * @param Form $form
@@ -30,7 +23,13 @@ class UtilFormAccessor {
             return $val;
         });
 
-        if ($form->getName().'[' === substr($path, 0, strlen($form->getName()) + 1)) {
+        $prefix = substr($path, 0, strlen($form->getName()) + 1);
+
+        if (
+            $form->getName().'[' === $prefix
+        ||
+            $form->getName().'.' === $prefix
+        ) {
             array_shift($keys);
         }
 
@@ -43,22 +42,12 @@ class UtilFormAccessor {
         /* @var $val Form */
         return $val;
     }
-    /**
-     *
-        $d = UtilFormAccessor::get($form, 'user[comments][1][path]');
-        $d->setData('test');
-     */
     public static function getValue(Form &$form, $path) {
 
         $tmp = static::getForm($form, $path);
 
         return $tmp->getData();
     }
-    /**
-     *
-        $d = UtilFormAccessor::get($form, 'user[comments][1][path]');
-        $d->setData('test');
-     */
     public static function setValue(Form &$form, $path, $data) {
 
         $tmp = static::getForm($form, $path);
@@ -92,6 +81,8 @@ class UtilFormAccessor {
                     return $result;
                 }
             } catch (UtilArrayException $ex) {
+                nieginie($o);
+                nieginie($p);
                 throw new UtilFormAccessorException($ex->getMessage());
             }
         }

@@ -38,6 +38,7 @@ class CommentType extends AbstractType {
                 ),
             ))
             ->add('path', 'hidden')
+            ->add('file', 'file')
 //            ->add('file', null, UploadSubscriber::isFileInRequest($this->validateuploads, $builder, 'file') ? array(
         ;
         if ($this->submit) {

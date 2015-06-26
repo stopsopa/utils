@@ -35,8 +35,6 @@ class Comment extends AbstractEntity
      */
     protected $user;
 
-    protected $path;
-
 
     /**
      * Get id
@@ -105,14 +103,6 @@ class Comment extends AbstractEntity
         $this->user = $user;
         return $this;
     }
-    function getPath() {
-        return $this->path;
-    }
-
-    function setPath($path) {
-        $this->path = $path;
-        return $this;
-    }
 
 
     public function getWebPath() {
@@ -126,6 +116,19 @@ class Comment extends AbstractEntity
 
     function setUpdatedAt($updatedAt) {
         $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+
+
+    public $file;
+    protected $path;
+    function getPath() {
+        return $this->path;
+    }
+
+    function setPath($path) {
+        $this->path = $path;
         return $this;
     }
 }
