@@ -1,6 +1,9 @@
 <?php
 
 namespace Stopsopa\UtilsBundle\Lib\Standalone;
+
+use ArrayAccess;
+use Stopsopa\UtilsBundle\Lib\Exception\UtilArrayException;
 use Traversable;
 
 /**
@@ -294,7 +297,39 @@ class UtilArray
      * @param ArrayAccess $object
      * @return boolean
      */
-    public static function isForeachable($object) {
+    public static function isForeachable(&$object) {
       return is_array($object) || $object instanceof Traversable;
+    }
+    public static function isArrayAccessable (&$object) {
+      return is_array($object) || $object instanceof ArrayAccess;
+    }
+    /**
+     * Jeśli obiekt implementuje ArrayAccess co oznacza że można go używać jak tablicy
+     * $k['test'] = 'test';
+     * to wcale nie oznacza że można go testować za pomocą array_key_exists
+     * @param ArrayAccess|array $object
+     * @param string|integer $key
+     * @param boolean $throwExceptionIfNot
+     * @return boolean
+     * @throws UtilArrayException
+     */
+    public static function offsetExists(&$object, $key, $throwExceptionIfNot = true) {
+
+        if (is_array($object)) {
+            if (array_key_exists($key, $object)) {
+                return true;
+            }
+        }
+        elseif ($object instanceof ArrayAccess) {
+            if ($object->offsetExists($key)) {
+                return true;
+            }
+        }
+
+        if ($throwExceptionIfNot) {
+            throw new UtilArrayException("Offset '".$key."' not exist");
+        }
+
+        return false;
     }
 }

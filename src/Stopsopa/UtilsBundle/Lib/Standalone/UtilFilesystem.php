@@ -4,6 +4,10 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
 
 use Exception;
 
+/**
+ * Patrz klasę Symfony\Component\Filesystem\Filesystem
+ * warto może poprzerabiać co nieco tak jak jest w tej klasie
+ */
 class UtilFilesystem
 {
     public static function checkIfFileExistOrICanCreate($file, $createIfNotExist = false)

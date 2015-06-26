@@ -13,6 +13,8 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormError;
 use Stopsopa\UtilsBundle\EventListener\UploadSubscriber;
+use Stopsopa\UtilsBundle\Entity\Comment;
+use Stopsopa\UtilsBundle\Lib\UtilFormAccessor;
 
 /**
  * @Route("/test/upload")
@@ -49,11 +51,24 @@ class TestUploadController extends AbstractController {
 
         $type = new UserType();
 
-        $action = $this->generateUrl('test-upload-create');
+            $c = new Comment();
+            $c->setPath('/testpath1');
+            $entity->addComment($c);
+            $c = new Comment();
+            $c->setPath('/testpath2');
+            $entity->addComment($c);
 
         $form = $this->createForm($type, $entity, array(
-            'action' => $action,
+            'action' => $this->generateUrl($request),
         ));
+
+        if ($request->files->count()) {
+
+            $form->handleRequest($request);
+
+            niechginie($request->files->all(), null, 4);
+        }
+
 
         if ($request->isPost()) {
 
@@ -65,12 +80,16 @@ class TestUploadController extends AbstractController {
 
                 $this->setNotification($request, 'Created');
 
-                return $this->redirect($action);
+                return $this->redirect($request);
             }
         }
 
+        $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');
+
+
+
         return $this->render('StopsopaUtilsBundle:upload:create.html.twig', array(
-            'form' => $form->createView(),
+            'form' => $form->createView()
         ));
     }
     /**
@@ -86,12 +105,8 @@ class TestUploadController extends AbstractController {
 
         $type = new UserType();
 
-        $editurl = $this->generateUrl($request, array(
-            'id' => $entity->getId()
-        ));
-
         $form = $this->createForm($type, $entity, array(
-            'action' => $editurl,
+            'action' => $this->generateUrl($request),
         ));
 
         if ($request->isPost()) {
@@ -104,7 +119,7 @@ class TestUploadController extends AbstractController {
 
                 $this->setNotification($request, 'Edited');
 
-                return $this->redirect($editurl);
+                return $this->redirect($request);
             }
         }
 
