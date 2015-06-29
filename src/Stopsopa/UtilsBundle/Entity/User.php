@@ -8,6 +8,7 @@ use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use Stopsopa\UtilsBundle\Lib\FileProcessors\UserFileProcessor;
 
 /**
  * User
@@ -139,11 +140,18 @@ class User extends AbstractEntity
         return $this->path;
     }
 
-
-
-
-
     public function getWebPath() {
+        if ($this->path) {
+            $config = UserFileProcessor::getConfig();
+
+            $tmp = $config['web'].$config['dirtmp'].$this->path;
+            if (file_exists($tmp)) {
+                return $config['dirtmp'].$this->path;
+            }
+
+            return $config['dir'].$this->path;
+
+        }
         return '/bundles/stopsopautils/utils/lorem.jpg';
     }
 }

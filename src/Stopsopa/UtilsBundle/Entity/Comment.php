@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Stopsopa\UtilsBundle\Lib\FileProcessors\CommentFileProcessor;
 
 /**
  * Comment
@@ -106,6 +107,17 @@ class Comment extends AbstractEntity
 
 
     public function getWebPath() {
+        if ($this->path) {
+            $config = CommentFileProcessor::getConfig();
+
+            $tmp = $config['web'].$config['dirtmp'].$this->path;
+            if (file_exists($tmp)) {
+                return $config['dirtmp'].$this->path;
+            }
+
+            return $config['dir'].$this->path;
+
+        }
         return '/bundles/stopsopautils/utils/lorem.jpg';
     }
 

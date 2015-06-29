@@ -3,9 +3,9 @@
 namespace Stopsopa\UtilsBundle\Lib\FileProcessors\Tools;
 
 use Exception;
+use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
 
 abstract class AbstractFileProcessor {
     /**
@@ -16,7 +16,7 @@ abstract class AbstractFileProcessor {
      * po drodze należy także ustawić path do przekazywania w polu hidden
      * @param UploadedFile $file
      * @param Form $form
-     * @param \Stopsopa\UtilsBundle\Lib\FileProcessors\Tools\UploadResult $result
+     * @param UploadResult $result
      * @throws Exception
      */
     public function handle(UploadedFile $file, UploadResult $result) {
@@ -47,16 +47,36 @@ abstract class AbstractFileProcessor {
 
         $result->setPath($directory.'/'.$newfilename);
     }
-    public function getConfig() {
+    public static function getConfig() {
         throw new Exception("Method not implemented");
 
 //        return array(
+//            'class'  => 'Namespace/classname',
 //            'web'    => $root.'/web',
 //            'dirtmp' => '/media/uploads/users_tmp',
 //            'dir'    => '/media/uploads/users',
 //            'file'   => '#^user\.comments\.\d+\.file#',
 //            'field'  => 'path',
 //        );
+    }
+    public function delete($entity) {
+        throw new Exception("Method not implemented");
+        /* @var $entity User */
+//        if ($path = $entity->getWebPath()) {
+//            $config = $this->getConfig();
+//
+//            $tmp = $config['web'].$config['dirtmp'].$path;
+//            if (file_exists($tmp)) {
+//                UtilFilesystem::removeFile($tmp);
+//                UtilFilesystem::removeEmptyDirsToPath(dirname($tmp), $config['web'].$config['dirtmp']);
+//            }
+//
+//            $tmp = $config['web'].$config['dir'].$path;
+//            if (file_exists($tmp)) {
+//                UtilFilesystem::removeFile($tmp);
+//                UtilFilesystem::removeEmptyDirsToPath(dirname($tmp), $config['web'].$config['dir']);
+//            }
+//        }
     }
     protected function generateSafeDirPrefix($filename) {
 
@@ -74,6 +94,18 @@ abstract class AbstractFileProcessor {
         } while (file_exists($absolutedir . '/' . $filename) || file_exists($tmpabsolutedir . '/' . $filename));
 
         return $dir;
+    }
+    public static function _getConfig($key = null) {
+        if ($key) {
+            $tmp = static::getConfig();
+            if ($key == 'fieldmatch') {
+                return preg_replace('#^(.*[\.\[\]])[^\.\[\]\#\/]+([\#\/])$#', '$1'.$tmp['field'].'$2', $tmp['file']);
+            }
+            if (array_key_exists($key, $tmp)) {
+                return $tmp[$key];
+            }
+        }
+        throw new Exception("Key '".$key."' not found in config: ".  json_encode($tmp));
     }
 }
 

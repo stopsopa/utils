@@ -3,11 +3,10 @@
 
 namespace Stopsopa\UtilsBundle\Lib\FileProcessors\Tools;
 
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request as BaseRequest;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Stopsopa\UtilsBundle\Lib\FileProcessors\Tools\AbstractFileProcessor;
-use Stopsopa\UtilsBundle\Lib\UtilFormAccessor;
 
 class UploadResult {
     /**
@@ -46,17 +45,14 @@ class UploadResult {
         return $this->path;
     }
     function setPath($path) {
-        nieginie($path);
-        niechginie($this->request->request->all());
         $this->path = $path;
 
-//        niechginie($this->form->getData());
+        $data = $this->request->request->all();
 
-//        nieginie($this->field);
-//        nieginie($path);
-//        niechginie($this->form->getData());
-//        UtilFormAccessor::setValue($this->form, $this->field, $path);
-//        niechginie(UtilFormAccessor::getValue($this->form, $this->field));
+        UtilArray::cascadeSet($data, $this->field, $path);
+
+        $this->request->request = new ParameterBag($data);
+
         return $this;
     }
 }

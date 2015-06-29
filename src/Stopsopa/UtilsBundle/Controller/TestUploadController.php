@@ -59,38 +59,27 @@ class TestUploadController extends AbstractController {
             'action' => $this->generateUrl($request),
         ));
 
-        $root = AbstractApp::getRootDir();
-
         $uploadhelper = new UploadHelper($request);
         $uploadhelper->addProcessor(new UserFileProcessor());
         $uploadhelper->addProcessor(new CommentFileProcessor());
 
         if ($request->isPost()) {
 
-//            $k = array();
-//            UtilArray::cascadeSet($k, 'fds.ggg.0.kk', 'val');
-
             $response = $uploadhelper->handle();
-//            $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');
-//            niechginie(UtilFormAccessor::getValue($form, 'user[comments][1][path]'));
 
             $form->handleRequest($request);
 
-
-
-//            if ($request->files->count()) { // obsługa asynchroniczna plików
-//
-//
-////                niechginie($request->files->all(), null, 4);
-//            }
-//            else
-                if ($form->isValid()) { // obsługa całego formularza
+            if ($form->isValid()) { // obsługa całego formularza
 
                 $man->update($entity);
 
+                $response = $uploadhelper->move();
+
                 $this->setNotification($request, 'Created');
 
-                return $this->redirect($request);
+                return $this->redirectToRoute('test-upload-edit', array(
+                    'id' => $entity->getId()
+                ));
             }
         }
 
@@ -115,13 +104,21 @@ class TestUploadController extends AbstractController {
             'action' => $this->generateUrl($request),
         ));
 
+        $uploadhelper = new UploadHelper($request);
+        $uploadhelper->addProcessor(new UserFileProcessor());
+        $uploadhelper->addProcessor(new CommentFileProcessor());
+
         if ($request->isPost()) {
+
+            $response = $uploadhelper->handle();
 
             $form->handleRequest($request);
 
             if ($form->isValid()) {
 
                 $man->update($entity);
+
+                $response = $uploadhelper->move();
 
                 $this->setNotification($request, 'Edited');
 
@@ -146,7 +143,24 @@ class TestUploadController extends AbstractController {
         /* @var $entity User */
         $entity = $man->findOrThrow($id);
 
-        $man->remove($entity);
+        $dbal = $man->getDbal();
+        $dbal->beginTransaction();
+
+            $man->remove($entity);
+
+//        $dbal->rollBack();
+        $dbal->commit();
+
+        $uploadhelper = new UploadHelper($request);
+        $uploadhelper->addProcessor(new UserFileProcessor());
+        $uploadhelper->addProcessor(new CommentFileProcessor());
+
+        foreach ($entity->getComments() as $c) {
+            $uploadhelper->delete($c);
+        }
+        $uploadhelper->delete($entity);
+
+
 
         $this->setNotification($request, 'Deleted');
 
