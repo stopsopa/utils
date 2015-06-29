@@ -14,7 +14,7 @@ class UserFileProcessor extends AbstractFileProcessor {
     public function handle(UploadedFile $file, UploadResult $result) {
 
         // validate and if error
-        $result->addError('File too big');
+//        $result->addError('File too big');
 
 
         // if ok move file and pass new path

@@ -302,7 +302,8 @@
                     }
 
                     return true;
-                }
+                },
+                afterdone: $.noop
             }, o || {});
 
             var processing          = false;
@@ -312,19 +313,27 @@
             var tmperror            = template(find(main, o.tmperror).html(), o.tmperror);
 
             var list                = find(main, o.list);
-            var progress            = find(main, o.progress);
-            var progresslabel       = find(main, o.progresslabel);
+//            var progress            = find(main, o.progress);
+//            var progresslabel       = find(main, o.progresslabel);
             var progressall         = find(main, o.allprogress);
             var progressalllabel    = find(main, o.allprogresslabel);
             var dropzone            = find(main, o.dropzone);
             var pastezone           = find(main, o.pastezone);
+
+//log('o.action')
+//log(o.action);
 
             if (o.action) {
                 var action              = o.action;
             }
             else {
                 var action              = main.closest('form').attr('action');
+                if (!action) {
+                    log('blueimp: action not specified and not found')
+                }
             }
+//            log('action')
+//            log(action)
 
             if (typeof o.maxsize == 'string') {
                 var maxsize             = main.find('['+o.maxsize+']').data(getKey(o.maxsize))
@@ -482,6 +491,9 @@
                         data.context = content;
 
                         bindDelete(find(data.context, o.del), o);
+
+                        o.afterdone(data.context);
+
                     });
                 },
 //                drop: function () {
@@ -491,6 +503,7 @@
 //                    log('change')
 //                },
                 progressall: function (e, data) {
+//                    log('test progress all');
                     var p = pall.get();
                     if (p !== null) {
                         progressall.css('width', p + '%');
@@ -502,11 +515,12 @@
                 },
                 progress: function (e, data) {
                     var prog    = find(data.context, o.progress);
-                    var label   = find(data.context, '[data-label]')
+                    var label   = find(data.context, o.progresslabel)
                     var p = parseInt(data.loaded / data.total * 100, 10);
 
                     prog.css('width', p + '%');
                     label.html(p + ' %');
+                    log('p: '+p)
 
                     var f = data.context.data(bagname);
 

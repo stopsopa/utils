@@ -48,12 +48,12 @@ class TestUploadController extends AbstractController {
 
         $type = new UserType();
 
-            $c = new Comment();
-            $c->setPath('/testpath1');
-            $entity->addComment($c);
-            $c = new Comment();
-            $c->setPath('/testpath2');
-            $entity->addComment($c);
+//            $c = new Comment();
+//            $c->setPath('/testpath1');
+//            $entity->addComment($c);
+//            $c = new Comment();
+//            $c->setPath('/testpath2');
+//            $entity->addComment($c);
 
         $form = $this->createForm($type, $entity, array(
             'action' => $this->generateUrl($request),
