@@ -430,6 +430,8 @@
 
                 },
                 done: function (e, data) {
+                    log('done')
+                    log(data)
 
 //                    $('[name="__name__"]').each(function () {
 //                        var tt = $(this);
@@ -449,23 +451,32 @@
                         var p = data.context.closest('.js');
                         var name = p.find('input:file').attr('name');
                         var path = name.replace(/^(.*\[)[^\]]+(\])$/, '$1path$2');
+                        var id = path.replace(/[\[\]]+/g, '_').replace(/^(.*?)_$/, '$1');
+                        log('attr')
+                        log({
+                            name: name,
+                            path: path,
+                            id: id
+                        });
 
                         var hpath = $();
                         main.find('input:hidden').each(function () {
                             var t = $(this);
-                            if (t.attr('name') === path) {
+                            if (t.attr('name') === path || t.attr('id') === id) {
                                 hpath = t;
                                 return false;
                             }
                         });
 
-                        var content = $('<div></div>').html(tmpdone(file)).find('> *').attr(o.oneattr, '');
-
-                        if (!hpath.length) {
-                            hpath = $('<input type="hidden"/>').appendTo(content);
+                        if (hpath.length) {
+                            hpath.remove();
                         }
 
-                        hpath.attr('name', path).val(file.hidden);
+                        var content = $('<div></div>').html(tmpdone(file)).find('> *').attr(o.oneattr, '');
+
+                        hpath = $('<input />').attr('type', 'hidden').appendTo(content);
+
+                        hpath.attr('name', path).attr('id', id).val(file.path);
 
                         data.context.replaceWith(content);
                         data.context = content;

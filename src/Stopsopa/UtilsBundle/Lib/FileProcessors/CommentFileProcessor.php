@@ -14,11 +14,14 @@ class CommentFileProcessor extends AbstractFileProcessor {
     public function handle(UploadedFile $file, UploadResult $result) {
 
         // validate and if error
-        $result->addError('File too big');
+//        $result->addError('File too big');
+
 
         // if ok move file and pass new path
 
         $config = $this->getConfig();
+
+
 
         $newfilename = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
         $ext = $file->guessExtension();
@@ -33,7 +36,8 @@ class CommentFileProcessor extends AbstractFileProcessor {
         $file->move($config['web'].$config['dirtmp'].$directory, $newfilename);
 
         $result->setResponse(array(
-            'web' => $config['dir'].$newfilename
+            'webPath' => $config['dirtmp'].$directory.'/'.$newfilename,
+            'path'    => $directory.'/'.$newfilename
         ));
 
         $result->setPath($directory.'/'.$newfilename);

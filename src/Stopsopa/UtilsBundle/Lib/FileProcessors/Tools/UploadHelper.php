@@ -27,7 +27,13 @@ class UploadHelper {
     public function addProcessor(AbstractFileProcessor $processor) {
         $this->processors[] = $processor;
     }
-
+    public function countFiles() {
+        $paths = $this->_extractFilePaths($this->request->files->all());
+//        nieginie($this->request->files->all(), 2);
+//        nieginie(count($paths));
+//        niechginie($paths, 2);
+        return count($paths);
+    }
 
 
     /**
@@ -40,40 +46,43 @@ class UploadHelper {
 
         foreach ($paths as $path => &$file) {
             $processor = $this->_getProcessor($path);
-//            if ($processor) {
-            if (!$processor) {
-                niechginie($path);
-            }
-                $config    = $processor->getConfig();
+            $config    = $processor->getConfig();
 
-                $prefix = preg_replace('#^(.*?)\.[^\.]+$#', '$1', $path);
+            $prefix = preg_replace('#^(.*?)\.[^\.]+$#', '$1', $path);
 
-    //            if (strpos($prefix, '.') === false) {
-    //                $form = $this->form;
-    //            }
-    //            else {
-
-    //                $form = UtilFormAccessor::getForm($this->form, $prefix);
-    //
-    //                niechginie(array(
-    //                    $prefix,
-    //                    $this->form,
-    //                    $form,
-    //                    $form->getData()
-    //                ));
-    //
-    ////                niechginie($form);
-    //            }
-
-                $result = new UploadResult($prefix.'.'.$config['field'], str_replace('.', '_', $prefix), $this->request);
-
-                $response[] = $result;
-
-                $processor->handle($file, $result);
+//            if (strpos($prefix, '.') === false) {
+//                $form = $this->form;
 //            }
+//            else {
+
+//                $form = UtilFormAccessor::getForm($this->form, $prefix);
+//
+//                niechginie(array(
+//                    $prefix,
+//                    $this->form,
+//                    $form,
+//                    $form->getData()
+//                ));
+//
+////                niechginie($form);
+//            }
+
+            $result = new UploadResult($prefix.'.'.$config['field'], str_replace('.', '_', $path), $this->request);
+
+            $response[] = $result;
+
+            $processor->handle($file, $result);
         }
 
-        $this->response = $response;
+        $return = array();
+        foreach ($response as $res) {
+            /* @var $res UploadResult */
+            $return[] = $res->getResult();
+        }
+
+        return array(
+            'files' => $return
+        );
     }
     public function move() {
         $paths = $this->_extractHiddenPaths($this->request->request->all());
@@ -112,6 +121,7 @@ class UploadHelper {
 
         return $list;
     }
+
     protected function _extractOneFile(&$tree, $prefix, &$list) {
         foreach ($tree as $key => &$data) {
 

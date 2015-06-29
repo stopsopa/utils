@@ -55,4 +55,18 @@ class UploadResult {
 
         return $this;
     }
+    function getResult() {
+        if (count($this->errors)) {
+            $res = array(
+                'errors' => $this->errors
+            );
+        }
+        else {
+            $res = $this->return;
+        }
+
+        return array_merge($res, array(
+            'id' => $this->id
+        ));
+    }
 }

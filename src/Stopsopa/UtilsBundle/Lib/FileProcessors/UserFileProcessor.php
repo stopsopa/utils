@@ -36,7 +36,8 @@ class UserFileProcessor extends AbstractFileProcessor {
         $file->move($config['web'].$config['dirtmp'].$directory, $newfilename);
 
         $result->setResponse(array(
-            'web' => $config['dir'].$newfilename
+            'webPath' => $config['dirtmp'].$directory.'/'.$newfilename,
+            'path'    => $directory.'/'.$newfilename
         ));
 
         $result->setPath($directory.'/'.$newfilename);

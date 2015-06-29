@@ -65,7 +65,10 @@ class TestUploadController extends AbstractController {
 
         if ($request->isPost()) {
 
-            $response = $uploadhelper->handle();
+            // później można wykombinować jakoś żeby sprzęgnąć ewentualne błędy z formem
+            if ($uploadhelper->countFiles()) {
+                return $this->getJsonResponse($uploadhelper->handle());
+            }
 
             $form->handleRequest($request);
 
@@ -110,7 +113,10 @@ class TestUploadController extends AbstractController {
 
         if ($request->isPost()) {
 
-            $response = $uploadhelper->handle();
+            // później można wykombinować jakoś żeby sprzęgnąć ewentualne błędy z formem
+            if ($uploadhelper->countFiles()) {
+                return $this->getJsonResponse($uploadhelper->handle());
+            }
 
             $form->handleRequest($request);
 

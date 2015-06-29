@@ -82,7 +82,7 @@
 
 {% block tmpdone %}
     <div class="done">
-        {% if _e.webPath %}
+        {% if _e.webPath is defined %}
             <a href="{{ _e.webPath|raw }}" target="_blank">
                 <img src="{{ _e.webPath|raw }}" width="50"/>
             </a>

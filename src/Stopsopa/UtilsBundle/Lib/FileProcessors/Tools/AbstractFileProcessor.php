@@ -25,9 +25,12 @@ abstract class AbstractFileProcessor {
         // validate and if error
         $result->addError('File too big');
 
+
         // if ok move file and pass new path
 
         $config = $this->getConfig();
+
+
 
         $newfilename = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
         $ext = $file->guessExtension();
@@ -42,7 +45,7 @@ abstract class AbstractFileProcessor {
         $file->move($config['web'].$config['dirtmp'].$directory, $newfilename);
 
         $result->setResponse(array(
-            'web' => $config['dir'].$newfilename
+            'web' => $config['dirtmp'].$directory.'/'.$newfilename
         ));
 
         $result->setPath($directory.'/'.$newfilename);
