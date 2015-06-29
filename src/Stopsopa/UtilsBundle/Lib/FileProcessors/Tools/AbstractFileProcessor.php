@@ -25,12 +25,9 @@ abstract class AbstractFileProcessor {
         // validate and if error
         $result->addError('File too big');
 
-
         // if ok move file and pass new path
 
         $config = $this->getConfig();
-
-
 
         $newfilename = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
         $ext = $file->guessExtension();

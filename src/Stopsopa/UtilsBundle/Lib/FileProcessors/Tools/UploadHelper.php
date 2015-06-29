@@ -11,10 +11,6 @@ use Stopsopa\UtilsBundle\Lib\UtilFormAccessor;
 
 class UploadHelper {
     /**
-     * @var Form
-     */
-    protected $form;
-    /**
      * @var BaseRequest
      */
     protected $request;
@@ -24,8 +20,8 @@ class UploadHelper {
     protected $processors;
 
     protected $response;
-    public function __construct(Form $form, BaseRequest $request) {
-        $this->form         = $form;
+
+    public function __construct(BaseRequest $request) {
         $this->request      = $request;
         $this->processors   = array();
     }
@@ -66,11 +62,11 @@ class UploadHelper {
 ////                niechginie($form);
 //            }
 
-            $result = new UploadResult($prefix.'.'.$config['field'], str_replace('.', '_', $prefix), $this->form);
+            $result = new UploadResult($prefix.'.'.$config['field'], str_replace('.', '_', $prefix), $this->request);
 
             $response[] = $result;
 
-            $processor->handle($file, $this->form, $result);
+            $processor->handle($file, $result);
         }
 
         $this->response = $response;

@@ -22,11 +22,11 @@ class UploadResult {
     protected $field;
     protected $id;
     protected $path;
-    protected $form;
-    public function __construct($field, $id, Form $form) {
-        $this->field       = $field;
+    protected $request;
+    public function __construct($field, $id, BaseRequest $request) {
+        $this->field        = $field;
         $this->id           = $id;
-        $this->form         = $form;
+        $this->request      = $request;
         $this->errors       = array();
     }
 
@@ -46,6 +46,8 @@ class UploadResult {
         return $this->path;
     }
     function setPath($path) {
+        nieginie($path);
+        niechginie($this->request->request->all());
         $this->path = $path;
 
 //        niechginie($this->form->getData());
@@ -53,8 +55,8 @@ class UploadResult {
 //        nieginie($this->field);
 //        nieginie($path);
 //        niechginie($this->form->getData());
-        UtilFormAccessor::setValue($this->form, $this->field, $path);
-        niechginie(UtilFormAccessor::getValue($this->form, $this->field));
+//        UtilFormAccessor::setValue($this->form, $this->field, $path);
+//        niechginie(UtilFormAccessor::getValue($this->form, $this->field));
         return $this;
     }
 }

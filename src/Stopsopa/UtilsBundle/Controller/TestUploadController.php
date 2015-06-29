@@ -9,10 +9,10 @@ use Stopsopa\UtilsBundle\Entity\UserManager;
 use Stopsopa\UtilsBundle\Form\UserType;
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Stopsopa\UtilsBundle\Lib\FileProcessors\CommentFileProcessor;
+use Stopsopa\UtilsBundle\Lib\FileProcessors\Tools\UploadHelper;
 use Stopsopa\UtilsBundle\Lib\FileProcessors\UserFileProcessor;
 use Stopsopa\UtilsBundle\Lib\Request;
-use Stopsopa\UtilsBundle\Lib\FileProcessors\Tools\UploadHelper;
-use Stopsopa\UtilsBundle\Lib\UtilFormAccessor;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 
 /**
  * @Route("/test/upload")
@@ -61,22 +61,25 @@ class TestUploadController extends AbstractController {
 
         $root = AbstractApp::getRootDir();
 
-        $uploadhelper = new UploadHelper($form, $request);
+        $uploadhelper = new UploadHelper($request);
         $uploadhelper->addProcessor(new UserFileProcessor());
         $uploadhelper->addProcessor(new CommentFileProcessor());
 
-
         if ($request->isPost()) {
+
+//            $k = array();
+//            UtilArray::cascadeSet($k, 'fds.ggg.0.kk', 'val');
+
+            $response = $uploadhelper->handle();
+//            $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');
+//            niechginie(UtilFormAccessor::getValue($form, 'user[comments][1][path]'));
 
             $form->handleRequest($request);
 
 
-            $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');
-            niechginie(UtilFormAccessor::getValue($form, 'user[comments][1][path]'));
 
 //            if ($request->files->count()) { // obsługa asynchroniczna plików
 //
-//                $response = $uploadhelper->handle();
 //
 ////                niechginie($request->files->all(), null, 4);
 //            }

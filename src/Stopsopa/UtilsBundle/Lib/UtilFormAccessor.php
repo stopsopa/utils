@@ -81,8 +81,6 @@ class UtilFormAccessor {
                     return $result;
                 }
             } catch (UtilArrayException $ex) {
-                nieginie($o);
-                nieginie($p);
                 throw new UtilFormAccessorException($ex->getMessage());
             }
         }
