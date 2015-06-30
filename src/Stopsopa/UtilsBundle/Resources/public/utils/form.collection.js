@@ -30,18 +30,6 @@
             title           : '[data-title]',
             del             : '[data-delete]',
             insertMethod    : 'prependTo',
-            confirm : function (confirmed, name) {
-                if (confirm('Usunąć element "'+name+'"?')) {
-                    confirmed();
-                }
-
-//                return;
-//
-//                swal.confirm('Usunąć element "'+name+'"?', function () {
-//                    t.remove();
-//                });
-
-            },
             added: function (row, list) {
 
             },
@@ -51,7 +39,7 @@
             addedandexisting: function (row, list, addflat) { // addflat - czy odpalnoy na add czy był obiekt statycznie
 
             },
-            remove: function (row, list, callback) {
+            remove: function (row, list, callback, name) {
                 callback();
             }
         }, opt || {});
@@ -101,10 +89,9 @@
 
                 var name = getTitle(t.find(opt.title));
 
-                opt.confirm(function () {
-                    opt.remove(t, list, function () {
-                        t.remove();
-                    });
+                opt.remove(t, list, function () {
+                    log('remove innerr')
+                    t.remove();
                 }, name);
             });
 
