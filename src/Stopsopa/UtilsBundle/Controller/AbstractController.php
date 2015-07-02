@@ -174,12 +174,20 @@ abstract class AbstractController extends Controller {
      * @return User|null
      */
     public function getUser() {
-      $user = $this->getToken()->getUser();
 
-      if(is_object($user))
+        $token = $this->getToken();
+        
+        if (!$token) {
+            return false;
+        }
+
+        $user = $token->getUser();
+
+        if(is_object($user)) {
             return $user;
+        }
 
-      return null;
+        return null;
     }
     /**
      * Możliwe że później trzeba będzie rozbudować tą metodę o obsługę
