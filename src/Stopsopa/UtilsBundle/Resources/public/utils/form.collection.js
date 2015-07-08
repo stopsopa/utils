@@ -85,6 +85,8 @@
             list.on('click', opt.del, function (e) {
                 e.preventDefault();
 
+                log('test remove');
+
                 var t = $(this).parents(listselector+' *').last();
 
                 var name = getTitle(t.find(opt.title));

@@ -83,11 +83,13 @@
                             tmperror            : '[data-tmp-error-comment]',
                         });
                     },
-                    remove: function (row, list, callback) {
+                    remove: function (row, list, callback, name) {
                         //setTimeout(callback, 1000);
-                        callback();
+                        swal.confirm("Czy jesteś pewien że chcesz usunąć adres '"+name+"'", function () {
+                            callback();
+                        })
                     }
-                })
+                });
 
 
 

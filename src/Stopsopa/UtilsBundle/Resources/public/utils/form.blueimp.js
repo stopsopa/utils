@@ -1,3 +1,5 @@
+'use strict';
+
 ;(function ($, bagname) {
 
     function log(l) {try{console.log(l);}catch (e) {}};
@@ -59,10 +61,11 @@
 
     function bindDelete(button, o) {
         button.click(function () {
+            log('delete ale form.blueimp')
             var t = $(this);
 
-
             var url = t.data('delete');
+
             if (url) {
                 t.attr('disabled', 'disabled');
 
@@ -277,7 +280,7 @@
                 onedatastart        : '** [data-startone]',
                 onecancel           : '** [data-cancelone]',
                 allsend             : '** [data-sendall]',
-                del                 : '** [data-delete]',
+                del                 : '** [data-bluedelete]',
                 tmpready            : '** [data-tmp-ready]',
                 tmpdone             : '** [data-tmp-done]',
                 tmperror            : '** [data-tmp-error]',
@@ -455,44 +458,55 @@
                     // ale upakowane jest to tak żę wygląda jakby mogła tu przyjśc lista danych
                     $.each(data.result.files, function (index, file) {
 
-                        var f = data.context.data(bagname);
-                        pall.step(100, f);
-                        var p = data.context.closest('.js');
-                        var name = p.find('input:file').attr('name');
-                        var path = name.replace(/^(.*\[)[^\]]+(\])$/, '$1path$2');
-                        var id = path.replace(/[\[\]]+/g, '_').replace(/^(.*?)_$/, '$1');
-                        log('attr')
-                        log({
-                            name: name,
-                            path: path,
-                            id: id
-                        });
+                        try {
+                            var f = data.context.data(bagname);
+                            pall.step(100, f);
+                            var p = data.context.closest('.js');
+                            var name = p.find('input:file').attr('name');
+                            var path = name.replace(/^(.*\[)[^\]]+(\])$/, '$1path$2');
+                            var id = path.replace(/[\[\]]+/g, '_').replace(/^(.*?)_$/, '$1');
 
-                        var hpath = $();
-                        main.find('input:hidden').each(function () {
-                            var t = $(this);
-                            if (t.attr('name') === path || t.attr('id') === id) {
-                                hpath = t;
-                                return false;
+                            var hpath = $();
+                            main.find('input:hidden').each(function () {
+                                var t = $(this);
+                                if (t.attr('name') === path || t.attr('id') === id) {
+                                    hpath = t;
+                                    return false;
+                                }
+                            });
+
+                            if (hpath.length) {
+                                hpath.remove();
                             }
-                        });
 
-                        if (hpath.length) {
-                            hpath.remove();
+                            var content = $('<div></div>');
+
+                            if (file.errors) {
+                                content.html(tmperror({error: file.errors[0]}))
+                            }
+                            else {
+                                content.html(tmpdone(file))
+                            }
+
+
+                            content.find('> *').attr(o.oneattr, '');
+
+                            hpath = $('<input />').attr('type', 'hidden').appendTo(content);
+
+                            hpath.attr('name', path).attr('id', id).val(file.path);
+
+                            data.context.replaceWith(content);
+                            data.context = content;
+
+                            bindDelete(find(data.context, o.del), o);
+
+                            o.afterdone(data.context);
+
+                        }
+                        catch (e) {
+                            log('exception: ' + e);
                         }
 
-                        var content = $('<div></div>').html(tmpdone(file)).find('> *').attr(o.oneattr, '');
-
-                        hpath = $('<input />').attr('type', 'hidden').appendTo(content);
-
-                        hpath.attr('name', path).attr('id', id).val(file.path);
-
-                        data.context.replaceWith(content);
-                        data.context = content;
-
-                        bindDelete(find(data.context, o.del), o);
-
-                        o.afterdone(data.context);
 
                     });
                 },

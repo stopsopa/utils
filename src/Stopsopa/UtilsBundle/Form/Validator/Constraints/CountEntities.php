@@ -9,6 +9,14 @@ use Symfony\Component\Validator\Constraint;
 /**
  * @Annotation
  *
+ * Generalnie to chyba nie ma sensu bo robi to samo
+ * 
+                    new Assert\Count([
+                        'max' => 4,
+                        'maxMessage' => 'Wprowadź maksymalnie %max% adresów'
+                    ])
+ *
+ *
  *
         $minmax         = new CountEntities(array(
             'min' => 1,
