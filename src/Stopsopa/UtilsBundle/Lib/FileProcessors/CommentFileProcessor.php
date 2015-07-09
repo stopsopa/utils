@@ -13,8 +13,15 @@ use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 class CommentFileProcessor extends AbstractFileProcessor {
     public function handle(UploadedFile $file, UploadResult $result) {
 
+
         // validate and if error
 //        $result->addError('File too big');
+        $ext = pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION);
+
+        if (!in_array($ext, explode(' ', 'pdf doc docx png bmp jpeg jpg txt'))) {
+            $result->addError("File extension '$ext' not allowed");
+            return;
+        }
 
 
         // if ok move file and pass new path

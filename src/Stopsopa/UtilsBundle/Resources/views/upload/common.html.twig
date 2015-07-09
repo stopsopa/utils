@@ -71,10 +71,11 @@
 
             {{ block('tmpdone') }}
         </script>
+        <!-- o klasy ready done error nie jest opara żadna logika ale dobrze aby były na potrzeby obróbki po stronie już konkretnej strony -->
         <script type="text/tmp" data-tmp-error-comment>
             <div class="error">
-                <span><%= name %></span>
                 <div>Błąd: <%= error %></div>
+                <button data-errorremove>delete</button>
             </div>
         </script>
 {% endblock %}

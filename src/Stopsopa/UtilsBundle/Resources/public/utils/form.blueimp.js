@@ -61,7 +61,6 @@
 
     function bindDelete(button, o) {
         button.click(function () {
-            log('delete ale form.blueimp')
             var t = $(this);
 
             var url = t.data('delete');
@@ -281,6 +280,7 @@
                 onecancel           : '** [data-cancelone]',
                 allsend             : '** [data-sendall]',
                 del                 : '** [data-bluedelete]',
+                errorremove         : '** [data-errorremove]',
                 tmpready            : '** [data-tmp-ready]',
                 tmpdone             : '** [data-tmp-done]',
                 tmperror            : '** [data-tmp-error]',
@@ -488,17 +488,29 @@
                                 content.html(tmpdone(file))
                             }
 
+                            content = content.find('> *');
 
-                            content.find('> *').attr(o.oneattr, '');
+                            content.attr(o.oneattr, '');
 
                             hpath = $('<input />').attr('type', 'hidden').appendTo(content);
 
                             hpath.attr('name', path).attr('id', id).val(file.path);
 
+                            if (file.errors) {
+                                hpath.remove();
+                            }
+
                             data.context.replaceWith(content);
                             data.context = content;
 
-                            bindDelete(find(data.context, o.del), o);
+                            if (file.errors) {
+                                find(data.context, o.errorremove).click(function () {
+                                    $(this).closest('['+o.oneattr+']').remove();
+                                });
+                            }
+                            else {
+                                bindDelete(find(data.context, o.del), o);
+                            }
 
                             o.afterdone(data.context);
 
