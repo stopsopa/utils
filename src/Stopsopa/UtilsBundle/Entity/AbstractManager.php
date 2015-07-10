@@ -52,12 +52,18 @@ SELECT count(*) c FROM $table
 
         return 0;
     }
-    public function getTableName() {
-        if (!$this->table) {
-            $this->table = $this->getClassMetadata()->getTableName();
+    public function getTableName($class = null) {
+
+        if (!$class) {
+            
+            if (!$this->table) {
+                $this->table = $this->getClassMetadata()->getTableName();
+            }
+
+            return $this->table;
         }
 
-        return $this->table;
+        return $this->getClassMetadata($class)->getTableName();
     }
     public function getClass() {
         return $this->class;
