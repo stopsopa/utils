@@ -306,7 +306,8 @@
 
                     return true;
                 },
-                afterdone: $.noop
+                onstartupload: $.noop, // konkretnie przy rozpocząciu uploadu, function (context) {}
+                afterdone: $.noop // gdy upload skończony, function (context) {}
             }, o || {});
 
             var processing          = false;
@@ -414,6 +415,7 @@
 
                                 t.attr('disabled', 'disabled');
 
+                                o.onstartupload(data.context);
                                 processing = data.submit()
 //                                    .done(function () { // https://github.com/blueimp/jQuery-File-Upload/wiki/API#initialization
 //                                        log('this is normal ajax object')
@@ -428,6 +430,7 @@
                         }
                         else {
                             pall.pending() && pall.add(file.size, file);
+                            o.onstartupload(data.context);
                             data.submit();
                         }
 
@@ -442,9 +445,6 @@
 
                 },
                 done: function (e, data) {
-                    log('done')
-                    log(data)
-
 //                    $('[name="__name__"]').each(function () {
 //                        var tt = $(this);
 //                        var p = tt.closest('.js')

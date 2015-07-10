@@ -1,21 +1,33 @@
 // wymaga jquery
 // <script type="text/javascript"></script>
 // 'bundles/stopsopautils/js/common.js'
+'use strict';
 
+//window.log = console ? console.log : function () {};
 function log() {
     try {
-        console.log.apply(this, arguments);
+        window.console.log.apply(window.console, arguments);
     } catch (e) {
-
     }
 }
 function error() {
     try {
-        console.error.apply(this, arguments);
+        window.console.error.apply(window.console, arguments);
     } catch (e) {
 
     }
 }
+
+// http://stackoverflow.com/a/22337556/1338731
+// jquery plugin 'jquery.ready.fix.js'
+// @author Szymon Działowski
+;(function ($) {
+    $.fn.ready.old || $(function (r) {
+        r = $.fn.ready;
+        $.fn.ready = function (fn) {    $.isReady ? fn() : r(fn);    };
+        $.fn.ready.old = r;
+    });
+})(jQuery);
 
 //window.site = {};
 //$(function () {
