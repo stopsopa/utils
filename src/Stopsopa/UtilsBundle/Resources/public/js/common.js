@@ -1,4 +1,5 @@
-// wymaga jquery
+;
+// // wymaga jquery
 // <script type="text/javascript"></script>
 // 'bundles/stopsopautils/js/common.js'
 'use strict';
@@ -14,7 +15,6 @@ function error() {
     try {
         window.console.error.apply(window.console, arguments);
     } catch (e) {
-
     }
 }
 
@@ -209,3 +209,4 @@ if ('sweetAlert' in window) {
 }
 
 
+;
