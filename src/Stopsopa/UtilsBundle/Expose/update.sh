@@ -1,10 +1,16 @@
 #!/bin/bash
 
 
+
+
 if [ "$(id -u -n)" == "root" ]; then
     echo -e "\e[31mDon't run this script as root\e[31m"
 else
     echo "czyszczenie katalogów cache & logs"
+
+
+    rm -rf app/cache/profiler/*
+    rm -rf app/logs/*
 
     /bin/bash stop.sh
 
@@ -22,7 +28,6 @@ else
 
     /bin/bash clean.sh
 
-    echo "na koniec odpalam gulp"
 fi
 
 
