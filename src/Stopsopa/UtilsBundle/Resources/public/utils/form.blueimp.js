@@ -105,7 +105,6 @@
         this.add = function (size, file) {
             if (!s(file)) {
                 return;
-                return log('no file specified file');
             }
             for (var i = 0, l = list.length ; i < l ; i += 1 ) {
                 if (list[i].file === file) {
@@ -122,7 +121,6 @@
         this.remove = function (file) {
             if (!s(file)) {
                 return ;
-                return log('no file specified remove');
             }
             for (var i = 0, l = list.length ; i < l ; i += 1 ) {
                 if (list[i].file === file) {
@@ -156,8 +154,7 @@
         }
         this.step = function (percent, file) {
             if (!s(file)) {
-                return
-                return log('no file specified step or is not file')
+                return;
             }
             var c = false;
             for (var i = 0, l = list.length ; i < l ; i += 1 ) {
@@ -486,12 +483,16 @@
                                 content.html(tmperror({error: file.errors[0]}))
                             }
                             else {
+                                log('file');
+                                log(file);
                                 content.html(tmpdone(file))
                             }
 
                             content = content.find('> *');
 
                             content.attr(o.oneattr, '');
+
+                            content.find('input:hidden:first').remove();
 
                             hpath = $('<input />').attr('type', 'hidden').appendTo(content);
 
