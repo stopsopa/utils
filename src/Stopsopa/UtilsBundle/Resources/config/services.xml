@@ -12,6 +12,8 @@
 
         <parameter key="test.comment.entitymanager">Stopsopa\UtilsBundle\Entity\CommentManager</parameter>
         <parameter key="test.comment.entity">Stopsopa\UtilsBundle\Entity\Comment</parameter>
+
+        <parameter key="password.generator">Stopsopa\UtilsBundle\Services\GeneratePassword</parameter>
         <!--<parameter key="twig.loader.filesystem.class">Symfony\Bundle\TwigBundle\Loader\FilesystemLoader</parameter> oryginalny zapis-->
 
     <!--<parameter key="app.country.jirarestservice">AppBundle\Services\JiraRestService</parameter>-->
@@ -73,6 +75,11 @@
     </parameters>
 
   <services>
+
+        <service id="password.generator" class="%password.generator%">
+<!--            <argument type="service" id="doctrine.orm.entity_manager"/>
+            <argument>%test.user.entity%</argument>-->
+        </service>
 
         <service id="test.user.manager" class="%test.user.entitymanager%">
             <argument type="service" id="doctrine.orm.entity_manager"/>
