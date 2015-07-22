@@ -242,6 +242,25 @@ abstract class AbstractController extends Controller {
         }
         return $a1;
     }
+    /**
+     * Teraz można wywołać w dowolny sposób:
+     * $this->render();
+     * $this->render(array(...));
+     * $this->render('index.html.twig');
+     * $this->render($response);
+     * $this->render(array(...), $response);
+     * $this->render($response, array(...));
+     * $this->render('index.html.twig');
+     * $this->render('index.html.twig', array(...));
+     * $this->render('index.html.twig', $response);
+     * $this->render('index.html.twig', array(...), $response);
+     * $this->render('index.html.twig', $response, array(...));
+     *
+     * @param SfResponse $view
+     * @param array $parameters
+     * @param SfResponse $response
+     * @return type
+     */
     public function render($view = null, array $parameters = array(), SfResponse $response = null) {
 
         if (!is_string($view) || strpos($view, ':') === false) {
@@ -253,7 +272,12 @@ abstract class AbstractController extends Controller {
         }
 
         if (is_string($view)) {
-            $twig .= $view;
+            if (isset($twig)) {
+                $twig .= $view;
+            }
+            else {
+                $twig = $view;
+            }
         }
         else {
             $twig .= $matches[2].'.html.twig';
