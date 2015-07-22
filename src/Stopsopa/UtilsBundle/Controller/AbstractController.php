@@ -244,24 +244,19 @@ abstract class AbstractController extends Controller {
     }
     public function render($view = null, array $parameters = array(), SfResponse $response = null) {
 
-        $controller = $this->get('request')->attributes->get('_controller');
+        if (!is_string($view)) {
+            $controller = $this->get('request')->attributes->get('_controller');
+            preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $controller, $matches);
+//            niechginie($matches);
+        }
 
-        preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $controller, $matches);
-
-//        niechginie($matches);
 //        [_controller] => AppBundle\Controller\Site\DefaultController::indexAction
 //        [_route] => home
 
-        if (!is_string($view)) {
-            if ($parameters instanceof SfResponse) {
-                $response = $parameters;
-            }
-            if (is_array($view)) {
-                $parameters = $view;
-            }
-            $view = $this->getBundleName().':'.$matches[1].':'.$matches[2].'.html.twig';
-        }
-
-        return parent::render($view, $parameters, $response);
+        return parent::render(
+            is_string($view) ? $view : ($this->getBundleName().':'.$matches[1].':'.$matches[2].'.html.twig'),
+            is_array($view) ? $view : (is_array($parameters) ? $parameters : (is_array($response) ? $response : array())),
+            ($view instanceof SfResponse) ? $view : (($parameters instanceof SfResponse) ? $parameters : (($response instanceof SfResponse) ? $response : null))
+        );
     }
 }
