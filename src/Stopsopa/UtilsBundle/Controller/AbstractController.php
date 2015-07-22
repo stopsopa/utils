@@ -5,6 +5,7 @@ namespace Stopsopa\UtilsBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Stopsopa\UtilsBundle\Lib\Json\Conditionally\Json;
 use Stopsopa\UtilsBundle\Lib\Response;
+use Symfony\Component\HttpFoundation\Response as SfResponse;
 use Stopsopa\UtilsBundle\Lib\UtilArray;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -176,7 +177,7 @@ abstract class AbstractController extends Controller {
     public function getUser() {
 
         $token = $this->getToken();
-        
+
         if (!$token) {
             return false;
         }
@@ -240,5 +241,27 @@ abstract class AbstractController extends Controller {
             }
         }
         return $a1;
+    }
+    public function render($view = null, array $parameters = array(), SfResponse $response = null) {
+
+        $controller = $this->get('request')->attributes->get('_controller');
+
+        preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $controller, $matches);
+
+//        niechginie($matches);
+//        [_controller] => AppBundle\Controller\Site\DefaultController::indexAction
+//        [_route] => home
+
+        if (!is_string($view)) {
+            if ($parameters instanceof SfResponse) {
+                $response = $parameters;
+            }
+            if (is_array($view)) {
+                $parameters = $view;
+            }
+            $view = $this->getBundleName().':'.$matches[1].':'.$matches[2].'.html.twig';
+        }
+
+        return parent::render($view, $parameters, $response);
     }
 }
