@@ -266,9 +266,13 @@ abstract class AbstractController extends Controller {
         if (!is_string($view) || strpos($view, ':') === false) {
             $controller = $this->get('request')->attributes->get('_controller');
 //          [_controller] => AppBundle\Controller\Site\DefaultController::indexAction
+//          lub
+//          [_controller] =>  'AppBundle:Site/Partials:townsTiles' / /jeśli leci przez render(controller w twig
 //          [_route] => home
-            preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $controller, $matches);
-            $twig = is_string($view) ? $view : ($this->getBundleName().':'.$matches[1].':');
+            if (strpos($controller, '\\Controller\\')) {
+                preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $controller, $matches);
+                $twig = is_string($view) ? $view : ($this->getBundleName().':'.$matches[1].':');
+            }
         }
 
         if (is_string($view)) {
@@ -280,7 +284,12 @@ abstract class AbstractController extends Controller {
             }
         }
         else {
-            $twig .= $matches[2].'.html.twig';
+            if (isset($matches)) {
+                $twig .= $matches[2].'.html.twig';
+            }
+            else {
+                $twig = $controller.'.html.twig';
+            }
         }
 
         return parent::render(
