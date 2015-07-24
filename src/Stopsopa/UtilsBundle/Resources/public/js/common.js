@@ -189,9 +189,9 @@ if ('_' in window) {
     site.tmp = function () {
         var tmp = _.templateSettings
         var own = {
-            evaluate    : /\[\[([\s\S]+?)\]\]/g,
-            interpolate : /\[\[=([\s\S]+?)\]\]/g,
-            escape      : /\[\[-([\s\S]+?)\]\]/g
+            evaluate    : /\(:([\s\S]+?):\)/g,
+            interpolate : /\(:=([\s\S]+?):\)/g,
+            escape      : /\(:-([\s\S]+?):\)/g
         }
         _.templateSettings = own; // podmianka delimiterów
         ret =  _.template.apply(this, arguments);
