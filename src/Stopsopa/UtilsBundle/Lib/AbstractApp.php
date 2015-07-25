@@ -147,13 +147,24 @@ class AbstractApp
 
     /**
      * Zwraca ścieżkę do katalogu głównego projektu
-     * @param bool $bundlepath - def: false, true - absolute path to current bundle
+     * @param object|string $bundlepath - def: false
+     *    object - Można przekazać jakikolwiek obiekt zostanie zwrócony bundle jak ustali się w jakim bandlu leży ta klasa
+     *    string -
      * @return string
      */
     public static function getRootDir($bundlepath = false) {
         if (static::isSymfony()) {
             $dir = dirname(static::getCont()->getParameter('kernel.root_dir'));
 
+            if (is_object($bundlepath)) {
+                $path   = get_class($bundlepath);
+                $bundle = preg_replace('#^(.*?\\\\[^\\\\]+Bundle)\\\\.*$#', '$1', $path);
+                if ($path !== $bundle) {
+                    $bundle = str_replace('\\', '/', $bundle);
+                    return static::getRootDir().'/src/'.$bundle;
+                }
+                throw new Exeption("Can't analyse path '$path' to find bundle directory");
+            }
             if ($bundlepath) {
                 return static::getKernel()->getBundle($bundlepath)->getPath();
     //            $n = get_called_class();
@@ -166,6 +177,9 @@ class AbstractApp
             return $dir;
         }
         else {
+            if ($bundlepath !== false) {
+                throw new Exception("This is not Symfony 2, can't user getRootDir with parameter");
+            }
             // nie wiem czy to najlepsze ale najwyżej później to wymienie
             if (!static::$root) {
                 $reflection = new ReflectionClass('Composer\Autoload\ClassLoader');

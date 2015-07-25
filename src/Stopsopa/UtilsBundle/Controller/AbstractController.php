@@ -13,6 +13,7 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormErrorIterator;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
 
 abstract class AbstractController extends Controller {
     /**
@@ -297,5 +298,8 @@ abstract class AbstractController extends Controller {
             is_array($view) ? $view : (is_array($parameters) ? $parameters : (is_array($response) ? $response : array())),
             ($view instanceof SfResponse) ? $view : (($parameters instanceof SfResponse) ? $parameters : (($response instanceof SfResponse) ? $response : null))
         );
+    }
+    public function getRootDir($bundlepath = false) {
+        return AbstractApp::getRootDir($bundlepath);
     }
 }
