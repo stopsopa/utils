@@ -9,6 +9,7 @@ use PDO;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ORM\Query;
 
 abstract class AbstractManager {
 
@@ -55,7 +56,7 @@ SELECT count(*) c FROM $table
     public function getTableName($class = null) {
 
         if (!$class) {
-            
+
             if (!$this->table) {
                 $this->table = $this->getClassMetadata()->getTableName();
             }
@@ -123,9 +124,57 @@ SELECT count(*) c FROM $table
     public function find($id) {
         return $this->repository->find($id);
     }
+    protected function _prepareQuery($alias, $select = array()) {
 
-    public function findAll() {
-        return $this->repository->findAll();
+        $qb = $this->createQueryBuilder($alias);
+
+        if (is_string($select)) {
+            $select = preg_split('#[^a-z0-9_\.]+#i', $select);
+        }
+
+        if (!$select) {
+           $select = array();
+        }
+
+        if (count($select)) {
+            call_user_func_array(array($qb, 'select'), $select);
+        }
+
+        return $qb;
+    }
+
+    /**
+     * $eman->findAllOrderBy('e', 'e.name', 'asc', array('e.id', 'e.username', 'e.path'), Query::HYDRATE_ARRAY);
+     * $eman->findAllOrderBy('e', 'e.name', 'asc', 'e.id|e.username|e.path', Query::HYDRATE_ARRAY);
+     * $eman->findAllOrderBy('e', 'e.name', 'asc', null, Query::HYDRATE_ARRAY); -- zwróć wszystie pola
+     */
+    public function findAllOrderBy($alias, $sort, $order = null, $select = array(), $hydrationMode = null) {
+
+        if (!$hydrationMode) {
+            $hydrationMode = Query::HYDRATE_OBJECT;
+        }
+
+        return $this->_prepareQuery($alias, $select)
+            ->orderBy($sort, $order)
+            ->getQuery()
+            ->getResult($hydrationMode)
+        ;
+    }
+
+    public function findAll($alias = null, $select = array(), $hydrationMode = null) {
+
+        if (!$alias) {
+            $alias = 'x';
+        }
+
+        if (!$hydrationMode) {
+            $hydrationMode = Query::HYDRATE_OBJECT;
+        }
+
+        return $this->_prepareQuery($alias, $select)
+            ->getQuery()
+            ->getResult($hydrationMode)
+        ;
     }
     public function findOneByOrCreate($data, $update = false) {
 
@@ -250,9 +299,6 @@ SELECT count(*) c FROM $table
             $entity = $this->createEntity();
 
         return $entity;
-    }
-    public function findAllOrderBy($field, $order = 'asc') {
-        return $this->createQueryBuilder('s')->orderBy('s.'.$field, $order)->getQuery()->getResult();
     }
     public function getTableNameByClass($class = null) {
         return $this->getClassMetadata($class)->getTableName();
