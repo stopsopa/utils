@@ -121,8 +121,30 @@ SELECT count(*) c FROM $table
         return new $this->class;
     }
 
-    public function find($id) {
-        return $this->repository->find($id);
+    protected $idfield;
+    public function find($id, $hydrationMode = null) {
+
+        if (!$hydrationMode) {
+            $hydrationMode = Query::HYDRATE_OBJECT;
+        }
+
+        if (!$this->idfield) {
+            $meta = $this->getClassMetadata();
+            $this->idfield = $meta->identifier[0];
+        }
+
+        $qb = $this->repository->createQueryBuilder("x");
+
+        return $qb
+            ->where(
+                $qb->expr()->eq(
+                    "x.{$this->idfield}",
+                    $qb->expr()->literal($id)
+                )
+            )
+            ->getQuery()
+            ->getSingleResult($hydrationMode)
+        ;
     }
     protected function _prepareQuery($alias, $select = array()) {
 
@@ -160,7 +182,11 @@ SELECT count(*) c FROM $table
             ->getResult($hydrationMode)
         ;
     }
-
+    /**
+     * $eman->findAll('e', array('e.id', 'e.username', 'e.path'), Query::HYDRATE_ARRAY);
+     * $eman->findAll('e', 'e.id|e.username|e.path', Query::HYDRATE_ARRAY);
+     * $eman->findAll('e', null, Query::HYDRATE_ARRAY); -- zwróć wszystie pola
+     */
     public function findAll($alias = null, $select = array(), $hydrationMode = null) {
 
         if (!$alias) {
