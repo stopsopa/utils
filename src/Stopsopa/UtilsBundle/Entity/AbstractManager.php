@@ -122,7 +122,11 @@ SELECT count(*) c FROM $table
     }
 
     protected $idfield;
-    public function find($id, $hydrationMode = null) {
+    public function find($id, $alias = null, $select = array(), $hydrationMode = null) {
+
+        if (!$alias) {
+            $alias = 'x';
+        }
 
         if (!$hydrationMode) {
             $hydrationMode = Query::HYDRATE_OBJECT;
@@ -133,12 +137,11 @@ SELECT count(*) c FROM $table
             $this->idfield = $meta->identifier[0];
         }
 
-        $qb = $this->repository->createQueryBuilder("x");
-
+        $qb = $this->_prepareSelect($alias, $select);
         return $qb
             ->where(
                 $qb->expr()->eq(
-                    "x.{$this->idfield}",
+                    $alias.'.'.$this->idfield,
                     $qb->expr()->literal($id)
                 )
             )
@@ -146,7 +149,7 @@ SELECT count(*) c FROM $table
             ->getSingleResult($hydrationMode)
         ;
     }
-    protected function _prepareQuery($alias, $select = array()) {
+    protected function _prepareSelect($alias, $select = array()) {
 
         $qb = $this->createQueryBuilder($alias);
 
@@ -176,7 +179,7 @@ SELECT count(*) c FROM $table
             $hydrationMode = Query::HYDRATE_OBJECT;
         }
 
-        return $this->_prepareQuery($alias, $select)
+        return $this->_prepareSelect($alias, $select)
             ->orderBy($sort, $order)
             ->getQuery()
             ->getResult($hydrationMode)
@@ -197,7 +200,7 @@ SELECT count(*) c FROM $table
             $hydrationMode = Query::HYDRATE_OBJECT;
         }
 
-        return $this->_prepareQuery($alias, $select)
+        return $this->_prepareSelect($alias, $select)
             ->getQuery()
             ->getResult($hydrationMode)
         ;
