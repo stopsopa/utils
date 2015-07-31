@@ -316,6 +316,13 @@ SELECT count(*) c FROM $table
     public function createQueryBuilder($alias) {
         return $this->repository->createQueryBuilder($alias);
     }
+    /**
+     * @param string $dql The DQL string.
+     * @return Query
+     */
+    public function createQuery($dql = '') {
+        return $this->em->createQuery($dql);
+    }
 
     public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
         return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
