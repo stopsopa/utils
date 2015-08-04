@@ -5,7 +5,7 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
 /**
  *
     $c = new UtilArgs(array(
-        'TEST',
+        'testmały',
         456,
         455.34,
         null,
@@ -18,7 +18,7 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
         null,
         true,
         array('pierwszy array','dwa'),
-        'testmały',
+        'TEST',
         array('drugi array','trzy'),
         function () {
             echo 'dwa';
@@ -28,9 +28,10 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
         new DateTime(),
     ));
 
-    niechginie($c->get(UtilArgs::ARR));
-    nieginie($c->pop(UtilArgs::STRING));
-    niechginie($c->get(UtilArgs::ARR | UtilArgs::STRING | UtilArgs::NUL));
+
+    nieginie($c->shiftFirst(UtilArgs::STRING | UtilArgs::ARR));
+    nieginie($c->get(UtilArgs::STRING | UtilArgs::ARR));
+    niechginie($c->shift(UtilArgs::STRING | UtilArgs::ARR));
  */
 class UtilArgs
 {
@@ -66,7 +67,13 @@ class UtilArgs
 
         return $list;
     }
-    public function &pop($type) {
+    /**
+     * Wyciąga wszystkie elementy danego typu w fromie array, jeśli nie ma nic to zwróci tablicę pustą
+     * Elementy w składowej args zostają usunięte i zwrócone
+     * @param string $type - int|string|array|resource|callback|float|object|numeric|[namespace]
+     * @param type $default
+     */
+    public function &shift($type) {
         $list = array();
 
         foreach ($this->args as $key => &$d) {
@@ -78,8 +85,16 @@ class UtilArgs
 
         return $list;
     }
-    public function &getFirst($type, &$default = null) {
-        $list = array();
+    /**
+     * Pobiera pierwszy element danego typu jeśli istnieje, jeśli nie to zwraca false,
+     * lub wartość z opcjonalego parametru default
+     *
+     * Element w składowej args zostaje tam gdzie jest
+     * @param type $type
+     * @param mixed $default (parametr opcjonalny);
+     * @return array
+     */
+    public function &getFirst($type) {
 
         foreach ($this->args as $key => &$d) {
             if ($this->_isType($d, $type)) {
@@ -87,10 +102,24 @@ class UtilArgs
             }
         }
 
-        return $list;
+        $args = func_get_args();
+        if (!count($list) && count($args) > 1) {
+            return $args[1];
+        }
+
+        $return = false;
+        return $return;
     }
-    public function &popFirst($type, &$default = null) {
-        $list = array();
+    /**
+     * Pobiera pierwszy element danego typu jeśli istnieje, jeśli nie to zwraca false,
+     * lub wartość z opcjonalego parametru default
+     *
+     * Element w składowej args zostaje usunięty i zwrócone
+     * @param type $type
+     * @param mixed $default (parametr opcjonalny);
+     * @return array
+     */
+    public function &shiftFirst($type) {
 
         foreach ($this->args as $key => &$d) {
             if ($this->_isType($d, $type)) {
@@ -99,7 +128,13 @@ class UtilArgs
             }
         }
 
-        return $list;
+        $args = func_get_args();
+        if (!count($list) && count($args) > 1) {
+            return $args[1];
+        }
+
+        $return = false;
+        return $return;
     }
     protected function _isType(&$d, $type) {
         if ($type & static::STRING && is_string($d)) {
