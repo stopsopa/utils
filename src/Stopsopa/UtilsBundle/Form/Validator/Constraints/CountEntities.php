@@ -2,7 +2,6 @@
 
 namespace Stopsopa\UtilsBundle\Form\Validator\Constraints;
 
-use Exception;
 use Symfony\Component\Validator\Exception\MissingOptionsException;
 use Symfony\Component\Validator\Constraint;
 
@@ -10,41 +9,21 @@ use Symfony\Component\Validator\Constraint;
  * @Annotation
  *
  * Generalnie to chyba nie ma sensu bo robi to samo
- * 
-                    new Assert\Count([
-                        'max' => 4,
-                        'maxMessage' => 'Wprowadź maksymalnie %max% adresów'
-                    ])
- *
- *
- *
-        $minmax         = new CountEntities(array(
-            'min' => 1,
-            'max' => 3,
-            'message' => 'Wybierz od %min% do %max% kategorii, które najlepiej opisują ofertę pracy'
-        ));
- *
- *
-        $min            = new CountEntities(array(
-            'min' => 1,
-            'minMessage' => 'Wybierz przynajmniej jedno miasto'
-        ));
-
  */
 class CountEntities extends Constraint
 {
     const TOO_SHORT_ERROR = 1;
     const TOO_LONG_ERROR = 2;
 
-    public $maxMessage      = 'Choose max {{ max }} entities from list';
-    public $minMessage      = 'Choose min {{ min }} entities from list';
-    public $message         = 'Choose min {{ min }} and max {{ max }} entities from list';
-    public $exactMessage    = 'Choose exactly {{ min }} entities from list';
+    public $maxMessage = 'Choose max {{ max }} entities from list';
+    public $minMessage = 'Choose min {{ min }} entities from list';
+    public $message = 'Choose min {{ min }} and max {{ max }} entities from list';
+    public $exactMessage = 'Choose exactly {{ min }} entities from list';
     public $min;
     public $max;
 
-    public function __construct($options = null) {
-
+    public function __construct($options = null)
+    {
         if (null !== $options && !is_array($options)) {
             $options = array(
                 'min' => $options,

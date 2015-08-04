@@ -114,7 +114,7 @@ class UtilArray
      *
      * @param type $data
      *
-     * @return boolean
+     * @return bool
      */
     public static function isAssoc(&$data)
     {
@@ -131,8 +131,8 @@ class UtilArray
      * Bierze co drugi element z listy, zaczynając od pierwszego
      * (pierwszy załącza do wynikowej tablicy).
      *
-     * @param array   $array
-     * @param integer $take  (dev) - co który ma brać?
+     * @param array $array
+     * @param int   $take  (dev) - co który ma brać?
      *
      * @return array
      */
@@ -182,7 +182,7 @@ class UtilArray
      * @param string $key
      * @param mix    $val
      *
-     * @return boolean
+     * @return bool
      */
     public static function cascadeSet(&$source, $key, $val)
     {
@@ -195,7 +195,7 @@ class UtilArray
         $element = &$source;
         while (($d = array_shift($key)) !== null) {
             if (count($key)) {
-                if (! (isset($element[$d]) && is_array($element[$d]))) {
+                if (!(isset($element[$d]) && is_array($element[$d]))) {
                     $element[$d] = array();
                 }
 
@@ -225,7 +225,7 @@ class UtilArray
      *
      * @param string $key
      *
-     * @return boolean|string
+     * @return bool|string
      */
     public static function cascadeRemove(&$source, $key)
     {
@@ -270,7 +270,7 @@ class UtilArray
             if ($d == ':') {
                 continue;
             }
-            $d = preg_split("#(?<!\\\\):#", $d, 2);
+            $d = preg_split('#(?<!\\\\):#', $d, 2);
 
             $d[0] && ($d[0] = trim(str_replace('\:', ':', $d[0])));
             isset($d[1]) && ($d[1] = trim($d[1]));
@@ -293,34 +293,40 @@ class UtilArray
         return $list;
     }
     /**
-     * Sprawdza czy obiekt można przejść foreach
+     * Sprawdza czy obiekt można przejść foreach.
+     *
      * @param ArrayAccess $object
-     * @return boolean
+     *
+     * @return bool
      */
-    public static function isForeachable(&$object) {
-      return is_array($object) || $object instanceof Traversable;
+    public static function isForeachable(&$object)
+    {
+        return is_array($object) || $object instanceof Traversable;
     }
-    public static function isArrayAccessable (&$object) {
-      return is_array($object) || $object instanceof ArrayAccess;
+    public static function isArrayAccessable(&$object)
+    {
+        return is_array($object) || $object instanceof ArrayAccess;
     }
     /**
      * Jeśli obiekt implementuje ArrayAccess co oznacza że można go używać jak tablicy
      * $k['test'] = 'test';
-     * to wcale nie oznacza że można go testować za pomocą array_key_exists
+     * to wcale nie oznacza że można go testować za pomocą array_key_exists.
+     *
      * @param ArrayAccess|array $object
-     * @param string|integer $key
-     * @param boolean $throwExceptionIfNot
-     * @return boolean
+     * @param string|int        $key
+     * @param bool              $throwExceptionIfNot
+     *
+     * @return bool
+     *
      * @throws UtilArrayException
      */
-    public static function offsetExists(&$object, $key, $throwExceptionIfNot = true) {
-
+    public static function offsetExists(&$object, $key, $throwExceptionIfNot = true)
+    {
         if (is_array($object)) {
             if (array_key_exists($key, $object)) {
                 return true;
             }
-        }
-        elseif ($object instanceof ArrayAccess) {
+        } elseif ($object instanceof ArrayAccess) {
             if ($object->offsetExists($key)) {
                 return true;
             }

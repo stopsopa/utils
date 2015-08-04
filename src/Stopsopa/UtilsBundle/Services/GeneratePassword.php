@@ -6,32 +6,33 @@ use Exception;
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
 
 /**
- * Stopsopa\UtilsBundle\Services\GeneratePassword
+ * Stopsopa\UtilsBundle\Services\GeneratePassword.
  */
-class GeneratePassword {
+class GeneratePassword
+{
     const SERVICE = 'password.generator';
     protected $words;
     protected $count;
-    public function __construct($words = null) {
-
+    public function __construct($words = null)
+    {
         if (!$words) {
-            $words = include(AbstractApp::getRootDir().'/app/config/words.php');
+            $words = include AbstractApp::getRootDir().'/app/config/words.php';
         }
 
         $this->words = $words;
         $this->count = count($words);
     }
-    public function generate() {
-
+    public function generate()
+    {
         if (!$this->words) {
-            throw new Exception("No list of words specified");
+            throw new Exception('No list of words specified');
         }
 
         $password = $this->_randomWord();
 
         do {
             $tmp = $this->_randomWord();
-        } while($password === $tmp);
+        } while ($password === $tmp);
 
         $password .= $tmp;
 
@@ -39,7 +40,8 @@ class GeneratePassword {
 
         return $password;
     }
-    protected function _randomWord() {
+    protected function _randomWord()
+    {
         return $this->words[rand(0, $this->count - 1)];
     }
 }

@@ -115,7 +115,7 @@ class PDOStatement
     protected function _decorate($stmt)
     {
         if ($stmt instanceof NativeStatement) {
-            return new PDOStatement($stmt);
+            return new self($stmt);
         }
 
         return $stmt;
@@ -132,7 +132,7 @@ class PDOStatement
     public function __call($method, $args)
     {
         if (!method_exists($this->stmt, $method)) {
-            throw new Exception("Call to undefined method ".get_class($this->stmt)."::$method");
+            throw new Exception('Call to undefined method '.get_class($this->stmt)."::$method");
         }
 
         return call_user_func_array(array($this->stmt, $method), $args);

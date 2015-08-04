@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Stopsopa\UtilsBundle\Lib\FileProcessors\Tools;
 
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
@@ -8,7 +7,8 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request as BaseRequest;
 
-class UploadResult {
+class UploadResult
+{
     /**
      * @var Form
      */
@@ -22,29 +22,36 @@ class UploadResult {
     protected $id;
     protected $path;
     protected $request;
-    public function __construct($field, $id, BaseRequest $request) {
-        $this->field        = $field;
-        $this->id           = $id;
-        $this->request      = $request;
-        $this->errors       = array();
+    public function __construct($field, $id, BaseRequest $request)
+    {
+        $this->field = $field;
+        $this->id = $id;
+        $this->request = $request;
+        $this->errors = array();
     }
 
-    public function addError($message) {
+    public function addError($message)
+    {
         $this->errors[] = $message;
     }
-    public function setResponse($return) {
+    public function setResponse($return)
+    {
         $this->return = $return;
     }
-    public function getErrors() {
+    public function getErrors()
+    {
         return $this->errors;
     }
-    public function countErrors() {
+    public function countErrors()
+    {
         return count($this->errors);
     }
-    function getPath() {
+    public function getPath()
+    {
         return $this->path;
     }
-    function setPath($path) {
+    public function setPath($path)
+    {
         $this->path = $path;
 
         $data = $this->request->request->all();
@@ -55,18 +62,18 @@ class UploadResult {
 
         return $this;
     }
-    function getResult() {
+    public function getResult()
+    {
         if (count($this->errors)) {
             $res = array(
-                'errors' => $this->errors
+                'errors' => $this->errors,
             );
-        }
-        else {
+        } else {
             $res = $this->return;
         }
 
         return array_merge($res, array(
-            'id' => $this->id
+            'id' => $this->id,
         ));
     }
 }

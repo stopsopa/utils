@@ -34,11 +34,11 @@ class Urlizer
      *
      * @param string $string
      *
-     * @return boolean $bool
+     * @return bool $bool
      */
     public static function seemsUtf8($string)
     {
-        for ($i = 0; $i < strlen($string); $i++) {
+        for ($i = 0; $i < strlen($string); ++$i) {
             if (ord($string[$i]) < 0x80) {
                 continue;
             } # 0bbbbbbb
@@ -60,7 +60,7 @@ class Urlizer
             else {
                 return false;
             } # Does not match any model
-            for ($j = 0; $j<$n; $j++) { # n bytes matching 10bbbbbb follow ?
+            for ($j = 0; $j < $n; ++$j) { # n bytes matching 10bbbbbb follow ?
                 if ((++$i == strlen($string)) || ((ord($string[$i]) & 0xC0) != 0x80)) {
                     return false;
                 }
@@ -203,7 +203,7 @@ class Urlizer
             .chr(244).chr(245).chr(246).chr(248).chr(249).chr(250).chr(251)
             .chr(252).chr(253).chr(255);
 
-            $chars['out'] = "EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy";
+            $chars['out'] = 'EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy';
 
             $string = strtr($string, $chars['in'], $chars['out']);
             $doubleChars['in'] = array(chr(140), chr(156), chr(198), chr(208), chr(222), chr(223), chr(230), chr(240), chr(254));
@@ -249,19 +249,19 @@ class Urlizer
                 continue;
             } // ASCII - next please
             if (ord($c{0}) >= 192 && ord($c{0}) <= 223) {
-                $ord = (ord($c{0})-192)*64 + (ord($c{1})-128);
+                $ord = (ord($c{0}) - 192) * 64 + (ord($c{1}) - 128);
             }
             if (ord($c{0}) >= 224 && ord($c{0}) <= 239) {
-                $ord = (ord($c{0})-224)*4096 + (ord($c{1})-128)*64 + (ord($c{2})-128);
+                $ord = (ord($c{0}) - 224) * 4096 + (ord($c{1}) - 128) * 64 + (ord($c{2}) - 128);
             }
             if (ord($c{0}) >= 240 && ord($c{0}) <= 247) {
-                $ord = (ord($c{0})-240)*262144 + (ord($c{1})-128)*4096 + (ord($c{2})-128)*64 + (ord($c{3})-128);
+                $ord = (ord($c{0}) - 240) * 262144 + (ord($c{1}) - 128) * 4096 + (ord($c{2}) - 128) * 64 + (ord($c{3}) - 128);
             }
             if (ord($c{0}) >= 248 && ord($c{0}) <= 251) {
-                $ord = (ord($c{0})-248)*16777216 + (ord($c{1})-128)*262144 + (ord($c{2})-128)*4096 + (ord($c{3})-128)*64 + (ord($c{4})-128);
+                $ord = (ord($c{0}) - 248) * 16777216 + (ord($c{1}) - 128) * 262144 + (ord($c{2}) - 128) * 4096 + (ord($c{3}) - 128) * 64 + (ord($c{4}) - 128);
             }
             if (ord($c{0}) >= 252 && ord($c{0}) <= 253) {
-                $ord = (ord($c{0})-252)*1073741824 + (ord($c{1})-128)*16777216 + (ord($c{2})-128)*262144 + (ord($c{3})-128)*4096 + (ord($c{4})-128)*64 + (ord($c{5})-128);
+                $ord = (ord($c{0}) - 252) * 1073741824 + (ord($c{1}) - 128) * 16777216 + (ord($c{2}) - 128) * 262144 + (ord($c{3}) - 128) * 4096 + (ord($c{4}) - 128) * 64 + (ord($c{5}) - 128);
             }
             if (ord($c{0}) >= 254 && ord($c{0}) <= 255) {
                 $chars{$i}
@@ -272,7 +272,7 @@ class Urlizer
             $bank = $ord >> 8;
 
             if (!array_key_exists($bank, (array) $UTF8_TO_ASCII)) {
-                $bankfile = __DIR__.'/data/'.sprintf("x%02x", $bank).'.php';
+                $bankfile = __DIR__.'/data/'.sprintf('x%02x', $bank).'.php';
                 if (file_exists($bankfile)) {
                     include $bankfile;
                 } else {
@@ -349,7 +349,7 @@ class Urlizer
      *
      * @param string UTF-8 encoded string
      *
-     * @return boolean true if valid
+     * @return bool true if valid
      *
      * @see http://hsivonen.iki.fi/php-utf8/
      */
@@ -357,11 +357,11 @@ class Urlizer
     {
         $mState = 0;     // cached expected number of octets after the current octet
                          // until the beginning of the next UTF8 character sequence
-        $mUcs4  = 0;     // cached Unicode character
+        $mUcs4 = 0;     // cached Unicode character
         $mBytes = 1;     // cached expected number of octets in the current sequence
 
         $len = strlen($str);
-        for ($i = 0; $i < $len; $i++) {
+        for ($i = 0; $i < $len; ++$i) {
             $in = ord($str{$i});
             if ($mState == 0) {
                 // When mState is zero we expect either a US-ASCII character or a
@@ -443,7 +443,7 @@ class Urlizer
                         }
                         //initialize UTF8 cache
                         $mState = 0;
-                        $mUcs4  = 0;
+                        $mUcs4 = 0;
                         $mBytes = 1;
                     }
                 } else {
@@ -486,7 +486,8 @@ class Urlizer
 
         return trim($text, $separator);
     }
-    public static function urlizeCaseSensitiveTrim($text, $separator = '-') {
+    public static function urlizeCaseSensitiveTrim($text, $separator = '-')
+    {
         $text = static::unaccent($text);
 
         $text = preg_replace('/[^A-Z^a-z^0-9^\/]+/', $separator, $text);

@@ -2,14 +2,10 @@
 
 namespace Stopsopa\UtilsBundle\Form\Validator\Constraints;
 
-use Exception;
 use Symfony\Component\Validator\Constraint;
 
 /**
  * @Annotation
- *
- *
- * 
  */
 class LengthStripTags extends Constraint
 {
@@ -29,8 +25,8 @@ class LengthStripTags extends Constraint
     public $min;
     public $charset = 'UTF-8';
 
-    public function __construct($options = null) {
-
+    public function __construct($options = null)
+    {
         if (null !== $options && !is_array($options)) {
             $options = array(
                 'min' => $options,

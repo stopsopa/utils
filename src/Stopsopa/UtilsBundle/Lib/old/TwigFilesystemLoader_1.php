@@ -5,7 +5,6 @@ namespace Stopsopa\UtilsBundle\Lib;
 use Exception;
 use InvalidArgumentException;
 use Symfony\Component\Config\FileLocatorInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\TemplateReferenceInterface;
 use Twig_Error_Loader;
@@ -14,9 +13,10 @@ use Symfony\Component\Templating\TemplateReference;
 /**
  * Ta klasa to zwykła kopia z vendorsów z podmienioną klasą macierzystą/rozszerzaną
  * ... jakby się coś w vendorsowej klasie zmieniło z nowymi wersjami to trzeba ją na nowo skopiować
- * Stopsopa\UtilsBundle\Lib\TwigFilesystemLoader
+ * Stopsopa\UtilsBundle\Lib\TwigFilesystemLoader.
  */
-class TwigFilesystemLoader extends TwigLoaderFilesystemExtend {
+class TwigFilesystemLoader_1 extends TwigLoaderFilesystemExtend
+{
     protected $locator;
     protected $parser;
 
@@ -36,7 +36,6 @@ class TwigFilesystemLoader extends TwigLoaderFilesystemExtend {
         // ale to nie jest pilne bo logicznie wszystko tutaj jest poprawne ale nie wedłóg konwencji symfonowej
         $this->container = $container;
         $this->dev = $container->getParameter('kernel.environment') == 'dev';
-
 
         $this->symlinkloader = AbstractApp::getStpaConfig('yui.symlinkloader', false);
         $this->loader = is_string($this->symlinkloader) ? trim($this->symlinkloader) : '';
@@ -80,24 +79,15 @@ class TwigFilesystemLoader extends TwigLoaderFilesystemExtend {
             }
         }
 
-
-
-
         // simon dodałem to:  vvv
         if ((false === $file || null === $file) && $template) {
             /* @var $template Symfony\Component\Templating\TemplateReference */
 //            niechginie($template->getPath());
             if ($template instanceof TemplateReference) {
                 $file = $this->exists($template->getPath());
-            } 
+            }
         }
         // simon dodałem to:  ^^^
-
-
-
-
-
-
 
 
         if (false === $file || null === $file) {

@@ -10,9 +10,10 @@ use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 
-class CommentFileProcessor extends AbstractFileProcessor {
-    public function handle(UploadedFile $file, UploadResult $result) {
-
+class CommentFileProcessor extends AbstractFileProcessor
+{
+    public function handle(UploadedFile $file, UploadResult $result)
+    {
 
         // validate and if error
 //        $result->addError('File too big');
@@ -20,15 +21,13 @@ class CommentFileProcessor extends AbstractFileProcessor {
 
         if (!in_array($ext, explode(' ', 'pdf doc docx png bmp jpeg jpg txt'))) {
             $result->addError("File extension '$ext' not allowed");
+
             return;
         }
-
 
         // if ok move file and pass new path
 
         $config = $this->getConfig();
-
-
 
         $newfilename = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
         $ext = $file->guessExtension();
@@ -36,7 +35,7 @@ class CommentFileProcessor extends AbstractFileProcessor {
         if (!$ext) {
             $ext = 'bin';
         }
-        $newfilename .= '.' . $ext;
+        $newfilename .= '.'.$ext;
 
         $directory = $this->generateSafeDirPrefix($newfilename);
 
@@ -44,12 +43,13 @@ class CommentFileProcessor extends AbstractFileProcessor {
 
         $result->setResponse(array(
             'webPath' => $config['dirtmp'].$directory.'/'.$newfilename,
-            'path'    => $directory.'/'.$newfilename
+            'path' => $directory.'/'.$newfilename,
         ));
 
         $result->setPath($directory.'/'.$newfilename);
     }
-    public function delete($entity) {
+    public function delete($entity)
+    {
         /* @var $entity User */
         if ($path = $entity->getPath()) {
             $config = $this->getConfig();
@@ -67,15 +67,15 @@ class CommentFileProcessor extends AbstractFileProcessor {
             }
         }
     }
-    public static function getConfig() {
+    public static function getConfig()
+    {
         return array(
-            'class'  => Comment::getClassNamespace(),
-            'web'    => AbstractApp::getRootDir().'/web',
+            'class' => Comment::getClassNamespace(),
+            'web' => AbstractApp::getRootDir().'/web',
             'dirtmp' => '/media/uploads/comments_tmp',
-            'dir'    => '/media/uploads/comments',
-            'file'   => '#^user\.comments\.\d+\.file#',
-            'field'  => 'path',
+            'dir' => '/media/uploads/comments',
+            'file' => '#^user\.comments\.\d+\.file#',
+            'field' => 'path',
         );
     }
 }
-

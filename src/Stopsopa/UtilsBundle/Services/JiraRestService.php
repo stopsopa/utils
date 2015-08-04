@@ -1,58 +1,63 @@
 <?php
 
 namespace Stopsopa\UtilsBundle\Services;
+
 use Exception;
 
 /**
  * Pisane z api wersja: JIRA 6.4.8 REST API
- *     https://docs.atlassian.com/jira/REST/6.4.8/
+ *     https://docs.atlassian.com/jira/REST/6.4.8/.
  *
  * dostępne werjse to:
  *     https://docs.atlassian.com/jira/REST/
  *
  * Stopsopa\UtilsBundle\JiraRestService
  */
-class JiraRestService {
+class JiraRestService
+{
     const SERVICE = 'jirarest';
     protected $user;
     protected $password;
     protected $endpoint;
-    public function __construct($config) {
-        $this->endpoint     = $config['endpoint'];
-        $this->user         = $config['user'];
-        $this->password     = $config['password'];
+    public function __construct($config)
+    {
+        $this->endpoint = $config['endpoint'];
+        $this->user = $config['user'];
+        $this->password = $config['password'];
     }
     /**
-     *
-     * @param string $url - eg: /rest/api/2/project/CRAW/statuses
+     * @param string $url     - eg: /rest/api/2/project/CRAW/statuses
      * @param string $method  - GET(default)|POST|PUT|DELETE
-     * @param array $data
-     * @param array $headers
+     * @param array  $data
+     * @param array  $headers
+     *
      * @return array
      */
-    public function curljson($url, $method = 'GET', $data = array(), $headers = array()) {
-
+    public function curljson($url, $method = 'GET', $data = array(), $headers = array())
+    {
         $url = $this->endpoint.$url;
 
         $method = strtoupper($method);
 
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_USERPWD, $this->user . ":" . $this->password);
+        curl_setopt($ch, CURLOPT_USERPWD, $this->user.':'.$this->password);
 
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
         curl_setopt($ch, CURLOPT_URL, $url);
 
-        if (count($data))
+        if (count($data)) {
             curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        }
 
         $headers = array_merge($headers, array(
-            'Content-Type: application/json'
+            'Content-Type: application/json',
         ));
 
-        if (count($headers))
+        if (count($headers)) {
             curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
@@ -63,8 +68,9 @@ class JiraRestService {
 
         $json = json_decode($result, true);
 
-        if (count($json))
+        if (count($json)) {
             return $json;
+        }
 
         throw new Exception($result);
     }

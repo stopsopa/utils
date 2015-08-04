@@ -2,6 +2,8 @@
 
 namespace Stopsopa\UtilsBundle\Lib\Kendo;
 
-use \Exception;
+use Exception;
 
-class KendoQbParserException extends Exception {}
+class KendoQbParserException extends Exception
+{
+}

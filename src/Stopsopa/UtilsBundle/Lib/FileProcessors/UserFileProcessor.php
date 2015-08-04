@@ -10,8 +10,10 @@ use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-class UserFileProcessor extends AbstractFileProcessor {
-    public function handle(UploadedFile $file, UploadResult $result) {
+class UserFileProcessor extends AbstractFileProcessor
+{
+    public function handle(UploadedFile $file, UploadResult $result)
+    {
 
         // validate and if error
 //        $result->addError('File too big');
@@ -20,15 +22,13 @@ class UserFileProcessor extends AbstractFileProcessor {
 
         if (!in_array($ext, explode(' ', 'pdf doc docx png bmp jpeg jpg txt'))) {
             $result->addError("File extension '$ext' not allowed");
+
             return;
         }
-
 
         // if ok move file and pass new path
 
         $config = $this->getConfig();
-
-
 
         $newfilename = Urlizer::urlizeCaseSensitiveTrim(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
         $ext = $file->guessExtension();
@@ -36,7 +36,7 @@ class UserFileProcessor extends AbstractFileProcessor {
         if (!$ext) {
             $ext = 'bin';
         }
-        $newfilename .= '.' . $ext;
+        $newfilename .= '.'.$ext;
 
         $directory = $this->generateSafeDirPrefix($newfilename);
 
@@ -44,12 +44,13 @@ class UserFileProcessor extends AbstractFileProcessor {
 
         $result->setResponse(array(
             'webPath' => $config['dirtmp'].$directory.'/'.$newfilename,
-            'path'    => $directory.'/'.$newfilename
+            'path' => $directory.'/'.$newfilename,
         ));
 
         $result->setPath($directory.'/'.$newfilename);
     }
-    public function delete($entity) {
+    public function delete($entity)
+    {
         /* @var $entity User */
         if ($path = $entity->getPath()) {
             $config = $this->getConfig();
@@ -68,15 +69,15 @@ class UserFileProcessor extends AbstractFileProcessor {
         }
     }
 
-    public static function getConfig() {
+    public static function getConfig()
+    {
         return array(
-            'class'  => User::getClassNamespace(),
-            'web'    => AbstractApp::getRootDir().'/web',
+            'class' => User::getClassNamespace(),
+            'web' => AbstractApp::getRootDir().'/web',
             'dirtmp' => '/media/uploads/users_tmp',
-            'dir'    => '/media/uploads/users',
-            'file'   => '#user\.file#',
-            'field'  => 'path',
+            'dir' => '/media/uploads/users',
+            'file' => '#user\.file#',
+            'field' => 'path',
         );
     }
 }
-

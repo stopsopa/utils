@@ -2,12 +2,10 @@
 
 namespace Stopsopa\UtilsBundle\Entity;
 
-use DateTime;
-use Stopsopa\UtilsBundle\Entity\AbstractManager;
-
 /**
- * Stopsopa\UtilsBundle\Entity\CommentManager
+ * Stopsopa\UtilsBundle\Entity\CommentManager.
  */
-class CommentManager extends AbstractManager {
+class CommentManager extends AbstractManager
+{
     const SERVICE = 'test.comment.manager';
 }

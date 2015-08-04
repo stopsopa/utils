@@ -7,15 +7,10 @@ use Stopsopa\UtilsBundle\Lib\AbstractException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+
 /**
- *
-X-preSetData: 0
-X-postSetData: 1
-X-preBind: 2
-X-bind: 3
-X-postBind: 4
  * http://symfony.com/doc/current/cookbook/form/dynamic_form_modification.html#adding-an-event-subscriber-to-a-form-class
- * g(Adding an Event Subscriber to a Form Class)
+ * g(Adding an Event Subscriber to a Form Class).
  */
 class UploadSubscriber implements EventSubscriberInterface
 {
@@ -23,43 +18,49 @@ class UploadSubscriber implements EventSubscriberInterface
     protected $callback;
     protected $name;
     protected static $lastentity;
-    public function __construct($workintmpdir, $callback, $name) {
+    public function __construct($workintmpdir, $callback, $name)
+    {
         $this->workintmpdir = $workintmpdir;
         $this->callback = $callback;
         $this->name = $name;
     }
 
-    public static function getSubscribedEvents() {
+    public static function getSubscribedEvents()
+    {
         // Tells the dispatcher that you want to listen on the form.pre_set_data
         // event and that the preSetData method should be called.
         return array(
-            FormEvents::PRE_SET_DATA    => 'preSetData',
+            FormEvents::PRE_SET_DATA => 'preSetData',
 //            FormEvents::POST_SET_DATA   => 'postSetData',
 //            FormEvents::PRE_BIND        => 'preBind',
 //            FormEvents::SUBMIT          => 'submit', // nie zawsze się odpala
-            FormEvents::BIND            => 'bind',
+            FormEvents::BIND => 'bind',
 //            FormEvents::POST_BIND       => 'postBind'
         );
     }
-    public function execute($isfileuploaded, $builder = null) {
+    public function execute($isfileuploaded, $builder = null)
+    {
         $method = $this->callback;
         if ($method) {
             $method($isfileuploaded, $builder);
         }
+
         return $this;
     }
 
-    public function preSetData(FormEvent $event) {
-//        header('X-preSetData: '.Test::get());
+    public function preSetData(FormEvent $event)
+    {
+        //        header('X-preSetData: '.Test::get());
         $this->_run($event, 'pre');
     }
 
-    public function bind(FormEvent $event) {
-//        header('X-bind: '.Test::get());
+    public function bind(FormEvent $event)
+    {
+        //        header('X-bind: '.Test::get());
         $this->_run($event, 'bind');
     }
-    protected function _run(FormEvent $event, $type) {
-
+    protected function _run(FormEvent $event, $type)
+    {
         $entity = $event->getData();
         $form = $event->getForm();
 
@@ -68,7 +69,7 @@ class UploadSubscriber implements EventSubscriberInterface
         if ($entity) {
             try {
                 if ($entity->getFile()) {
-//                    nieginie('jest');
+                    //                    nieginie('jest');
 //                    nieginie(get_class($entity).':'.$entity->getId());
 //                    nieginie($entity, null, 1);
                     static::$lastentity = $entity;
@@ -76,7 +77,6 @@ class UploadSubscriber implements EventSubscriberInterface
                 }
 
                 $this->execute($entity ? $entity->getFile() : false, $form);
-
             } catch (Exception $ex) {
                 throw $ex;
             }
@@ -85,20 +85,10 @@ class UploadSubscriber implements EventSubscriberInterface
         AbstractException::delErrorHandler();
     }
 
-    public static function getLastEntity() {
+    public static function getLastEntity()
+    {
         return static::$lastentity;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 //    public function postSetData(FormEvent $event) {
 ////        header('X-postSetData: '.Test::get());

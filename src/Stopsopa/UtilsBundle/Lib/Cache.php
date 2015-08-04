@@ -28,7 +28,7 @@ class Cache
     }
     public static function getParamYml()
     {
-        return static::getRoot()."/app/hosts/".getHost().".yml";
+        return static::getRoot().'/app/hosts/'.getHost().'.yml';
     }
     public static function getConfigJson()
     {
@@ -36,7 +36,7 @@ class Cache
     }
     public static function getConfigYml()
     {
-        return static::getRoot()."/app/config.yml";
+        return static::getRoot().'/app/config.yml';
     }
 
     public static function clear()

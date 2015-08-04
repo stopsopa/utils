@@ -32,7 +32,7 @@ class Lock
      *
      * @param int $seconds - jeśli ustawimy ten parametr
      *
-     * @return boolean|Lock - zależy od tego czy podamy parametr seconds
+     * @return bool|Lock - zależy od tego czy podamy parametr seconds
      *
      * @throws Exception
      */

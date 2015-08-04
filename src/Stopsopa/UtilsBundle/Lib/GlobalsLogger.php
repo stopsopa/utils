@@ -3,38 +3,43 @@
 namespace Stopsopa\UtilsBundle\Lib;
 
 /**
- *
-$log = new GlobalsLogger('log.log');
-$log->write();
+ $log->write();
  */
-class GlobalsLogger {
+class GlobalsLogger
+{
     protected $file;
-    public function __construct($file) {
+    public function __construct($file)
+    {
         $this->file = $file;
         if (!file_exists($file)) {
             $this->clear();
         }
     }
-    public function clear () {
+    public function clear()
+    {
         file_put_contents($this->file, '');
     }
-    protected function getData($label,$data) {
-        $label = str_pad($label, 7,' ');
+    protected function getData($label, $data)
+    {
+        $label = str_pad($label, 7, ' ');
         $string = count($data) ? json_encode($data) : false;
+
         return $string ? "\n---$label : $string" : '';
     }
-    private function log($data) {
-        file_put_contents($this->file, $data . file_get_contents($this->file) );
+    private function log($data)
+    {
+        file_put_contents($this->file, $data.file_get_contents($this->file));
     }
-    public function write($mode = 'b', $add = '') {
-        $time   = date('Y-m-d H:i:s');
+    public function write($mode = 'b', $add = '')
+    {
+        $time = date('Y-m-d H:i:s');
         $client = $_SERVER['HTTP_USER_AGENT'] ? $_SERVER['HTTP_USER_AGENT'] : 'no user agent, probably file_get_contents()';
 
-        $uri    = $_SERVER['REQUEST_URI'];
+        $uri = $_SERVER['REQUEST_URI'];
 
         $server = $this->getData('server', $_SERVER);
-        $get    = $this->getData('get', $_GET);
-        $post   = $this->getData('post', $_POST);
+        $get = $this->getData('get', $_GET);
+        $post = $this->getData('post', $_POST);
         $cookie = $this->getData('cookie', $_COOKIE);
         switch ($mode) {
             case 'b':
@@ -51,8 +56,7 @@ class GlobalsLogger {
                 break;
             default :
         }
-        $add    = $add ? "\n---data   :>>>$add<<<" : '';
-
+        $add = $add ? "\n---data   :>>>$add<<<" : '';
 
         $this->log(<<<google
 ---time: $time ---client: $client
@@ -63,4 +67,3 @@ google
         );
     }
 }
-

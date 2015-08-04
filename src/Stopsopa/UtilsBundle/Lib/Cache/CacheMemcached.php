@@ -2,7 +2,6 @@
 
 namespace Stopsopa\UtilsBundle\Lib\Cache;
 
-
 class CacheMemcached extends AbstractCache
 {
     protected $hash;

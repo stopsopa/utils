@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Stopsopa\UtilsBundle\Lib;
 
 use ArrayAccess;
@@ -10,15 +9,16 @@ use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\Form\Form;
 
-
-class UtilFormAccessor {
+class UtilFormAccessor
+{
     /**
-     * @param Form $form
+     * @param Form   $form
      * @param string $path
+     *
      * @return Form
      */
-    public static function &getForm(Form &$form, $path) {
-
+    public static function &getForm(Form &$form, $path)
+    {
         $keys = array_filter(preg_split('#[\.\[\]]+#', $path), function ($val) {
             return $val;
         });
@@ -42,14 +42,14 @@ class UtilFormAccessor {
         /* @var $val Form */
         return $val;
     }
-    public static function getValue(Form &$form, $path) {
-
+    public static function getValue(Form &$form, $path)
+    {
         $tmp = static::getForm($form, $path);
 
         return $tmp->getData();
     }
-    public static function setValue(Form &$form, $path, $data) {
-
+    public static function setValue(Form &$form, $path, $data)
+    {
         $tmp = static::getForm($form, $path);
 
         $tmp->setData($data);
@@ -62,8 +62,8 @@ class UtilFormAccessor {
      */
     protected static $accessor;
 
-    protected static function &accessorGet(&$o, $key) {
-
+    protected static function &accessorGet(&$o, $key)
+    {
         if (!static::$accessor) {
             static::$accessor = PropertyAccess::createPropertyAccessor();
         }
@@ -71,13 +71,15 @@ class UtilFormAccessor {
         return static::$accessor->getValue($o, $key);
     }
 
-    protected static function &_get(&$o, $p) {
+    protected static function &_get(&$o, $p)
+    {
         $result;
 
         if (static::_isArrayAccessable($o)) {
             try {
                 if (UtilArray::offsetExists($o, $p)) {
                     $result = &$o[$p];
+
                     return $result;
                 }
             } catch (UtilArrayException $ex) {
@@ -86,9 +88,11 @@ class UtilFormAccessor {
         }
 
         $result = static::accessorGet($o, $p);
+
         return $result;
     }
-    protected static function _isArrayAccessable ($object) {
-      return is_array($object) || $object instanceof ArrayAccess;
+    protected static function _isArrayAccessable($object)
+    {
+        return is_array($object) || $object instanceof ArrayAccess;
     }
 }

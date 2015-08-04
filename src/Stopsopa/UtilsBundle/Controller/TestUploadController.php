@@ -7,38 +7,34 @@ use Stopsopa\UtilsBundle\Entity\Comment;
 use Stopsopa\UtilsBundle\Entity\User;
 use Stopsopa\UtilsBundle\Entity\UserManager;
 use Stopsopa\UtilsBundle\Form\UserType;
-use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Stopsopa\UtilsBundle\Lib\FileProcessors\CommentFileProcessor;
 use Stopsopa\UtilsBundle\Lib\FileProcessors\Tools\UploadHelper;
 use Stopsopa\UtilsBundle\Lib\FileProcessors\UserFileProcessor;
 use Stopsopa\UtilsBundle\Lib\Request;
-use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 
 /**
  * @Route("/test/upload")
-routing.yml
-
-stopsopautils:
-    resource: "@ StopsopaUtilsBundle/Controller/"
-    type:     annotation
  */
-class TestUploadController extends AbstractController {
+class TestUploadController extends AbstractController
+{
     /**
      * @Route("", name="test-upload")
      */
-    public function upload(Request $request) {
+    public function upload(Request $request)
+    {
 
         /* @var $man UserManager */
         $man = $this->get(UserManager::SERVICE);
 
         return $this->render('StopsopaUtilsBundle:upload:index.html.twig', array(
-            'users' => $man->findAll()
+            'users' => $man->findAll(),
         ));
     }
     /**
      * @Route("/create", name="test-upload-create")
      */
-    public function createAction(Request $request) {
+    public function createAction(Request $request)
+    {
 
         /* @var $man UserManager */
         $man = $this->get(UserManager::SERVICE);
@@ -81,19 +77,20 @@ class TestUploadController extends AbstractController {
                 $this->setNotification($request, 'Created');
 
                 return $this->redirectToRoute('test-upload-edit', array(
-                    'id' => $entity->getId()
+                    'id' => $entity->getId(),
                 ));
             }
         }
 
         return $this->render('StopsopaUtilsBundle:upload:create.html.twig', array(
-            'form' => $form->createView()
+            'form' => $form->createView(),
         ));
     }
     /**
      * @Route("/edit/{id}", name="test-upload-edit", requirements={"id"="\d+"})
      */
-    public function editAction(Request $request, $id) {
+    public function editAction(Request $request, $id)
+    {
 
         /* @var $man UserManager */
         $man = $this->get(UserManager::SERVICE);
@@ -121,7 +118,6 @@ class TestUploadController extends AbstractController {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-
                 $man->update($entity);
 
                 $response = $uploadhelper->move();
@@ -133,15 +129,16 @@ class TestUploadController extends AbstractController {
         }
 
         return $this->render('StopsopaUtilsBundle:upload:edit.html.twig', array(
-            'form'   => $form->createView(),
-            'entity' => $entity
+            'form' => $form->createView(),
+            'entity' => $entity,
         ));
     }
 
     /**
      * @Route("/delete/{id}", name="test-upload-delete", requirements={"id"="\d+"})
      */
-    public function deleteAction(Request $request, $id) {
+    public function deleteAction(Request $request, $id)
+    {
 
         /* @var $man UserManager */
         $man = $this->get(UserManager::SERVICE);
@@ -152,7 +149,7 @@ class TestUploadController extends AbstractController {
         $dbal = $man->getDbal();
         $dbal->beginTransaction();
 
-            $man->remove($entity);
+        $man->remove($entity);
 
 //        $dbal->rollBack();
         $dbal->commit();
@@ -166,11 +163,8 @@ class TestUploadController extends AbstractController {
         }
         $uploadhelper->delete($entity);
 
-
-
         $this->setNotification($request, 'Deleted');
 
         return $this->redirect($request->headers->get('referer'));
-
     }
 }

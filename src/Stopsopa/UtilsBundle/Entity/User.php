@@ -2,21 +2,16 @@
 
 namespace Stopsopa\UtilsBundle\Entity;
 
-use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
-use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
-use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\Validator\Constraints as Assert;
 use Stopsopa\UtilsBundle\Lib\FileProcessors\UserFileProcessor;
 
 /**
- * User
+ * User.
  */
 class User extends AbstractEntity
 {
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -31,18 +26,19 @@ class User extends AbstractEntity
     private $surname;
 
     /**
-     * reutrn ArrayCollection
+     * reutrn ArrayCollection.
      */
     protected $comments;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->comments = new ArrayCollection();
     }
 
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -50,9 +46,10 @@ class User extends AbstractEntity
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
+     *
      * @return User
      */
     public function setName($name)
@@ -63,7 +60,7 @@ class User extends AbstractEntity
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -73,9 +70,10 @@ class User extends AbstractEntity
     }
 
     /**
-     * Set surname
+     * Set surname.
      *
      * @param string $surname
+     *
      * @return User
      */
     public function setSurname($surname)
@@ -86,7 +84,7 @@ class User extends AbstractEntity
     }
 
     /**
-     * Get surname
+     * Get surname.
      *
      * @return string
      */
@@ -94,53 +92,63 @@ class User extends AbstractEntity
     {
         return $this->surname;
     }
-    public function addComment(Comment $comment) {
+    public function addComment(Comment $comment)
+    {
         $comment->setUser($this);
         $this->comments->add($comment);
 
         return $this;
     }
-    public function removeComment(Comment $comment) {
+    public function removeComment(Comment $comment)
+    {
         $comment->setUser(null);
         $this->comments->removeElement($comment);
+
         return $this;
     }
     /**
      * @return ArrayCollection
      */
-    public function getComments() {
-       return $this->comments;
+    public function getComments()
+    {
+        return $this->comments;
     }
 
-    public function setComments($comments) {
-
-        if ( ! ($comments instanceof ArrayCollection) && !is_array($comments) )
+    public function setComments($comments)
+    {
+        if (!($comments instanceof ArrayCollection) && !is_array($comments)) {
             $comments = array($comments);
+        }
 
-        if (is_array($comments))
+        if (is_array($comments)) {
             $comments = new ArrayCollection($comments);
+        }
 
         $this->comments = $comments;
 
         return $this;
     }
 
-
     public $file;
     /**
-     * W tym polu faktycznie będzie trzymany fragment ścieżki do pliku
+     * W tym polu faktycznie będzie trzymany fragment ścieżki do pliku.
+     *
      * @var string
      */
     public $path;
-    public function setPath($path) {
+    public function setPath($path)
+    {
         $this->path = $path;
+
         return $this;
     }
-    function getPath() {
+    public function getPath()
+    {
         return $this->path;
     }
 
-    public function getWebPath() {
+    public function getWebPath()
+    {
         if ($this->path) {
             $config = UserFileProcessor::getConfig();
 
@@ -150,8 +158,8 @@ class User extends AbstractEntity
             }
 
             return $config['dir'].$this->path;
-
         }
+
         return '/bundles/stopsopautils/utils/lorem.jpg';
     }
 }

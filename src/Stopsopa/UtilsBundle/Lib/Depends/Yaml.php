@@ -41,7 +41,7 @@ class Yaml
             $i = true;
             $assoc2 = self::isAssoc($data);
             foreach ($data as $k => $d) {
-                $ret .= ($i ? "\n" : '').self::cycle($k, $d, $assoc2, $level+1);
+                $ret .= ($i ? "\n" : '').self::cycle($k, $d, $assoc2, $level + 1);
                 $i = false;
             }
         } else {
@@ -63,7 +63,7 @@ class Yaml
                         $ret .= $data ? 'true' : 'false';
                         break;
                     case is_object($data):
-                        throw new Exception("Yaml:parse() value is an object. Class: ".get_class($data));
+                        throw new Exception('Yaml:parse() value is an object. Class: '.get_class($data));
                     default:
                         $ret .= $data;
                         break;

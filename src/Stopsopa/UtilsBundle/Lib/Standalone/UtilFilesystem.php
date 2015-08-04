@@ -6,7 +6,7 @@ use Exception;
 
 /**
  * Patrz klasę Symfony\Component\Filesystem\Filesystem
- * warto może poprzerabiać co nieco tak jak jest w tej klasie
+ * warto może poprzerabiać co nieco tak jak jest w tej klasie.
  */
 class UtilFilesystem
 {
@@ -103,62 +103,64 @@ class UtilFilesystem
 
         return true;
     }
-    public static function removeDirIfEmpty($dir) {
-
+    public static function removeDirIfEmpty($dir)
+    {
         if (static::isEmptyDir($dir)) {
             rmdir($dir);
+
             return true;
         }
 
         return false;
     }
 
-    public static function isEmptyDir($dir) {
+    public static function isEmptyDir($dir)
+    {
         if (!file_exists($dir)) {
             return;
         }
 
         if (!is_readable($dir)) {
-            return NULL;
+            return;
         }
 
         return (count(scandir($dir)) == 2);
     }
     /**
-     * Usuwa puste katalogi przy parametrach
+     * Usuwa puste katalogi przy parametrach.
      *
-                UtilFilesystem::removeEmptyDirsToPath(
-                    pathinfo($file, PATHINFO_DIRNAME),
-                    $this->getUploadRootDir()
-                );
+     UtilFilesystem::removeEmptyDirsToPath(
+     pathinfo($file, PATHINFO_DIRNAME),
+     $this->getUploadRootDir()
+     );
      *
      * ze stanu :
-        .
-        `-- user
-            |-- d3
-            |   `-- 5d
-            `-- e8
-                `-- d9
-                    `-- Clipboard02-kopiajfdksla-fds-afjdksla-fdsa-f-d-safdsa-f-d-sa-fd-s-af-d-sa-f-ds-a-fdusa-f-dsa-f-ds-a-fd-sa.bmpddd
-
+     .
+     `-- user
+     |-- d3
+     |   `-- 5d
+     `-- e8
+     `-- d9
+     `-- Clipboard02-kopiajfdksla-fds-afjdksla-fdsa-f-d-safdsa-f-d-sa-fd-s-af-d-sa-f-ds-a-fdusa-f-dsa-f-ds-a-fd-sa.bmpddd
+     
      * removeEmptyDirsToPath('/var/docker/www/main/web/media/uploads/d3/5d', '/var/docker/www/main/web/media/uploads')
      *
      * do stanu
-        .
-        `-- user
-            `-- e8
-                `-- d9
-                    `-- Clipboard02-kopiajfdksla-fds-afjdksla-fdsa-f-d-safdsa-f-d-sa-fd-s-af-d-sa-f-ds-a-fdusa-f-dsa-f-ds-a-fd-sa.bmpddd
+     .
+     `-- user
+     `-- e8
+     `-- d9
+     `-- Clipboard02-kopiajfdksla-fds-afjdksla-fdsa-f-d-safdsa-f-d-sa-fd-s-af-d-sa-f-ds-a-fdusa-f-dsa-f-ds-a-fd-sa.bmpddd
      *
      *
      *
      * @param type $dir
      * @param type $path
      */
-    public static function removeEmptyDirsToPath($dir, $path) {
-
-        $dir    = rtrim($dir, DIRECTORY_SEPARATOR);
-        $path   = rtrim($path, DIRECTORY_SEPARATOR);
+    public static function removeEmptyDirsToPath($dir, $path)
+    {
+        $dir = rtrim($dir, DIRECTORY_SEPARATOR);
+        $path = rtrim($path, DIRECTORY_SEPARATOR);
 
         while ($dir != $path) {
             if (!static::removeDirIfEmpty($dir)) {
@@ -169,11 +171,13 @@ class UtilFilesystem
         }
     }
     /**
-     * Robi to co zwykły move z tym że tworzy katalogi po drodze jeśli nie istnieją dla ścieżki docelowej
+     * Robi to co zwykły move z tym że tworzy katalogi po drodze jeśli nie istnieją dla ścieżki docelowej.
+     *
      * @param type $source
      * @param type $target
      */
-    public static function rename($source, $target, $mode = 0770) {
+    public static function rename($source, $target, $mode = 0770)
+    {
         $dir = dirname($target);
 
         if (!file_exists($dir)) {

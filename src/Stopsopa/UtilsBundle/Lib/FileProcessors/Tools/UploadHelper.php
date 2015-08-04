@@ -1,14 +1,13 @@
 <?php
 
-
 namespace Stopsopa\UtilsBundle\Lib\FileProcessors\Tools;
 
-use Stopsopa\UtilsBundle\Lib\FileProcessors\Tools\AbstractFileProcessor;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request as BaseRequest;
 
-class UploadHelper {
+class UploadHelper
+{
     /**
      * @var BaseRequest
      */
@@ -20,14 +19,17 @@ class UploadHelper {
 
     protected $response;
 
-    public function __construct(BaseRequest $request) {
-        $this->request      = $request;
-        $this->processors   = array();
+    public function __construct(BaseRequest $request)
+    {
+        $this->request = $request;
+        $this->processors = array();
     }
-    public function addProcessor(AbstractFileProcessor $processor) {
+    public function addProcessor(AbstractFileProcessor $processor)
+    {
         $this->processors[] = $processor;
     }
-    public function countFiles() {
+    public function countFiles()
+    {
         $paths = $this->_extractFilePaths($this->request->files->all());
 //        nieginie($this->request->files->all(), 2);
 //        nieginie(count($paths));
@@ -35,18 +37,18 @@ class UploadHelper {
         return count($paths);
     }
 
-
     /**
-     * $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');
+     * $d = UtilFormAccessor::setValue($form, 'user[comments][1][path]', 'test');.
      */
-    public function handle() {
+    public function handle()
+    {
         $paths = $this->_extractFilePaths($this->request->files->all());
 
         $response = array();
 
         foreach ($paths as $path => &$file) {
             $processor = $this->_getProcessor($path);
-            $config    = $processor->getConfig();
+            $config = $processor->getConfig();
 
             $prefix = preg_replace('#^(.*?)\.[^\.]+$#', '$1', $path);
 
@@ -81,10 +83,11 @@ class UploadHelper {
         }
 
         return array(
-            'files' => $return
+            'files' => $return,
         );
     }
-    public function move() {
+    public function move()
+    {
         $paths = $this->_extractHiddenPaths($this->request->request->all());
 
         foreach ($paths as $path => $file) {
@@ -103,7 +106,8 @@ class UploadHelper {
         }
     }
 
-    public function getData() {
+    public function getData()
+    {
         $list = array();
 
         foreach ($this->response as $response) {
@@ -114,7 +118,8 @@ class UploadHelper {
         return $list;
     }
 
-    protected function _extractFilePaths($paths) {
+    protected function _extractFilePaths($paths)
+    {
         $list = array();
 
         $this->_extractOneFile($paths, '', $list);
@@ -122,9 +127,9 @@ class UploadHelper {
         return $list;
     }
 
-    protected function _extractOneFile(&$tree, $prefix, &$list) {
+    protected function _extractOneFile(&$tree, $prefix, &$list)
+    {
         foreach ($tree as $key => &$data) {
-
             if ($prefix) {
                 $key = $prefix.'.'.$key;
             }
@@ -140,20 +145,20 @@ class UploadHelper {
         }
     }
 
-    protected function _extractHiddenPaths($paths) {
+    protected function _extractHiddenPaths($paths)
+    {
         $list = array();
 
         $this->_extractOneHiddenPath($paths, '', $list);
 
         return $list;
     }
-    protected function _extractOneHiddenPath(&$tree, $prefix, &$list) {
+    protected function _extractOneHiddenPath(&$tree, $prefix, &$list)
+    {
         foreach ($tree as $key => &$data) {
-
             if ($prefix) {
                 $tmpkey = $prefix.'.'.$key;
-            }
-            else {
+            } else {
                 $tmpkey = $key;
             }
 
@@ -169,16 +174,16 @@ class UploadHelper {
             }
         }
     }
-    static $processorcache;
+    public static $processorcache;
     /**
-     *
      * @param string $path
+     *
      * @return AbstractFileProcessor
      */
-    protected function _getProcessor($path) {
-
+    protected function _getProcessor($path)
+    {
         if (!$path) {
-            return null;
+            return;
         }
 
         if (!is_array(static::$processorcache)) {
@@ -195,23 +200,22 @@ class UploadHelper {
             $config = $processor->getConfig();
 
             if (preg_match($config['file'], $path)) {
-
                 static::$processorcache[$path] = $processor;
 
                 return $processor;
             }
         }
     }
-    static $processorcachepath;
+    public static $processorcachepath;
     /**
-     *
      * @param string $path
+     *
      * @return AbstractFileProcessor
      */
-    protected function _getProcessorByPath($path) {
-
+    protected function _getProcessorByPath($path)
+    {
         if (!$path) {
-            return null;
+            return;
         }
 
         if (!is_array(static::$processorcachepath)) {
@@ -228,21 +232,20 @@ class UploadHelper {
             $match = $processor->_getConfig('fieldmatch');
 
             if (preg_match($match, $path)) {
-
                 static::$processorcachepath[$path] = $processor;
 
                 return $processor;
             }
         }
     }
-    public function delete($entity) {
+    public function delete($entity)
+    {
         foreach ($this->processors as $processor) {
             $config = $processor->getConfig();
 
             if ($entity instanceof $config['class']) {
                 return $processor->delete($entity);
             }
-
         }
     }
 }

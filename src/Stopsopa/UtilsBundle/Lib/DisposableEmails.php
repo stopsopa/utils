@@ -2,8 +2,9 @@
 
 namespace Stopsopa\UtilsBundle\Lib;
 
-class DisposableEmails {
-    static $domains = [  // lista składa się z zwykłych domen lub jeśli zaczyna się od znaku / to string traktowany jest jako wyrażenie regularne        
+class DisposableEmails
+{
+    public static $domains = [  // lista składa się z zwykłych domen lub jeśli zaczyna się od znaku / to string traktowany jest jako wyrażenie regularne        
         'yopmail.com', // yopmail.com
         '/ee\d+\.pl/',      // koszmail.pl
         'koszmail.pl',    // koszmail.pl
@@ -20,21 +21,23 @@ class DisposableEmails {
         'speed.1s.fr',
         'courriel.fr.nf',
         'moncourrier.fr.nf',
-        'monemail.fr.nf'
+        'monemail.fr.nf',
     ];
-    public static function isDisposable($email) {
+    public static function isDisposable($email)
+    {
         $domain = trim(preg_replace('#^.*?@(.*)$#', '$1', $email));
         foreach (static::$domains as &$d) {
             if ($d[0] == '/') {
-                if (preg_match($d, $domain)) 
-                    return true;                            
-            }
-            else {
+                if (preg_match($d, $domain)) {
+                    return true;
+                }
+            } else {
                 if ($domain === $d) {
                     return true;
-                }                
+                }
             }
         }
+
         return false;
     }
 }

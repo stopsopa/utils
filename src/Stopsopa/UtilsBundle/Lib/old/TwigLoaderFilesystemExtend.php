@@ -7,20 +7,19 @@ use Twig_Error_Loader;
 use Twig_Loader_Filesystem;
 
 /**
- * Trochę burdelu się narobiło w tej klasie :/
+ * Trochę burdelu się narobiło w tej klasie :/.
  *
  * Stopsopa\UtilsBundle\Lib\TwigLoaderFilesystemExtend
  */
-class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
+class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem
+{
     /**
-     *
      * @var ContainerInterface
      */
     protected $container;
     protected $symlinkloader;
     protected $loader;
     protected $dev;
-
 
 //    protected function transform($name) {
 //
@@ -52,9 +51,9 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 //        return $name;
 //    }
 
-    /**
-     * {@inheritdoc}
-     */
+/**
+ * {@inheritdoc}
+ */
 //    public function exists($name)
 //    {
 //        $p = explode(':', $this->transform($name));
@@ -84,9 +83,10 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 ////            return false;
 ////        }
 //    }
-    public function getCacheKey($name) {
+    public function getCacheKey($name)
+    {
+        niechginie('jest');
 
-            niechginie('jest');
         return parent::getCacheKey($name);
 
 //        if ($this->isExc($name)) {
@@ -107,9 +107,9 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 //            return $name;
 //        }
     }
-    public function getSource($name) {
-
-            niechginie('jest');
+    public function getSource($name)
+    {
+        niechginie('jest');
         if (AbstractApp::isDev()) {
             return $this->_replaceAssets(parent::getSource($name));
         }
@@ -134,11 +134,11 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 //            return $this->_replaceAssets($name);
 //        }
     }
-    public function isFresh($name, $time) {
+    public function isFresh($name, $time)
+    {
+        niechginie('jest');
 
-            niechginie('jest');
         return parent::isFresh($name, $time);
-
 
 //        if ($this->isExc($name)) {
 //            return parent::isFresh($name, $time);
@@ -158,11 +158,13 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 //            return false;
 //        }
     }
-    protected function _replaceAssets($data) {
+    protected function _replaceAssets($data)
+    {
         if ($this->dev && preg_match('#\{%\s+(?:stylesheets|javascripts)#is', $data)) {
             $loader = $this->loader;
+
             return preg_replace_callback('#([ ]*)\{%\s+(?:stylesheets|javascripts)((?:\s+[^\'"]*[\'"][^\'"]*[\'"])*?)\s+%\}([^\{]*?)\{\{\s*asset_url\s*\}\}([^\{]*?)\{%\s+end(?:stylesheets|javascripts)\s+%\}#is', function ($match) use ($loader) {
-                if ( substr_count($match[2], '"') > 1 || substr_count($match[2], "'") > 1 ) {
+                if (substr_count($match[2], '"') > 1 || substr_count($match[2], "'") > 1) {
                     preg_match_all('#(\s+[^\'"]*[\'"][^\'"]*[\'"])*?#si', $match[2], $m);
                     $match[4] = rtrim($match[4]);
                     $l = array();
@@ -171,11 +173,10 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
                         $d = trim($d);
                         if ($d) {
                             if ($d[0] == '"' || $d[0] == "'") {
-                                $l[] = trim($d,'\'"');
-                            }
-                            elseif (substr($d, 0, 6) == 'output') {
+                                $l[] = trim($d, '\'"');
+                            } elseif (substr($d, 0, 6) == 'output') {
                                 $output = explode('=', $d);
-                                $output = trim($output[1],'\'"');
+                                $output = trim($output[1], '\'"');
                             }
                         }
                     }
@@ -188,14 +189,16 @@ class TwigLoaderFilesystemExtend extends Twig_Loader_Filesystem {
 //                    ));
 
                     foreach ($l as $k => $e) {
-                        $l[$k] = $match[1].$match[3].$loader.$output."=".$e.$match[4];
+                        $l[$k] = $match[1].$match[3].$loader.$output.'='.$e.$match[4];
                     }
 
-                    return join("\n", $l)."\n";
+                    return implode("\n", $l)."\n";
                 }
+
                 return "\n";
             }, $data);
         }
+
         return $data;
     }
 //    protected function isExc($name) {

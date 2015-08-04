@@ -6,21 +6,21 @@ use Stopsopa\UtilsBundle\Composer\AbstractInstallerPart;
 use Stopsopa\UtilsBundle\Composer\UtilHelper;
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
-use Stopsopa\UtilsBundle\Lib\Standalone\UtilIni;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class InstallCommand extends AbstractCommand {
-
-    public function configure() {
+class InstallCommand extends AbstractCommand
+{
+    public function configure()
+    {
         $this
             ->setName('stpa:install')
-            ->setDescription("Instalator iterujący po wszystkich bundlach w namespace Stopsopa i szukający w nich znajdujących się klas ... dopsiac")
-            ->addOption('list', null, null,'Porcja danych do przetworzenia: ')
+            ->setDescription('Instalator iterujący po wszystkich bundlach w namespace Stopsopa i szukający w nich znajdujących się klas ... dopsiac')
+            ->addOption('list', null, null, 'Porcja danych do przetworzenia: ')
         ;
     }
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     public function execute(InputInterface $input, OutputInterface $output)
@@ -40,8 +40,7 @@ class InstallCommand extends AbstractCommand {
                 /* @var $cls AbstractInstallerPart */
                 $cls->install($input, $output);
             }
-        }
-        else {
+        } else {
             $tmp = array();
 
             foreach ($list as $cls) {
@@ -52,15 +51,17 @@ class InstallCommand extends AbstractCommand {
             $output->writeln(implode("\n", $tmp));
         }
     }
-    protected function _findPartsClasses() {
+    protected function _findPartsClasses()
+    {
         $list = array();
 
         $d = DIRECTORY_SEPARATOR;
 
         // zastąpić później preg_quote($str);
         $dd = $d;
-        if ($d === '\\')
+        if ($d === '\\') {
             $dd .= $d;
+        }
 
         foreach (UtilHelper::findClasses("#{$dd}InstallerPart\.php$#", '#\\InstallerPart$#', '#Abstract#') as $namespace) {
             $cls = new $namespace();

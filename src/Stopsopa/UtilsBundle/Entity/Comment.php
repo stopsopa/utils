@@ -3,21 +3,16 @@
 namespace Stopsopa\UtilsBundle\Entity;
 
 use DateTime;
-use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Stopsopa\UtilsBundle\Lib\Standalone\Urlizer;
-use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Stopsopa\UtilsBundle\Lib\FileProcessors\CommentFileProcessor;
 
 /**
  * Comment
- * http://httpd.pl/onetomany?data=%28!o!-%28!cls!-!Namespace\\Point!*!field!-!odbiory!%29*!m!-%28!cls!-!Namespace\\Odbior!*!field!-!point!*!id!-!id!*!join!-!pointId!%29%29
+ * http://httpd.pl/onetomany?data=%28!o!-%28!cls!-!Namespace\\Point!*!field!-!odbiory!%29*!m!-%28!cls!-!Namespace\\Odbior!*!field!-!point!*!id!-!id!*!join!-!pointId!%29%29.
  */
 class Comment extends AbstractEntity
 {
     /**
-     * @var integer
+     * @var int
      */
     private $id;
 
@@ -36,11 +31,10 @@ class Comment extends AbstractEntity
      */
     protected $user;
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -48,9 +42,10 @@ class Comment extends AbstractEntity
     }
 
     /**
-     * Set comment
+     * Set comment.
      *
      * @param string $comment
+     *
      * @return Comment
      */
     public function setComment($comment)
@@ -61,7 +56,7 @@ class Comment extends AbstractEntity
     }
 
     /**
-     * Get comment
+     * Get comment.
      *
      * @return string
      */
@@ -71,9 +66,10 @@ class Comment extends AbstractEntity
     }
 
     /**
-     * Set createdAt
+     * Set createdAt.
      *
      * @param DateTime $createdAt
+     *
      * @return Comment
      */
     public function setCreatedAt($createdAt)
@@ -84,7 +80,7 @@ class Comment extends AbstractEntity
     }
 
     /**
-     * Get createdAt
+     * Get createdAt.
      *
      * @return DateTime
      */
@@ -96,17 +92,20 @@ class Comment extends AbstractEntity
     /**
      * @return Punkt
      */
-    public function getUser() {
+    public function getUser()
+    {
         return $this->user;
     }
 
-    public function setUser(User $user = null) {
+    public function setUser(User $user = null)
+    {
         $this->user = $user;
+
         return $this;
     }
 
-
-    public function getWebPath() {
+    public function getWebPath()
+    {
         if ($this->path) {
             $config = CommentFileProcessor::getConfig();
 
@@ -116,31 +115,34 @@ class Comment extends AbstractEntity
             }
 
             return $config['dir'].$this->path;
-
         }
+
         return '/bundles/stopsopautils/utils/lorem.jpg';
     }
 
-
-    function getUpdatedAt() {
+    public function getUpdatedAt()
+    {
         return $this->updatedAt;
     }
 
-    function setUpdatedAt($updatedAt) {
+    public function setUpdatedAt($updatedAt)
+    {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 
-
-
     public $file;
     protected $path;
-    function getPath() {
+    public function getPath()
+    {
         return $this->path;
     }
 
-    function setPath($path) {
+    public function setPath($path)
+    {
         $this->path = $path;
+
         return $this;
     }
 }

@@ -88,7 +88,7 @@ class UtilString
      *
      * @return string
      */
-    public static function toSlugg($str, $delimiter = "-")
+    public static function toSlugg($str, $delimiter = '-')
     {
         $rep = array(
             'ё' => 'yo','Ё' => 'Yo',
@@ -417,7 +417,7 @@ class UtilString
         }
         $openedtags = array_reverse($openedtags);
         # close tags
-        for ($i = 0; $i < $len_opened; $i++) {
+        for ($i = 0; $i < $len_opened; ++$i) {
             if (!in_array($openedtags[$i], $closedtags)) {
                 if (!in_array(strtolower($openedtags[$i]), $ignore)) {
                     $html .= '</'.$openedtags[$i].'>';
@@ -445,7 +445,7 @@ class UtilString
         if (count($parts) > 1) {
             $num = $parts[count($parts) - 1];
             if (preg_match('/^\d+$/i', $num)) {
-                return preg_replace("/^(.*$delimiter)\d+$/i", "$1", $string).($num + 1);
+                return preg_replace("/^(.*$delimiter)\d+$/i", '$1', $string).($num + 1);
             }
         }
 
@@ -526,14 +526,15 @@ class UtilString
 //    return $data;
 //  }
 
-    public static function hlight($string, $find, $cls = "hresult")
+    public static function hlight($string, $find, $cls = 'hresult')
     {
-        if (!$find) {// gdy pusty string
+        if (!$find) {
+            // gdy pusty string
         return $string;
         }
 
-        foreach (array_map("trim", (array) explode(' ', $find)) as $tag) {
-            $part = preg_quote($tag, "/");
+        foreach (array_map('trim', (array) explode(' ', $find)) as $tag) {
+            $part = preg_quote($tag, '/');
             $string = preg_split('~(</?[\w][^>]*>)~', $string, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
             foreach ($string as $kk => $tt) {
                 if ($tt[0] != '<') {
@@ -581,7 +582,7 @@ class UtilString
             $diff = $backward;
         }
 
-        $string = UtilString::subEndStartStop(
+        $string = self::subEndStartStop(
           $string,
           $pos - $backward > 0 ? $pos - $forward : 0,
           $pos + mb_strlen($find, $encoding) + $forward < mb_strlen($string, $encoding) ? mb_strlen($find, $encoding) + $forward + $diff : mb_strlen($string, $encoding) - $pos
@@ -593,7 +594,7 @@ class UtilString
     {
         $str = '';
 
-        for ($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $length; ++$i) {
             $str .= static::randomChar($pula);
         }
 
@@ -601,7 +602,7 @@ class UtilString
     }
     public static function randomChar($pula = 'QWERTYUIOPASDFGHJKLZXCVBNM')
     {
-        return mb_substr($pula, mt_rand(0, mb_strlen($pula)-1), 1);
+        return mb_substr($pula, mt_rand(0, mb_strlen($pula) - 1), 1);
     }
     protected static $_flipget;
 
@@ -611,7 +612,7 @@ class UtilString
      (function (w, c, name) {
      for (var i in c)
      c[c[i]] = i;
-
+     
      window[name] = function (s) {
      s = s.split('');
      for (var i = 0, l = s.length ; i < l ; ++i ) {
@@ -640,9 +641,9 @@ class UtilString
                 '"' => '!',
                 ':' => '-',
                 '{' => '(',
-                '}' => ")",
-                '?' => "_",
-                '&' => "~",
+                '}' => ')',
+                '?' => '_',
+                '&' => '~',
             ) as $key => $data) {
                 static::$_flipget[static::$_flipget[$key] = $data] = $key;
             }

@@ -11,8 +11,8 @@ use Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\Query;
 
-abstract class AbstractManager {
-
+abstract class AbstractManager
+{
     /**
      * @var EntityManager
      */
@@ -33,30 +33,32 @@ abstract class AbstractManager {
     protected $repository;
     protected $class;
 
-    public function __construct(EntityManager $em, $class = null) {
-        $this->em               = $em;
-        $this->dbal             = $em->getConnection();
+    public function __construct(EntityManager $em, $class = null)
+    {
+        $this->em = $em;
+        $this->dbal = $em->getConnection();
         if ($class) {
-            $this->class        = $class;
-            $this->repository   = $em->getRepository($this->class);
-            $this->table        = $this->getTableName();
+            $this->class = $class;
+            $this->repository = $em->getRepository($this->class);
+            $this->table = $this->getTableName();
         }
     }
-    public function count() {
+    public function count()
+    {
         $table = $this->table;
-        $stmt  = $this->dbal->query("
+        $stmt = $this->dbal->query("
 SELECT count(*) c FROM $table
 ");
         $stmt->execute();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC))
-          return (int)$row['c'];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            return (int) $row['c'];
+        }
 
         return 0;
     }
-    public function getTableName($class = null) {
-
+    public function getTableName($class = null)
+    {
         if (!$class) {
-
             if (!$this->table) {
                 $this->table = $this->getClassMetadata()->getTableName();
             }
@@ -66,64 +68,78 @@ SELECT count(*) c FROM $table
 
         return $this->getClassMetadata($class)->getTableName();
     }
-    public function getClass() {
+    public function getClass()
+    {
         return $this->class;
     }
-    public function getClassMetadata($class = null) {
+    public function getClassMetadata($class = null)
+    {
         return $this->em->getClassMetadata($class ?: $this->class);
     }
-    public function supportsEntity($entity) {
+    public function supportsEntity($entity)
+    {
         return $entity instanceof $this->class;
     }
 
-    public function remove($object, $flush = true) {
-
+    public function remove($object, $flush = true)
+    {
         $this->em->remove($object);
         $flush and $this->em->flush();
 
         return $this;
     }
 
-    public function findOrThrow($id) {
+    public function findOrThrow($id)
+    {
         $entity = $this->find($id);
 
-        if (!$entity)
+        if (!$entity) {
             throw new NotFoundHttpException("Entity '{$this->class}' not found by id: '$id'");
+        }
 
         return $entity;
     }
 
-    public function update($entity, $flush = true) {
+    public function update($entity, $flush = true)
+    {
         $this->em->persist($entity);
         $flush and $this->em->flush();
     }
 
-    public function persist($entity) {
+    public function persist($entity)
+    {
         $this->em->persist($entity);
+
         return $this;
     }
 
-    public function flush($entity = null) {
+    public function flush($entity = null)
+    {
         $this->em->flush($entity);
+
         return $this;
     }
 
-    public function clean($entityName = null) {
+    public function clean($entityName = null)
+    {
         $this->em->clear($entityName);
+
         return $this;
     }
 
-    public function refresh($entity) {
+    public function refresh($entity)
+    {
         $this->em->refresh($entity);
     }
 
-    public function createEntity() {
-        return new $this->class;
+    public function createEntity()
+    {
+        return new $this->class();
     }
 
     protected $idfield;
-    public function find($id, $alias = null, $select = array(), $hydrationMode = null) {
-
+    public function find($id, $alias = null, $select = array(), $hydrationMode = null)
+    {
         if (!$alias) {
             $alias = 'x';
         }
@@ -138,6 +154,7 @@ SELECT count(*) c FROM $table
         }
 
         $qb = $this->_prepareSelect($alias, $select);
+
         return $qb
             ->where(
                 $qb->expr()->eq(
@@ -149,8 +166,8 @@ SELECT count(*) c FROM $table
             ->getSingleResult($hydrationMode)
         ;
     }
-    protected function _prepareSelect($alias, $select = array()) {
-
+    protected function _prepareSelect($alias, $select = array())
+    {
         $qb = $this->createQueryBuilder($alias);
 
         if (is_string($select)) {
@@ -158,7 +175,7 @@ SELECT count(*) c FROM $table
         }
 
         if (!$select) {
-           $select = array();
+            $select = array();
         }
 
         if (count($select)) {
@@ -171,10 +188,10 @@ SELECT count(*) c FROM $table
     /**
      * $eman->findAllOrderBy('e', 'e.name', 'asc', array('e.id', 'e.username', 'e.path'), Query::HYDRATE_ARRAY);
      * $eman->findAllOrderBy('e', 'e.name', 'asc', 'e.id|e.username|e.path', Query::HYDRATE_ARRAY);
-     * $eman->findAllOrderBy('e', 'e.name', 'asc', null, Query::HYDRATE_ARRAY); -- zwróć wszystie pola
+     * $eman->findAllOrderBy('e', 'e.name', 'asc', null, Query::HYDRATE_ARRAY); -- zwróć wszystie pola.
      */
-    public function findAllOrderBy($alias, $sort, $order = null, $select = array(), $hydrationMode = null) {
-
+    public function findAllOrderBy($alias, $sort, $order = null, $select = array(), $hydrationMode = null)
+    {
         if (!$hydrationMode) {
             $hydrationMode = Query::HYDRATE_OBJECT;
         }
@@ -188,10 +205,10 @@ SELECT count(*) c FROM $table
     /**
      * $eman->findAll('e', array('e.id', 'e.username', 'e.path'), Query::HYDRATE_ARRAY);
      * $eman->findAll('e', 'e.id|e.username|e.path', Query::HYDRATE_ARRAY);
-     * $eman->findAll('e', null, Query::HYDRATE_ARRAY); -- zwróć wszystie pola
+     * $eman->findAll('e', null, Query::HYDRATE_ARRAY); -- zwróć wszystie pola.
      */
-    public function findAll($alias = null, $select = array(), $hydrationMode = null) {
-
+    public function findAll($alias = null, $select = array(), $hydrationMode = null)
+    {
         if (!$alias) {
             $alias = 'x';
         }
@@ -205,8 +222,8 @@ SELECT count(*) c FROM $table
             ->getResult($hydrationMode)
         ;
     }
-    public function findOneByOrCreate($data, $update = false) {
-
+    public function findOneByOrCreate($data, $update = false)
+    {
         $entity = $this->findOneBy($data);
 
         if (!$entity) {
@@ -224,16 +241,18 @@ SELECT count(*) c FROM $table
     }
 
     /**
-     * @param type $ids
+     * @param type                    $ids
      * @param false|true|QueryBuilder $qb
-     *      false(default)  - tworzy qb, zwraca listę encji
-     *      string          - tworzy qb, zwraca qb, z podanego stringu tworzy alias
-     *      QueryBuilder    - ustawia odpowiedni warunek i zwraca obiekt z powrotem
+     *                                     false(default)  - tworzy qb, zwraca listę encji
+     *                                     string          - tworzy qb, zwraca qb, z podanego stringu tworzy alias
+     *                                     QueryBuilder    - ustawia odpowiedni warunek i zwraca obiekt z powrotem
+     *
      * @return type
+     *
      * @throws Exception
      */
-    public function findByIds($ids, $qb = false) {
-
+    public function findByIds($ids, $qb = false)
+    {
         if (!is_array($ids)) {
             $ids = array($ids);
         }
@@ -247,15 +266,13 @@ SELECT count(*) c FROM $table
         $fid = $this->getClassMetadata()->getIdentifier();
 
         if (isset($fid[0])) {
-
             if ($qb instanceof QueryBuilder) {
                 $b = $qb;
-            }
-            else {
+            } else {
                 $b = $this->createQueryBuilder($alias);
             }
 
-            $b->andWhere($b->expr()->in($alias.".".$fid[0], $ids));
+            $b->andWhere($b->expr()->in($alias.'.'.$fid[0], $ids));
 
             if ($qb) {
                 return $b;
@@ -267,42 +284,44 @@ SELECT count(*) c FROM $table
         throw new Exception("Entity {$this->class} has no identifier field");
     }
 
-    public function findOneBy($values) {
+    public function findOneBy($values)
+    {
         return $this->repository->findOneBy($values);
     }
 
     /**
-     * Dla obsługi zapytań doctrine typu ->findOneBySlug()
+     * Dla obsługi zapytań doctrine typu ->findOneBySlug().
+     *
      * @param string $method
-     * @param array $args
+     * @param array  $args
+     *
      * @return mixed
+     *
      * @throws Exception
      */
-    public function __call($method, $args) {
-
+    public function __call($method, $args)
+    {
         $key = 'OrThrow';
 
         if (strpos($method, $key) === strlen($method) - strlen($key)) {
-            $throw      = true;
-            $method     = substr($method, 0, -strlen($key));
-        }
-        else {
-            $throw      = false;
+            $throw = true;
+            $method = substr($method, 0, -strlen($key));
+        } else {
+            $throw = false;
         }
 
         $obj = $this;
         set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line, array $err_context) use ($obj, $method) {
               throw new Exception("Method '$method' doesn't exist in object '".$this->class."'");
         });
-        $data =  call_user_func_array(array($this->repository, $method), $args);
+        $data = call_user_func_array(array($this->repository, $method), $args);
         restore_error_handler();
 
         if ($throw) {
             if (is_array($data) && !count($data)) {
-                throw new NotFoundHttpException("Entities '{$this->class}' not found by method '$method' and criteria: ".json_encode ($args));
-            }
-            elseif (!$data) {
-                throw new NotFoundHttpException("Entity '{$this->class}' not found by method '$method' and criteria: ".json_encode ($args));
+                throw new NotFoundHttpException("Entities '{$this->class}' not found by method '$method' and criteria: ".json_encode($args));
+            } elseif (!$data) {
+                throw new NotFoundHttpException("Entity '{$this->class}' not found by method '$method' and criteria: ".json_encode($args));
             }
         }
 
@@ -311,44 +330,54 @@ SELECT count(*) c FROM $table
 
     /**
      * @param string $alias
+     *
      * @return \Doctrine\ORM\QueryBuilder
      */
-    public function createQueryBuilder($alias) {
+    public function createQueryBuilder($alias)
+    {
         return $this->repository->createQueryBuilder($alias);
     }
     /**
      * @param string $dql The DQL string.
+     *
      * @return Query
      */
-    public function createQuery($dql = '') {
+    public function createQuery($dql = '')
+    {
         return $this->em->createQuery($dql);
     }
 
-    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null) {
+    public function findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+    {
         return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
     }
 
-    public function findOrCreate($id) {
+    public function findOrCreate($id)
+    {
         $entity = $this->find($id);
 
-        if (!$entity)
+        if (!$entity) {
             $entity = $this->createEntity();
+        }
 
         return $entity;
     }
-    public function getTableNameByClass($class = null) {
+    public function getTableNameByClass($class = null)
+    {
         return $this->getClassMetadata($class)->getTableName();
     }
     /**
      * @return Connection
      */
-    public function getDbal() {
+    public function getDbal()
+    {
         return $this->dbal;
     }
     /**
      * @return EntityManager
      */
-    public function getEntityManager() {
+    public function getEntityManager()
+    {
         return $this->em;
     }
 }
