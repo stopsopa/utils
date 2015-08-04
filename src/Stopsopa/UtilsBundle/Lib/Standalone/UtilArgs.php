@@ -40,7 +40,6 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
  */
 class UtilArgs
 {
-    protected $args;
     const NUL       = 1;
     const INT       = 2;
     const STRING    = 4;
@@ -51,6 +50,7 @@ class UtilArgs
     const OBJECT    = 128;
     const NUMERIC   = 256;
 
+    protected $args;
 
     public function __construct($args) {
         $this->args = $args;
