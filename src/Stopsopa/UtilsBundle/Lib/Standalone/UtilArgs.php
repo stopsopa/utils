@@ -29,6 +29,11 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
     ));
 
 
+    nieginie($c->shiftFirst(UtilArgs::NUL, 'default'));
+    nieginie($c->shiftFirst(UtilArgs::NUL, 'default'));
+    nieginie($c->shiftFirst(UtilArgs::NUL, 'default'));
+    nieginie($c->shiftFirst(UtilArgs::NUL, 'default'));
+    nieginie($c->shiftFirst(UtilArgs::NUL, 'default'));
     nieginie($c->shiftFirst(UtilArgs::STRING | UtilArgs::ARR));
     nieginie($c->get(UtilArgs::STRING | UtilArgs::ARR));
     niechginie($c->shift(UtilArgs::STRING | UtilArgs::ARR));
