@@ -103,7 +103,7 @@ class UtilArgs
         }
 
         $args = func_get_args();
-        if (!count($list) && count($args) > 1) {
+        if (count($args) > 1) {
             return $args[1];
         }
 
@@ -129,7 +129,8 @@ class UtilArgs
         }
 
         $args = func_get_args();
-        if (!count($list) && count($args) > 1) {
+
+        if (count($args) > 1) {
             return $args[1];
         }
 
