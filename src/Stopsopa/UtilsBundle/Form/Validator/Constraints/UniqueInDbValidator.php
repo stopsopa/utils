@@ -18,8 +18,6 @@ class UniqueInDbValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, get_class(new UniqueInDb()));
         }
 
-        $c = count($value);
-
         /* @var $constraint UniqueInDb */
 
         $config = $constraint->getDbOptions();
