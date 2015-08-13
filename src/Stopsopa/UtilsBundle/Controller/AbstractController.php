@@ -296,6 +296,9 @@ abstract class AbstractController extends Controller
                 preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $rparams, $matches);
                 $view = $this->getBundleName().':'.$matches[1].':'.$matches[2].'.html.twig';
             }
+            else {
+                $view = $rparams.'.html.twig';
+            }
         }
 
         switch (substr_count($view, ':')) {
@@ -311,8 +314,12 @@ abstract class AbstractController extends Controller
                     preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $rparams, $matches);
                     $view = $this->getBundleName().':'.$matches[1].':'.$view;
                 }
+                else {
+                    $view = $rparams.'.html.twig';
+                }
                 break;
         }
+//        nieginie($view);
 
         return $this->render($view, $parameters, $response);
     }
