@@ -143,6 +143,9 @@ class UtilArgs
         return $return;
     }
     protected function _isType(&$d, $type) {
+        if ( (is_string($type) || is_object($type)) && is_object($d)) {
+            return $d instanceof $type;
+        }
         if ($type & static::STRING && is_string($d)) {
             return true;
         }
@@ -168,9 +171,6 @@ class UtilArgs
             return true;
         }
         if ($type & static::RESOURCE && is_resource($d)) {
-            return true;
-        }
-        if (is_string($type) && is_object($d) && $d instanceof $type) {
             return true;
         }
         return false;

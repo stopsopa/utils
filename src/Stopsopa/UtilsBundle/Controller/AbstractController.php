@@ -13,6 +13,7 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Routing\Exception\MissingMandatoryParametersException;
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilArgs;
 
 abstract class AbstractController extends Controller
 {
@@ -257,17 +258,20 @@ abstract class AbstractController extends Controller
     }
     /**
      * Teraz można wywołać w dowolny sposób:
-     * $this->render();
-     * $this->render(array(...));
-     * $this->render('index.html.twig');
-     * $this->render($response);
-     * $this->render(array(...), $response);
-     * $this->render($response, array(...));
-     * $this->render('index.html.twig');
-     * $this->render('index.html.twig', array(...));
-     * $this->render('index.html.twig', $response);
-     * $this->render('index.html.twig', array(...), $response);
-     * $this->render('index.html.twig', $response, array(...));.
+//     * $this->render();
+//     * $this->render(array(...));
+//     * $this->render('index.html.twig');
+//     * $this->render('Folder:index.html.twig');
+//     * $this->render('Folder\Subfolder:index.html.twig');
+//     * $this->render($response);
+//     * $this->render(array(...), $response);
+//     * $this->render($response, array(...));
+//     * $this->render('index.html.twig');
+//     * $this->render('Folder\Subfolder:index.html.twig');
+//     * $this->render('index.html.twig', array(...));
+//     * $this->render('Folder\Subfolder:index.html.twig', $response);
+//     * $this->render('index.html.twig', array(...), $response);
+//     * $this->render('index.html.twig', $response, array(...));.
      *
      * @param SfResponse $view
      * @param array      $parameters
@@ -275,39 +279,42 @@ abstract class AbstractController extends Controller
      *
      * @return type
      */
-    public function render($view = null, array $parameters = array(), SfResponse $response = null)
+    public function rend()
     {
-        if (!is_string($view) || strpos($view, ':') === false) {
-            $controller = $this->get('request')->attributes->get('_controller');
-//          [_controller] => AppBundle\Controller\Site\DefaultController::indexAction
-//          lub
-//          [_controller] =>  'AppBundle:Site/Partials:townsTiles' / /jeśli leci przez render(controller w twig
-//          [_route] => home
-            if (strpos($controller, '\\Controller\\')) {
-                preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $controller, $matches);
-                $twig = is_string($view) ? $view : ($this->getBundleName().':'.$matches[1].':');
+        $a = new UtilArgs(func_get_args());
+
+        $view = $a->getFirst(UtilArgs::STRING);
+
+        $parameters = $a->getFirst(UtilArgs::ARR, array());
+
+        $response = $a->getFirst('Symfony\Component\HttpFoundation\Response', null);
+
+        if (!is_string($view) || !$view) {
+            $rparams = $this->get('request')->attributes->get('_controller');
+
+            if (strpos($rparams, '\\Controller\\')) {
+                preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $rparams, $matches);
+                $view = $this->getBundleName().':'.$matches[1].':'.$matches[2].'.html.twig';
             }
         }
 
-        if (is_string($view)) {
-            if (isset($twig)) {
-                $twig .= $view;
-            } else {
-                $twig = $view;
-            }
-        } else {
-            if (isset($matches)) {
-                $twig .= $matches[2].'.html.twig';
-            } else {
-                $twig = $controller.'.html.twig';
-            }
+        switch (substr_count($view, ':')) {
+            case 2:
+                break;
+            case 1:
+                $view = $this->getBundleName().':'.$view;
+                break;
+            default:
+                $rparams = $this->get('request')->attributes->get('_controller');
+
+                if (strpos($rparams, '\\Controller\\')) {
+                    preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $rparams, $matches);
+                    $view = $this->getBundleName().':'.$matches[1].':'.$view;
+                }
+                break;
         }
 
-        return parent::render(
-            $twig,
-            is_array($view) ? $view : (is_array($parameters) ? $parameters : (is_array($response) ? $response : array())),
-            ($view instanceof SfResponse) ? $view : (($parameters instanceof SfResponse) ? $parameters : (($response instanceof SfResponse) ? $response : null))
-        );
+        return $this->render($view, $parameters, $response);
     }
     public function getRootDir($bundlepath = false)
     {

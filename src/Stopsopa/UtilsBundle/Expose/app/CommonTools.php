@@ -162,8 +162,11 @@ if (!function_exists('str_putcsv')) {
     }
 }
 
-function isdebug()
+function isdebug($return = false)
 {
+    if ($return && !empty($_COOKIE['debug'])) {
+        return $_COOKIE['debug'];
+    }
     return !empty($_COOKIE['debug']) && $_COOKIE['debug'] !== 'null';
 }
 
