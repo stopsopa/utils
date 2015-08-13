@@ -374,6 +374,34 @@ SELECT count(*) c FROM $table
         return $this->dbal;
     }
     /**
+     * Tą metodę kiedyś trzebaby wzbogacić bo tera zwyciąga kilka ale występujących po sobie
+     * @param type $num
+     * @return type
+     */
+    public function findRandom($num = 1) {
+
+        $c = $this->count();
+
+        $qb = $this->createQueryBuilder('x');
+
+        return $qb
+            ->setMaxResults($num)
+            ->setFirstResult(rand(0, $c - $num))
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    public function findRandomOne() {
+        $list = $this->findRandom();
+
+        if (count($list)) {
+            return $list[0];
+        }
+        
+        return null;
+    }
+
+    /**
      * @return EntityManager
      */
     public function getEntityManager()
