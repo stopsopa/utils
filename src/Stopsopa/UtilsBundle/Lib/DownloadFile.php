@@ -55,7 +55,7 @@ class DownloadFile
     public static function downloadStatic($file, $headers = array()) {
 
         if (!is_array($headers)) {
-            $s = array();
+            $headers = array();
         }
 
         $headers = array_merge(array(
@@ -74,10 +74,24 @@ class DownloadFile
 
         return $respone;
     }
+    /**
+     * Aby powstrzymać przed downloadem, tak aby otwarło w przeglądarce:
+        return DownloadFile::downloadGenerated($pdfContent, $filename, array(
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => false
+        ));
+
+     * @param type $data
+     * @param type $filename
+     * @param type $headers
+     * @return type
+     */
     public static function downloadGenerated($data, $filename, $headers = array()) {
 
+        $response = new Response();
+
         if (!is_array($headers)) {
-            $s = array();
+            $headers = array();
         }
 
         $disposition = $response->headers->makeDisposition(
@@ -88,9 +102,13 @@ class DownloadFile
         $headers = array_merge(array(
             'Content-Type' => 'application/octet-stream',
             'Content-Disposition' => $disposition
-        ), $headers); 
+        ), $headers);
 
-        $response = new Response();
+//niechginie($headers);
+
+        foreach ($headers as $key => &$value) {
+            $response->headers->set($key, $value);
+        }
 
         return $response->setCache(array(
             'last_modified' => new DateTime(),
