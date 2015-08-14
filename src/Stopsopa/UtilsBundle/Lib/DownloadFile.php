@@ -10,6 +10,14 @@ use DateTime;
 class DownloadFile
 {
     /**
+     *
+     * Uwaga warty zainteresowania przy dużych plikach jest też StreamResponse http://symfony.com/doc/current/components/http_foundation/introduction.html#streaming-a-response
+     *
+     *
+     *
+     *
+     *
+     *
      * Należy dokładnie zwalidować ścieżkę $file którą tutaj przekazujemy
      * Niedbale skonstruowany download może umożliwiać użytkownikowi zewnętrznemu ściąganie wrażliwych danych z serwera.
      *
