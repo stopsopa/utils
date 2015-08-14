@@ -55,10 +55,12 @@ class DownloadFile
     public static function downloadStatic($file, $headers = array()) {
 
         if (!is_array($headers)) {
-            $headers = array();
+            $s = array();
         }
 
-        $headers['Content-Type'] = 'application/octet-stream';
+        $headers = array_merge(array(
+            'Content-Type' => 'application/octet-stream'
+        ), $headers);
 
         $respone = new BinaryFileResponse(
             $file,
@@ -74,15 +76,21 @@ class DownloadFile
     }
     public static function downloadGenerated($data, $filename, $headers = array()) {
 
-        $response = new Response();
+        if (!is_array($headers)) {
+            $s = array();
+        }
 
         $disposition = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
             pathinfo($filename, PATHINFO_BASENAME)
         );
 
-        $response->headers->set('Content-Disposition', $disposition);
-        $response->headers->set('Content-Type', 'application/octet-stream');
+        $headers = array_merge(array(
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => $disposition
+        ), $headers); 
+
+        $response = new Response();
 
         return $response->setCache(array(
             'last_modified' => new DateTime(),
