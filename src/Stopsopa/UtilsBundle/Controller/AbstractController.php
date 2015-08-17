@@ -200,6 +200,14 @@ abstract class AbstractController extends Controller
 
         return;
     }
+    public function getUserOrThrow() {
+        $user = $this->getUser();
+        if (!$user) {
+            throw $this->createNotFoundException("User not found in session");
+        }
+        return $user;
+    }
+
     /**
      * Możliwe że później trzeba będzie rozbudować tą metodę o obsługę
      * zagnieżdżonych formularzy.
