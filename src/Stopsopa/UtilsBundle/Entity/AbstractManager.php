@@ -230,7 +230,9 @@ SELECT count(*) c FROM $table
             /* @var $entity EmployerForm */
             $entity = $this->createEntity();
 
-            $entity->set($data);
+            foreach ($data as $key => &$d) {
+                call_user_func(array($entity, 'set'.ucfirst($key)), $d);
+            }
 
             if ($update) {
                 $this->update($entity);
@@ -397,7 +399,7 @@ SELECT count(*) c FROM $table
         if (count($list)) {
             return $list[0];
         }
-        
+
         return null;
     }
 
