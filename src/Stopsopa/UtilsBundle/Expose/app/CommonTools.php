@@ -39,20 +39,6 @@ if (extension_loaded('xdebug')) {
     ini_set('xdebug.var_display_max_data', 8024);
 }
 
-if (!function_exists('isdebug')) { // przez to mogę tą funkcję zdefiniować w pierwsze kolejnosci w front kontrolerach
-    function isdebug()
-    {
-        $allowed = false;
-        if (isset($_COOKIE['debug'])) {
-            $allowed = true;
-        }
-        if (php_sapi_name() == 'cli') {
-            $allowed = true;
-        }
-
-        return $allowed;
-    }
-}
 
 /**
  * Inspiracja: https://www.youtube.com/watch?v=P17pg55FbvA.
@@ -164,10 +150,22 @@ if (!function_exists('str_putcsv')) {
 
 function isdebug($return = false)
 {
-    if ($return && !empty($_COOKIE['debug'])) {
-        return $_COOKIE['debug'];
+    if ($return) {
+        if (php_sapi_name() == 'cli') {
+            return 'dev';
+        }
+        return @$_COOKIE['debug'];
     }
-    return !empty($_COOKIE['debug']) && $_COOKIE['debug'] !== 'null';
+
+    $allowed = false;
+    if (php_sapi_name() == 'cli') {
+        $allowed = true;
+    }
+    if (!empty($_COOKIE['debug']) && $_COOKIE['debug'] !== 'null') {
+        $allowed = true;
+    }
+
+    return $allowed;
 }
 
 function getHost()

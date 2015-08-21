@@ -142,7 +142,7 @@ class UtilFilesystem
      `-- e8
      `-- d9
      `-- Clipboard02-kopiajfdksla-fds-afjdksla-fdsa-f-d-safdsa-f-d-sa-fd-s-af-d-sa-f-ds-a-fdusa-f-dsa-f-ds-a-fd-sa.bmpddd
-     
+
      * removeEmptyDirsToPath('/var/docker/www/main/web/media/uploads/d3/5d', '/var/docker/www/main/web/media/uploads')
      *
      * do stanu
@@ -185,5 +185,71 @@ class UtilFilesystem
         }
 
         return rename($source, $target);
+    }
+
+    /**
+     * Przełącza flagi w plikach w formacie /*id* /!!1 na /*id* /!!0 i odwrotnie za pomocą stpa:switch
+     * @param string $file
+     * @param string $id
+     */
+    public static function toggleFlag($file, $id, $forceState = null) {
+
+        static::checkFile($file, $toWrite = true);
+
+        $state = static::toggleFlagGetState($file, $id);
+
+        if ($state === null) {
+            throw new Exception("Flag '$id' not exist in file '$file'");
+        }
+
+        $t      = file_get_contents($file);
+
+        $id     = preg_quote($id, '#');
+
+        $s = $state;
+
+        if (is_bool($forceState)) {
+            if ($forceState === !$state) { // ustawiam stan na podany w force
+                $t = preg_replace("#(?<=/\*$id\*/!!)".intval($state)."#", ''.intval(!$state), $t);
+
+                $s = !intval($state);
+            }
+        }
+        else { // toggle state
+            if ($state) {
+                $t = preg_replace("#(?<=/\*$id\*/!!)1#", '0', $t);
+                $s = false;
+            }
+            else {
+                $t = preg_replace("#(?<=/\*$id\*/!!)0#", '1', $t);
+                $s = true;
+            }
+        }
+
+        if ($state !== $s) {
+            file_put_contents($file, $t);
+        }
+    }
+    /**
+     * Zwraca stan flagi
+     * @param string $file
+     * @param string $id
+     * @return bool|null - null: brak flagi, true: flaga włączona, false: flaga wyłączona
+     */
+    public static function toggleFlagGetState($file, $id) {
+
+        static::checkFile($file, $toWrite = true);
+
+        $content = file_get_contents($file);
+
+        $id = preg_quote($id, '#');
+
+        preg_match("#/\*$id\*/!!([0|1])#", $content, $match);
+
+        if (isset($match['1'])) {
+            return !!intval($match['1']); // zwraca stan flagi
+        }
+
+        return null; // brak flagi w pliku
     }
 }
