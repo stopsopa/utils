@@ -194,7 +194,7 @@ if ('_' in window) {
             escape      : /\(:-([\s\S]+?):\)/g
         }
         _.templateSettings = own; // podmianka delimiterów
-        ret =  _.template.apply(this, arguments);
+        var ret =  _.template.apply(this, arguments);
         _.templateSettings = tmp; // odkładam domyślne delimitery na miejsce
         return ret;
     }
