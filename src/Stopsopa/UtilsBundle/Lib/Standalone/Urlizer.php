@@ -490,7 +490,7 @@ class Urlizer
     {
         $text = static::unaccent($text);
 
-        $text = preg_replace('/[^A-Z^a-z^0-9^\/]+/', $separator, $text);
+        $text = preg_replace('/[^A-Z^a-z^0-9]+/', $separator, $text);
 
         return trim($text, $separator);
     }
