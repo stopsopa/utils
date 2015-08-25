@@ -13,15 +13,18 @@ class UtilFilesystem
     public static function checkIfFileExistOrICanCreate($file, $createIfNotExist = false)
     {
         if (file_exists($file)) {
-            static::checkFile($file, true);
+            return static::checkFile($file, true);
         } else {
             $dir = dirname($file);
             try {
-                return static::checkDir($dir, true);
+                $result = static::checkDir($dir, true);
+                if ($result) {
+                    $createIfNotExist and touch($file);
+                }
+                return $result;
             } catch (Exception $ex) {
                 throw new Exception("Cant create file: '$file' - reason: ".$ex->getMessage());
             }
-            $createIfNotExist and touch($file);
         }
     }
     public static function checkDir($dir, $toWrite = false)

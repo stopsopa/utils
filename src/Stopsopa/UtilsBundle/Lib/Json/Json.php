@@ -9,13 +9,13 @@ use Exception;
  */
 class Json
 {
-    public static function encode($data, $options = 0, $depth = 512)
+    public static function encode($data, $options = 0)
     {
         if ($data === false) {
             return 'false';
         }
 
-        $tmp = json_encode($data, $options, $depth);
+        $tmp = json_encode($data, $options);
 
         if ($tmp === false) {
             throw new Exception('native 1: Nie powiodło się przekształcenie za pomocą json_encode'.print_r($data, true));
@@ -23,8 +23,8 @@ class Json
 
         return $tmp;
     }
-    public static function decode($json, $assoc = true, $depth = 512)
+    public static function decode($json, $assoc = true)
     {
-        return json_decode($json, $assoc, $depth);
+        return json_decode($json, $assoc);
     }
 }

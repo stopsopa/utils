@@ -125,7 +125,7 @@ if ('jQuery' in window) {
                             }
 
                         } else {
-                            log("response nie zawiera stringu");
+                            // log("response nie zawiera stringu");
                         }
 
                         if (typeof fn === "function") {

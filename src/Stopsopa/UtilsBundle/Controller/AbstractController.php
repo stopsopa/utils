@@ -99,7 +99,7 @@ abstract class AbstractController extends Controller
      */
     protected function getDbal($type = 'default')
     {
-        return $this->getEntityManager($type)->getConnection();
+        return $this->get("doctrine.dbal.{$type}_connection");
     }
     /**
      * @param type $entity
