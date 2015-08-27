@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\UnitOfWork;
 
 abstract class AbstractManager
 {
@@ -183,6 +184,10 @@ SELECT count(*) c FROM $table
         }
 
         return $qb;
+    }
+
+    public function isPersisted($entity) {
+        return $this->em->getUnitOfWork()->getEntityState($entity) === UnitOfWork::STATE_MANAGED;
     }
 
     /**

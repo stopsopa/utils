@@ -12,7 +12,10 @@ class LengthStripTagsValidator extends ConstraintValidator
 {
     public function validate($value, Constraint $constraint)
     {
+        // wszystkie tagi zastępuje jedną spacją
+
         $value = preg_replace('#<[^>]*>#', ' ', $value);
+
 
         if (!$constraint instanceof LengthStripTags) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\LengthStripTags');
@@ -61,6 +64,8 @@ class LengthStripTagsValidator extends ConstraintValidator
 
             return;
         }
+
+        isdebug() and dump('validator: '.$length);
 
         if (null !== $constraint->max && $length > $constraint->max) {
             $this->buildViolation($constraint->min == $constraint->max ? $constraint->exactMessage : $constraint->maxMessage)
