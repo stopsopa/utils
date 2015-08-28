@@ -10,11 +10,15 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 class LengthStripTagsValidator extends ConstraintValidator
 {
+    public static function process($data) {
+        return preg_replace('#<[^>]*>#', ' ', $data);
+    }
+
     public function validate($value, Constraint $constraint)
     {
         // wszystkie tagi zastępuje jedną spacją
 
-        $value = preg_replace('#<[^>]*>#', ' ', $value);
+        $value = static::process($value);
 
 
         if (!$constraint instanceof LengthStripTags) {
