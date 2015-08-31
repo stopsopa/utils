@@ -16,9 +16,9 @@ class LengthStripTagsValidator extends ConstraintValidator
 //        c = $('<textarea />').html(c).text();
 //        c = c.replace(/<[^>]*>/g, ' ').replace(/[\s\n\t\r]+/g, ' ');
 
-        $data = html_entity_decode($data);
-        $data = preg_replace('#<[^>]*>#', ' ', $data);
-        $data = preg_replace('#[\s\r\n\xC2\xA0\t]+#i', ' ', $data);
+        $data = html_entity_decode($data, ENT_COMPAT | ENT_HTML401, $encoding = "UTF-8");
+        $data = preg_replace('#<[^>]*>#u', ' ', $data);
+        $data = preg_replace('#[\s\r\n\xC2\xA0\t]+#ui', ' ', $data);
 
         return $data;
     }
@@ -26,9 +26,7 @@ class LengthStripTagsValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         // wszystkie tagi zastępuje jedną spacją
-
         $value = static::process($value);
-
 
         if (!$constraint instanceof LengthStripTags) {
             throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\LengthStripTags');
