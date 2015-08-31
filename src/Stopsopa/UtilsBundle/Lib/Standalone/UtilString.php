@@ -64,7 +64,7 @@ class UtilString
         // http://erisds.co.uk/code/getting-rid-of-non-breaking-spaces-nbsp  g(Getting Rid of Non Breaking Spaces) g(white space characters tinymce) g(Have you ever tried to parse, process or preg_replace some HTML? Ever tried to do it when the HTML is UTF-8 encoded? Getting rid of white space can be tricky, here’s a few tricks I’ve learned)
     $data = str_replace('&nbsp;', ' ', $data);
 
-        return trim(preg_replace("/[\s\r\n\xC2\xA0]+/i", ' ', $data));
+        return trim(preg_replace("/[\s\r\n\t\xC2\xA0]+/i", ' ', $data));
     }
 
     protected function setupEncodingList($list)
@@ -612,7 +612,7 @@ class UtilString
      (function (w, c, name) {
      for (var i in c)
      c[c[i]] = i;
-     
+
      window[name] = function (s) {
      s = s.split('');
      for (var i = 0, l = s.length ; i < l ; ++i ) {

@@ -11,7 +11,16 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 class LengthStripTagsValidator extends ConstraintValidator
 {
     public static function process($data) {
-        return preg_replace('#<[^>]*>#', ' ', $data);
+        // logika ta odpowiada po stronie serwera takiemu czemuś :
+//        var c = ed.getContent();
+//        c = $('<textarea />').html(c).text();
+//        c = c.replace(/<[^>]*>/g, ' ').replace(/[\s\n\t\r]+/g, ' ');
+
+        $data = html_entity_decode($data);
+        $data = preg_replace('#<[^>]*>#', ' ', $data);
+        $data = preg_replace('#[\s\r\n\xC2\xA0\t]+#i', ' ', $data);
+
+        return $data;
     }
 
     public function validate($value, Constraint $constraint)
@@ -42,6 +51,9 @@ class LengthStripTagsValidator extends ConstraintValidator
 
         if (function_exists('iconv_strlen')) {
             $length = @iconv_strlen($stringValue, $constraint->charset);
+//            nieginie($stringValue);
+//            nieginie(mb_strlen($stringValue, 'utf-8'));
+//            niechginie($length);
             $invalidCharset = false === $length;
         } elseif (function_exists('mb_strlen')) {
             if (mb_check_encoding($stringValue, $constraint->charset)) {
@@ -68,8 +80,6 @@ class LengthStripTagsValidator extends ConstraintValidator
 
             return;
         }
-
-        isdebug() and dump('validator: '.$length);
 
         if (null !== $constraint->max && $length > $constraint->max) {
             $this->buildViolation($constraint->min == $constraint->max ? $constraint->exactMessage : $constraint->maxMessage)
