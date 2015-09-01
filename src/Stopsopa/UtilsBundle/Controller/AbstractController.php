@@ -289,13 +289,13 @@ abstract class AbstractController extends Controller
      */
     public function rend()
     {
-        $a = new UtilArgs(func_get_args());
+        $a          = new UtilArgs(func_get_args());
 
-        $view = $a->getFirst(UtilArgs::STRING);
+        $view       = $a->getFirst(UtilArgs::STRING);
 
         $parameters = $a->getFirst(UtilArgs::ARR, array());
 
-        $response = $a->getFirst('Symfony\Component\HttpFoundation\Response', null);
+        $response   = $a->getFirst('Symfony\Component\HttpFoundation\Response', null);
 
         if (!is_string($view) || !$view) {
             $rparams = $this->get('request')->attributes->get('_controller');

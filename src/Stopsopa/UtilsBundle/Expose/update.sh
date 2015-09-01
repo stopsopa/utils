@@ -1,16 +1,18 @@
 #!/bin/bash
 
 
-
-
 if [ "$(id -u -n)" == "root" ]; then
     echo -e "\e[31mDon't run this script as root\e[31m"
 else
+
+    THISFILE=${BASH_SOURCE[0]}
+    DIR="$( cd "$( dirname "${THISFILE}" )" && pwd -P )"
+    PHP="php "
+    NOW="$(date +%Y-%m-%d_%H-%M-%S)"
+
+    ${PHP} ${DIR}/app/console stpa:switch blank app/CommonTools.php true
+
     echo "czyszczenie katalogów cache & logs"
-
-
-    rm -rf app/cache/profiler/*
-    rm -rf app/logs/*
 
     /bin/bash stop.sh
 
@@ -18,7 +20,7 @@ else
 
     git checkout .
 
-    if [ "$(whoami)" == "area.test.absolvent.pl" ]; then
+    if [ "$(whoami)" == "this.domain" ]; then
         git clean -df
     else
         git reset --hard HEAD
@@ -28,6 +30,7 @@ else
 
     /bin/bash clean.sh
 
+    echo "na koniec odpalam gulp"
 fi
 
 

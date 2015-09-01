@@ -1,22 +1,15 @@
 <?php
 
+if (php_sapi_name() !== 'cli' && /*blank*/!!0) {
+    require_once dirname(__FILE__).'/../web/blank.php';
+}
+
+
 require_once __DIR__.'/../vendor/autoload.php';
 //require_once __DIR__.'/getHost.php';
 
 
 //use App;
-
-/**
- * Standardowe użycie tej biblioteki to :
- * - skopiować do katalogu app
- * - podmontować do wszystkich front kontrolerów :
- * app/console
-require_once __DIR__.'/bootstrap.php.cache';
-require_once __DIR__.'/AppKernel.php';
-require_once __DIR__.'/CommonTools.php';
- * web/app.php
- *  web/app_dev.php app/console
- */
 
 class CommonTools
 {
@@ -163,7 +156,7 @@ if (!function_exists('str_putcsv')) {
 function isdebug($return = false)
 {
     if ($return) {
-        if (php_sapi_name() == 'cli') {
+        if (php_sapi_name() === 'cli') {
             return 'dev';
         }
         return @$_COOKIE['debug'];

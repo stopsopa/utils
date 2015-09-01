@@ -12,14 +12,16 @@ else
     PHP="php "
     NOW="$(date +%Y-%m-%d_%H-%M-%S)"
 
+    ${PHP} ${DIR}/app/console stpa:switch blank app/CommonTools.php true
 
     /bin/bash stop.sh
 
     rm -rf ${DIR}/app/logs/* ${DIR}/app/cache/*
 
-    node node_modules/gulp/bin/gulp.js sass-site
-
-    node node_modules/gulp/bin/gulp.js sass-sp
+    if [ -f node_modules/gulp/bin/gulp.js ]; then
+        node node_modules/gulp/bin/gulp.js sass-site
+        node node_modules/gulp/bin/gulp.js sass-sp
+    fi
 
     # ${PHP} ${DIR}/app/console fos:js-routing:dump
     ${PHP} ${DIR}/app/console cache:clear --env=prod
@@ -27,9 +29,11 @@ else
     ${PHP} ${DIR}/app/console assetic:dump --env=prod
 
 
+    ${PHP} ${DIR}/app/console stpa:switch blank app/CommonTools.php false
 
-    node node_modules/gulp/bin/gulp.js serve &
-
+    if [ -f node_modules/gulp/bin/gulp.js ]; then
+        node node_modules/gulp/bin/gulp.js serve
+    fi
 
     # sudo setfacl -dR -m u:$(ps aux | grep apache | grep -v root | grep -v color | tail -2 | head -1 | cut -d " " -f1):rwx -m u:$(whoami):rwx app/cache app/logs
     # php vendor/sensio/distribution-bundle/Sensio/Bundle/DistributionBundle/Resources/bin/build_bootstrap.php
