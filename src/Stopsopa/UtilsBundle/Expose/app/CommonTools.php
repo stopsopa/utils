@@ -6,6 +6,18 @@ require_once __DIR__.'/../vendor/autoload.php';
 
 //use App;
 
+/**
+ * Standardowe użycie tej biblioteki to :
+ * - skopiować do katalogu app
+ * - podmontować do wszystkich front kontrolerów :
+ * app/console
+require_once __DIR__.'/bootstrap.php.cache';
+require_once __DIR__.'/AppKernel.php';
+require_once __DIR__.'/CommonTools.php';
+ * web/app.php
+ *  web/app_dev.php app/console
+ */
+
 class CommonTools
 {
     //  public static function getPdo() {
