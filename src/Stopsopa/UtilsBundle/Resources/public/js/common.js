@@ -185,22 +185,32 @@ else {
 
 
 if ('_' in window) {
-    // zmian adelimiterów silnika templatek ale tylko tam gdzie jest to potrzebne
+    // zmiana adelimiterów silnika templatek ale tylko tam gdzie jest to potrzebne
     site.tmp = function () {
-        var tmp = _.templateSettings
-        var own = {
+        var ret, tmp = _.templateSettings;
+        _.templateSettings = { // podmianka delimiterów
             evaluate    : /\(:([\s\S]+?):\)/g,
             interpolate : /\(:=([\s\S]+?):\)/g,
             escape      : /\(:-([\s\S]+?):\)/g
-        }
-        _.templateSettings = own; // podmianka delimiterów
-        var ret =  _.template.apply(this, arguments);
+        };
+        ret =  _.template.apply(this, arguments);
         _.templateSettings = tmp; // odkładam domyślne delimitery na miejsce
         return ret;
     }
 }
 else {
     log('common.js: brak biblioteki underscore.js');
+}
+
+if (window.Routing) {
+    window.Router = {
+        path : function (name, params) {
+            return Routing.generate.call(Routing, name, params, false);
+        },
+        url : function (name, params) {
+            return Routing.generate.call(Routing, name, params, true);
+        }
+    }
 }
 
 

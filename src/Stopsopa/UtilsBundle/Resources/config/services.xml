@@ -72,6 +72,9 @@
 
         <parameter key="cmsbase.form.type.multitree.class">Cms\BaseBundle\Form\Type\MultiTreeType</parameter>-->
 
+
+        <!--<parameter key="stopsopa.twig.twigextension">Stopsopa\UtilsBundle\Services\TwigExtensions</parameter>-->
+
     </parameters>
 
   <services>
@@ -90,6 +93,13 @@
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument>%test.comment.entity%</argument>
         </service>
+
+        <!-- Rozszerzenia twig vvv -->
+<!--            <service id="stopsopa_twig.extensions" class="%stopsopa.twig.twigextension%" public="false">
+                <argument type="service" id="service_container"/>
+                <tag name="twig.extension" />
+            </service>-->
+        <!-- Rozszerzenia twig ^^^ -->
 
 <!--        <service id="jirarest" class="%app.country.jirarestservice%">
             <argument>%jirarest%</argument>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Stopsopa\UtilsBundle\Lib\Dbals;
+namespace Stopsopa\UtilsBundle\Lib\Dbal;
 
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
@@ -11,6 +11,8 @@ use Doctrine\DBAL\Query\QueryBuilder;
 
 abstract class AbstractDbal
 {
+//    const SERVICE = 'dbal.speakers';
+//    const TABLE   = 'speakers';
     const WARM = '__warm';
 
     /**

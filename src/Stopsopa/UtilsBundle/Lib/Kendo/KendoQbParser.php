@@ -6,6 +6,10 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\EntityManager;
 use PDO;
 use Doctrine\DBAL\Statement;
+use Doctrine\DBAL\Connection;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Doctrine\ORM\Configuration;
+use Doctrine\ORM\Tools\Setup;
 
 /**
  * @author Szymon Działowski
@@ -39,7 +43,7 @@ use Doctrine\DBAL\Statement;
  *    // odbieram niezmienione parametry z kendogrida
  $post = Json::decode($request->getContent());
  $kendoFilters = $post['filters'];
- 
+
  $qb = $this->getRepository(MainTree::EN)->createQueryBuilder('n');
  $qb->select('count(n)')
  $kqb = new KendoQbParser(); // nie potrzeba tu pchać EntityManager dla obróbki obiektowej
@@ -63,24 +67,24 @@ use Doctrine\DBAL\Statement;
  * // dla klasy pochodzą z kendogrida i będą miały prawidłowy format, jeśli ktoś będzie nimi manipulować to wewnętrzna
  * // walidacja rzuci exception co oznacza koniec hakowania
  $kqb->setupQb($qb, $kendoFilters);
- 
+
  $count = $qb->getQuery()->getSingleScalarResult();
  $qb->select('n')
  $list = $qb->getQuery()->getResult();
- 
+
  // Po nowemu jest tak
  public function countAndListMailUser($filters, $mailGroupId = false, $datePut = false, $dumperName = null) {
  if(!is_string($dumperName))
  $dumperName = MailerDumper::getClassName();
- 
+
  $qb = $this->repository->createQueryBuilder('mu')
  ->leftJoin('mu.mail', 'm')
  ->leftJoin('m.mailGroup', 'mg');
- 
+
  if($mailGroupId && $datePut)
  $qb->where($qb->expr()->eq('mg.id', $qb->expr()->literal($mailGroupId)))
  ->andWhere($qb->expr()->eq('mu.datePut', $qb->expr()->literal($datePut)));
- 
+
  $kqb = new KendoQbParser();
  $kqb->setMaxLimit(1000); // zabezpieczenie
  $kqb->setTransMap(array(
@@ -91,33 +95,33 @@ use Doctrine\DBAL\Statement;
  'mailGroupId'   => 'mg.id',
  'datePut'       => 'mu.datePut'
  ));
- 
+
  $kqb->setupQb($qb, $filters);
- 
+
  $count = $kqb->getCount('count(mu)');
  $list = $kqb->getList('mu', 'm', 'mg');
  $list = App::getDumperService()->dump($list, $dumperName);
- 
+
  return array($count, $list);
  }
- 
- 
+
+
  ====== Uzycie przy zapytaniach dbal: ====
  // tu jest trochę więcej roboty, takie życie z dbal'em...
  *
  * // WAŻNA UWAGA:
  * DOBRZE JEST ZAMKNĄĆ ZAPYTANIE W PODZAPYTANIU A WARUNKI WYWALIĆ DO ZEWNĘTRZNEGO ZAPYTANIA ABY NIE TRZEBA BYŁO ROBIĆ TRANSLACJI PÓL Z JS DO SQL
  * // WAŻNA UWAGA:
- 
+
  // odbieram niezmienione parametry z kendogrida
  $post = Json::decode($request->getContent());
  $kendoFilters = $post['filters'];
- 
+
  // tu jest potrzebny entity manager
  // można zrobić z tego service z metodą factory ale czy jest sens dla jednego parametru który zawsze mamy pod ręką w kontrolerze ? ... kto jak woli
  $kqb = new KendoQbParser($this->getEntityManager());
  $kqb->setMaxLimit(500);  // zabezpiecznie przed wybieraniem zbyt wielu wierszy z kolumny
- 
+
  // translacje nazw kolumn w js na nazwy w bazie danych i odwrotnie
  // normalnie jest to para klucz(js) => wartość(db)
  $kqb->setTransMap(array(
@@ -129,7 +133,7 @@ use Doctrine\DBAL\Statement;
  'cmpstring' => false     // (def: true) czy ma wartość interpretować jako string (robi where x like %y%), false - interpretuje jako wartość (robi where x = y)// (def: true) czy ma kolumnę w bazie interpretować jako string, false - interpretuje jako wartość
  )
  ));
- 
+
  // TUTAJ ODBYWA SIĘ PRZETWARZANIE I PRODUKOWANIE WARUNKÓW PRZED 'WSADZANIEM' ICH DO ZAPYTANIA SQL...
  $kqb->setupFilters($kendoFilters);
  //    debugg($kqb->getOrderByPart($pre = ' ORDER BY '),11);
@@ -168,7 +172,14 @@ class KendoQbParser
      */
     public function __construct($em = null)
     {
-        $em and $this->setEM($em);
+        if (is_string($em)) {
+            $em = AbstractApp::get($em);
+            if ($em instanceof Connection) {
+                $em = EntityManager::create($em, Setup::createAnnotationMetadataConfiguration(array(), false));
+            }
+        }
+
+        $this->setEM($em);
     }
 
     public function setEM(EntityManager $em)
@@ -418,7 +429,7 @@ class KendoQbParser
     {
         $c = ++$this->c;
 
-        return "_f_$c";
+        return "f__$c";
     }
 
     /**
