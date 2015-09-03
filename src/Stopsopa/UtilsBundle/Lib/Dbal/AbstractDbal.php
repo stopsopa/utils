@@ -13,13 +13,110 @@ abstract class AbstractDbal
 {
 //    const SERVICE = 'dbal.speakers';
 //    const TABLE   = 'speakers';
+//    const PRIMARY = 'id'; // dobrze jest zdefiniować także primary key żeby orm nie szukał sam tego pola
     const WARM = '__warm';
+
+
+    /**
+     * Sugerowana metoda create
+     */
+//    public function create() {
+//        return array(
+//            'created_at' => date('Y-m-d H:i:s'),
+//            'updated_at' => date('Y-m-d H:i:s')
+//        );
+//    }
 
     /**
      * @return QueryBuilder
      */
     public function createQueryBuilder($symbol = 'e') {
         return AbstractApp::getDbal()->createQueryBuilder()->select("$symbol.*")->from(static::TABLE, $symbol);
+    }
+    /**
+     * Odfiltrowuje podane dane tak aby w zwrotce były tylko dane dla kolumn które istniją w tabeli którą reprezentuje ta klasa modelu
+     * @param type $data
+     * @param type $existing - domyslnie zwraca te które istniją, można tą flagą odwrócić
+     * @return type
+     */
+    public function filterDataToExistingInDb($data, $existing = true) {
+        $table = static::TABLE;
+
+        $columns = $this->getFields();
+
+        $return = array();
+
+        foreach ($data as $key => &$d) {
+            if ( array_key_exists($key, $columns) === $existing) {
+                $return[$key] = $d;
+            }
+        }
+
+        return $return;
+    }
+    protected $primaryKey;
+    public function getPrimaryKey() {
+
+        if ($this->primaryKey) {
+            return $this->primaryKey;
+        }
+
+        // w pierwszej kolejnosc sprawdzam czy jest w const
+        if (defined(get_class($this).'::PRIMARY')) {
+            return $this->primaryKey = static::PRIMARY;
+        }
+
+        // nastepnie szukam w bazie
+        if (!$this->primaryKey) {
+            foreach ($this->getFields() as $col => $d) {
+                if ($d['Key'] === 'PRI') {
+                    return $this->primaryKey = $col;
+                }
+            }
+        }
+
+        $table = static::TABLE;
+        throw new Exception("Not found primary key for table '$table'");
+    }
+
+    protected $columns;
+    /**
+     * Wyciąga informacje z bazy o strukturze tabli którą reprezentuje ta klasa modelu
+     * Dodatkowo dane są cachowane
+     * @param type $column
+     * @return type
+     */
+    protected function getFields($column = null) {
+
+        if (!$this->columns) {
+            $table = static::TABLE;
+            $this->columns = array();
+
+            foreach (AbstractApp::getDbal()->query("SHOW COLUMNS FROM `$table`")->fetchAll(PDO::FETCH_ASSOC) as $d) {
+                $this->columns[$d['Field']] = $d;
+            }
+        }
+
+        if ($column) {
+            return $this->columns[$column];
+        }
+
+        return $this->columns;
+    }
+
+    /**
+     * Wrzuca do bazy jeśli nie podamy id
+     * Jeśli podamy to najpierw szuka (jeśli nie znajdzie to exception) potem update na tym rekordzie
+     * @param type $data
+     * @param type $id
+     */
+    public function persist($data, $id = null, $types = array()) {
+        
+        if ($id) {
+            return $this->update($data, $id, $types, true);
+        }
+
+        return $this->insert($data);
     }
 
     /**
@@ -29,76 +126,121 @@ abstract class AbstractDbal
      * @return AbstractDbal
      */
     public function insert(array $data, array $types = array()) {
+        $data = $this->filterDataToExistingInDb($data);
         AbstractApp::getDbal()->insert(static::TABLE, $data, $types);
         return $this;
     }
-
     /**
-     * @param int $id - id encji
-     * @param array $data - dane które mają być zmeinione
-     * do przerobienia na zwykłą metodę dbal
      *
-     * użycie:
-     *   jeśli jedno pole:
-     *    ->update(id, nazwa_kolumny, wartosc)
-     *   jesli wiele pól:
-     *    ->update(id, tablicaasocjacyjna_nazwa_pola_wartość)
+     * $orm->update(array(
+     *   'name' => 'nazwa',
+     *   'created_at' => '2015-09-03'
+     * ), 456);
+     *
+     * lub
+     *
+     * $orm->update(array(
+     *   'name' => 'nazwa',
+     *   'created_at' => '2015-09-03'
+     * ), array(
+     *   'primary_key' => 345
+     * ));
+     *
+     * lub
+     *
+     * $orm->update(array(
+     *   'name' => 'nazwa',
+     *   'created_at' => '2015-09-03'
+     * ), array(
+     *   'name' => 'nameto change',
+     *   'created_at' => '2015-09-03'
+     * ));
+     *
+     * @param array $data
+     * @param type $identifier - id or array of criterias
+     * @param array $types
+     * @return type
      */
-    public function update()
+    public function update(array $data, $identifier, array $types = array(), $throw = false)
     {
-        $a = func_get_args();
+        $data = $this->filterDataToExistingInDb($data);
 
-        if (count($a) < 2) {
-            throw new Exception("Zbyt mała liczba argumentów, oczekuje się: id - id wiersza w bazie, kolumna, nowa wartość lub id - id wiersza w bazie, tablica asocjacyjna wartości. Podano wartości: " . Json::encode($a));
+        if (is_numeric($identifier)) {
+            $identifier = array(
+                $this->getPrimaryKey() => $identifier
+            );
         }
 
-        $table = static::TABLE;
+        $affected = AbstractApp::getDbal()->update(static::TABLE, $data, $identifier, $types);
 
-        if (is_array($a[1])) {
-            $set = implode(', ', array_map(function ($key) {
-                return "`$key` = :$key";
-            }, array_keys($a[1])));
-            $query = "
-UPDATE  $table
-SET     $set
-WHERE   id = :id
-";
-            $stmt = AbstractApp::getDbal()->prepare($query);
-
-            foreach ($a[1] as $key => &$val) {
-                $stmt->bindValue($key, $val);
+        if ($throw) {
+            if (!$affected) {
+                throw new Exception("Update data ".json_encode($data)." by identifiers ".json_encode($identifier)." not maked any changes in table `".static::TABLE."` at all");
             }
-
-            if (is_array($a[0]))
-                $a[0] = $a[0]['id'];
-
-            $stmt->bindValue('id', $a[0]);
-
-            return $stmt->execute();
         }
 
-        if (count($a) > 2 && is_string($a[1])) {
-            return $this->update($a[0], [
-                $a[1] => $a[2]
-            ]);
-        }
+        return $affected;
 
-        throw new Exception("Nieprawidłowe użycie metody. " . Json::encode($a));
+//        $a = func_get_args();
+//
+//        if (count($a) < 2) {
+//            throw new Exception("Zbyt mała liczba argumentów, oczekuje się: id - id wiersza w bazie, kolumna, nowa wartość lub id - id wiersza w bazie, tablica asocjacyjna wartości. Podano wartości: " . Json::encode($a));
+//        }
+//
+//        $table = static::TABLE;
+//
+//        if (is_array($a[1])) {
+//            $set = implode(', ', array_map(function ($key) {
+//                return "`$key` = :$key";
+//            }, array_keys($a[1])));
+//            $query = "
+//UPDATE  $table
+//SET     $set
+//WHERE   id = :id
+//";
+//            $stmt = AbstractApp::getDbal()->prepare($query);
+//
+//            foreach ($a[1] as $key => &$val) {
+//                $stmt->bindValue($key, $val);
+//            }
+//
+//            if (is_array($a[0]))
+//                $a[0] = $a[0]['id'];
+//
+//            $stmt->bindValue('id', $a[0]);
+//
+//            return $stmt->execute();
+//        }
+//
+//        if (count($a) > 2 && is_string($a[1])) {
+//            return $this->update($a[0], [
+//                $a[1] => $a[2]
+//            ]);
+//        }
+//
+//        throw new Exception("Nieprawidłowe użycie metody. " . Json::encode($a));
     }
 
     public function createHashIfEmptyForAll() {
+
         $list = $this->findBy(array(
             'hash' => null
         ));
+
+        $primary = $this->getPrimaryKey();
+
         foreach ($list as &$l) {
-            $this->getHash($l['id']);
+            $this->getHash($l[$primary]);
         }
+
         return $this;
     }
 
     public function getHash($id)
     {
-        $empl = AbstractApp::getDbal()->fetchAssoc('SELECT * FROM ' . static::TABLE . ' WHERE id = :id', ['id' => $id]);
+        $primary = $this->getPrimaryKey();
+
+        $empl = AbstractApp::getDbal()->fetchAssoc('SELECT * FROM ' . static::TABLE . ' WHERE `'.$primary.'` = :id', array('id' => $id));
 
         if (!empty($empl['hash']))
             return $empl['hash'];
@@ -161,7 +303,7 @@ WHERE   id = :id
 
     public function find($id)
     {
-        return $this->extend(AbstractApp::getDbal()->fetchAssoc('SELECT * FROM ' . static::TABLE . ' WHERE id = :id', [
+        return $this->extend(AbstractApp::getDbal()->fetchAssoc('SELECT * FROM ' . static::TABLE . ' WHERE '.$this->getPrimaryKey().' = :id', [
             'id' => $id
         ]));
     }
@@ -183,8 +325,10 @@ WHERE   id = :id
         $stmt = AbstractApp::getDbal()->query($query);
         $list = [];
 
+        $primary = $this->getPrimaryKey();
+
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $list[$row['id']] = $row;
+            $list[$row[$primary]] = $row;
         }
 
         return $this->extend($list, true);
@@ -310,8 +454,8 @@ WHERE   id = :id
 
         return ((float)$usec + (float)$sec);
     }
-    public function generateUniqueHash()
-    {
+    public function generateUniqueHash() {
+
         $table = static::TABLE;
         $stmt = AbstractApp::getDbal()->prepare("SELECT * FROM $table e WHERE e.hash = :hash");
 
@@ -321,5 +465,8 @@ WHERE   id = :id
         } while ($stmt->fetch(PDO::FETCH_ASSOC));
 
         return $hash;
+    }
+    public function delete($identifier, $types = array()) {
+        return AbstractApp::getDbal()->delete(static::TABLE, $identifier, $types);
     }
 }
