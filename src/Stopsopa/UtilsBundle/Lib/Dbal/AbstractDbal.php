@@ -111,7 +111,7 @@ abstract class AbstractDbal
      * @param type $id
      */
     public function persist($data, $id = null, $types = array()) {
-        
+
         if ($id) {
             return $this->update($data, $id, $types, true);
         }
@@ -127,6 +127,11 @@ abstract class AbstractDbal
      */
     public function insert(array $data, array $types = array()) {
         $data = $this->filterDataToExistingInDb($data);
+
+        if (method_exists($this, 'create')) {
+            $data = array_merge($this->create(), $data);
+        }
+
         AbstractApp::getDbal()->insert(static::TABLE, $data, $types);
         return $this;
     }
@@ -164,6 +169,10 @@ abstract class AbstractDbal
     public function update(array $data, $identifier, array $types = array(), $throw = false)
     {
         $data = $this->filterDataToExistingInDb($data);
+
+        if (method_exists($this, 'create')) {
+            $data = array_merge($this->create(), $data);
+        }
 
         if (is_numeric($identifier)) {
             $identifier = array(
