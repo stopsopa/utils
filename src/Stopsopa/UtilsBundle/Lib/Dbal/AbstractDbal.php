@@ -9,6 +9,19 @@ use PDO;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Doctrine\DBAL\Query\QueryBuilder;
 
+/**
+ *
+    /* *
+     * @return DbalLocations;
+     * /
+    public static function getDbalLocations() {
+        $key = DbalLocations::SERVICE;
+        if (!array_key_exists($key, static::$services))
+            static::$services[$key] = new DbalLocations(static::$app);
+
+        return static::$services[$key];
+    }
+ */
 abstract class AbstractDbal
 {
 //    const SERVICE = 'dbal.speakers';
@@ -17,6 +30,20 @@ abstract class AbstractDbal
     const WARM = '__warm';
 
 
+
+    /**
+     * @param mixed $data , true  - zwraca nazwę metody wzbogacajęcej dane,
+     *                      null  - testuje czy jest metoda w klasie dziedziczącej,
+     *                      array - wzbogaca dane przy tej konfiguracji brana jest pod uwagę flaga $many
+     * @param bool $many - czy przetwarzam jedną encję czy tablicę encji
+     *
+     * @return string
+     *
+    protected function __warm(&$d)
+    {
+       .. działany na referencji
+    }
+    */
     /**
      * Sugerowana metoda create
      */
@@ -78,6 +105,85 @@ abstract class AbstractDbal
         $table = static::TABLE;
         throw new Exception("Not found primary key for table '$table'");
     }
+    /**
+     * @param string|AbstractDbal $joinTable
+     * @param type $joinColumn
+     * @param type $foreignColumn
+     * @param type $joinId
+     * @param array $foreignIds
+     * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
+     */
+    public function joinTableUpdate($joinTable, $joinColumn, $foreignColumn, $joinId, array $foreignIds) {
+
+        if ($joinTable instanceof AbstractDbal) {
+            /* @var $man AbstractDbal */
+            $man = $joinTable;
+            $joinTable = $man::TABLE;
+        }
+        else {
+            $man = null;
+        }
+
+        $dbal = AbstractApp::getDbal();
+
+        $stmt = $dbal->prepare("SELECT `$joinColumn` id, `$foreignColumn` jid FROM `$joinTable` WHERE `$joinColumn` = :id");
+        $stmt->bindValue('id', $joinId);
+        $stmt->execute();
+
+        $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($man && is_array($foreignIds[0])) {
+            $primary = $man->getPrimaryKey();
+            $tmp = array();
+            foreach ($foreignIds as $key => &$d) {
+                if (array_key_exists($primary, $d) && $d[$primary] != $key) {
+                    $tmp[$d[$primary]] = $d;
+                }
+                else {
+                    $tmp[$key] = $d;
+                }
+            }
+            $foreignIds = $tmp;
+        }
+
+        if (!empty($foreignIds[0]) && !@is_array($foreignIds[0])) {
+            $tmp = array();
+            foreach ($foreignIds as &$id) {
+                $tmp[$id] = array();
+            }
+            $foreignIds = $tmp;
+        }
+
+        foreach ($existing as &$d) {
+            if (!array_key_exists($d['jid'], $foreignIds)) {
+                $dbal->delete($joinTable ,array(
+                    $joinColumn     => $joinId,
+                    $foreignColumn  => $d['jid']
+                ));
+            }
+        }
+
+        $ex = array_map(function ($row) {
+            return $row['jid'];
+        }, $existing);
+
+        foreach ($foreignIds as $id => &$d) {
+            if (!in_array($id, $ex)) {
+                $tmp = array_merge($d, array(
+                    $joinColumn     => $joinId,
+                    $foreignColumn  => $id
+                ));
+
+                if ($man) {
+                    $tmp = $man->filterDataToExistingInDb($tmp);
+                }
+
+                $dbal->insert($joinTable, $tmp);
+            }
+        }
+
+        return $this;
+    }
 
     protected $columns;
     /**
@@ -109,31 +215,47 @@ abstract class AbstractDbal
      * Jeśli podamy to najpierw szuka (jeśli nie znajdzie to exception) potem update na tym rekordzie
      * @param type $data
      * @param type $id
+     * @return type id
      */
     public function persist($data, $id = null, $types = array()) {
 
         if ($id) {
-            return $this->update($data, $id, $types, true);
+            $this->update($data, $id, $types, true);
+            return $id;
         }
 
-        return $this->insert($data);
+        $primary = $this->getPrimaryKey();
+
+        if (in_array($primary, $data)) {
+            return $this->persist($data, $data[$primary], $types, true);
+        }
+
+        $this->insert($data);
+
+        return AbstractApp::getDbal()->lastInsertId();
     }
 
     /**
      *
      * @param array $data
      * @param array $types
-     * @return AbstractDbal
+     * @return affected rows
      */
     public function insert(array $data, array $types = array()) {
+
         $data = $this->filterDataToExistingInDb($data);
 
         if (method_exists($this, 'create')) {
             $data = array_merge($this->create(), $data);
         }
 
-        AbstractApp::getDbal()->insert(static::TABLE, $data, $types);
-        return $this;
+        $primary = $this->getPrimaryKey();
+
+        if (array_key_exists($primary, $data)) {
+            return $this->update($data, $data[$primary], $types, true);
+        }
+
+        return AbstractApp::getDbal()->insert(static::TABLE, $data, $types);
     }
     /**
      *
@@ -164,7 +286,7 @@ abstract class AbstractDbal
      * @param array $data
      * @param type $identifier - id or array of criterias
      * @param array $types
-     * @return type
+     * @return type affected rows
      */
     public function update(array $data, $identifier, array $types = array(), $throw = false)
     {
@@ -183,7 +305,14 @@ abstract class AbstractDbal
         $affected = AbstractApp::getDbal()->update(static::TABLE, $data, $identifier, $types);
 
         if ($throw) {
+            // sprawdzę czy tylko dane były takie same, czy to był faktyczny problem ze znalezieniem encji
+            $pass = false;
             if (!$affected) {
+                if ($this->findOneBy($identifier)) {
+                    $pass = true;
+                }
+            }
+            if (!$pass && !$affected) {
                 throw new Exception("Update data ".json_encode($data)." by identifiers ".json_encode($identifier)." not maked any changes in table `".static::TABLE."` at all");
             }
         }
@@ -268,20 +397,6 @@ abstract class AbstractDbal
 
         return 0;
     }
-
-    /**
-     * @param mixed $data , true  - zwraca nazwę metody wzbogacajęcej dane,
-     *                      null  - testuje czy jest metoda w klasie dziedziczącej,
-     *                      array - wzbogaca dane przy tej konfiguracji brana jest pod uwagę flaga $many
-     * @param bool $many - czy przetwarzam jedną encję czy tablicę encji
-     *
-     * @return string
-     *
-    protected function __warm(&$d)
-    {
-       .. działany na referencji
-    }
-     */
     public function extend($data = false, $many = false)
     {
         $name = static::WARM;
