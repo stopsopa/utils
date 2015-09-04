@@ -105,15 +105,166 @@ abstract class AbstractDbal
         $table = static::TABLE;
         throw new Exception("Not found primary key for table '$table'");
     }
+    public function relatedTableUpdate(AbstractDbal $relatedMan, $joinId, $joinColumn, array $foreignData) {
+
+        $this->relatedTableDelete($relatedMan, $joinId, $joinColumn, $foreignData);
+
+        $this->relatedTableInsert($relatedMan, $joinId, $joinColumn, $foreignData);
+
+        return $this->relatedTableModify($relatedMan, $joinId, $joinColumn, $foreignData);
+    }
+    public function relatedTableInsert(AbstractDbal $relatedMan, $joinId, $joinColumn, array $foreignData) {
+
+        $dbal = AbstractApp::getDbal();
+
+        $primary = $relatedMan->getPrimaryKey();
+
+        $relatedTable = $relatedMan::TABLE;
+
+        $stmt = $dbal->prepare("SELECT `$primary`, `$joinColumn` FROM `$relatedTable` WHERE `$joinColumn` = :id");
+        $stmt->bindValue('id', $joinId);
+        $stmt->execute();
+
+        $existing = array();
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $d) {
+            $existing[$d[$primary]] = $d;
+        }
+
+        $tmp = array();
+
+        foreach ($foreignData as &$data) {
+            if (empty($data[$primary]) || !array_key_exists($data[$primary], $existing)) {
+                if (!empty($data[$primary])) {
+                    unset($data[$primary]);
+                }
+                $data[$joinColumn] = $joinId;
+
+                $insert = $data;
+
+                if (method_exists($relatedMan, 'create')) {
+                    $insert = array_merge($relatedMan->create(), $insert);
+                }
+
+                $insert = $relatedMan->filterDataToExistingInDb($insert);
+
+                $dbal->insert($relatedTable, $insert);
+            }
+        }
+
+        return $this;
+    }
+    public function relatedTableModify(AbstractDbal $relatedMan, $joinId, $joinColumn, array $foreignData) {
+
+        $dbal = AbstractApp::getDbal();
+
+        $primary = $relatedMan->getPrimaryKey();
+
+        $relatedTable = $relatedMan::TABLE;
+
+        $stmt = $dbal->prepare("SELECT `$primary`, `$joinColumn` FROM `$relatedTable` WHERE `$joinColumn` = :id");
+        $stmt->bindValue('id', $joinId);
+        $stmt->execute();
+
+        $existing = array();
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $d) {
+            $existing[$d[$primary]] = $d;
+        }
+
+        $tmp = array();
+        foreach ($foreignData as &$d) {
+            if (!empty($d[$primary])) {
+                $tmp[$d[$primary]] = $d;
+            }
+        }
+
+        foreach ($tmp as $id => &$d) {
+            if (array_key_exists($id, $existing)) {
+
+                if (method_exists($relatedMan, 'create')) {
+                    $d = array_merge($relatedMan->create(), $d);
+                }
+
+                $dbal->update($relatedTable, $d, array(
+                    $primary => $id
+                ));
+            }
+        }
+
+
+        return $this;
+    }
+    /**
+     * Zostawia tylko te co wylistujesz w $foreignData - resztę usuwa
+     *
+     * Można później dopisać coś żęby odwracać działanie
+     *
+     * @param \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal $relatedMan
+     * @param type $joinId
+     * @param type $joinColumn
+     * @param array $foreignData
+     * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
+     */
+    public function relatedTableDelete(AbstractDbal $relatedMan, $joinId, $joinColumn, array $foreignData) {
+
+        $dbal = AbstractApp::getDbal();
+
+        $primary = $relatedMan->getPrimaryKey();
+
+        $relatedTable = $relatedMan::TABLE;
+
+        $stmt = $dbal->prepare("SELECT `$primary`, `$joinColumn` FROM `$relatedTable` WHERE `$joinColumn` = :id");
+        $stmt->bindValue('id', $joinId);
+        $stmt->execute();
+
+        $existing = array();
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $d) {
+            $existing[$d[$primary]] = $d;
+        }
+
+        $dataids = array_map(function ($row) use ($primary) {
+            return empty($row[$primary]) ? null : $row[$primary];
+        }, $foreignData);
+
+        $tmp = array();
+
+        foreach ($existing as $id => &$ex) {
+            if (!in_array($id, $dataids)) {
+                $dbal->delete($relatedTable, array(
+                    $primary => $id
+                ));
+            }
+        }
+
+        return $this;
+    }
     /**
      * @param string|AbstractDbal $joinTable
      * @param type $joinColumn
      * @param type $foreignColumn
      * @param type $joinId
-     * @param array $foreignIds
+     * @param array $foreignData
      * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
+     *
+     *
+        $this->joinTableUpdate(App::getDbalEmployerIndustry(), 'employer_id', 'industry_id', $id, $data['industries']);
+        $this->joinTableUpdate('employer_industries', 'employer_id', 'industry_id', $id, $data['industries']);
+     *
+     * gdzie $data['industries'] może być:
+     * array(54,34,67,45)
+     * lub id w kluczach a wartości w wartościach jeśli w kolumnie łączącej trzeba ustawić też inne pola niż samej relacji
+     * array(
+     *      45 => array('name'=>'name1)),
+     *      46 => array('name'=>'name2)),
+     *      '47' => array('name'=>'name3)),
+     * )
      */
-    public function joinTableUpdate($joinTable, $joinColumn, $foreignColumn, $joinId, array $foreignIds) {
+    public function joinTableUpdate($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
+
+        $this->joinTableDelete($joinTable, $joinId, $joinColumn, $foreignData, $foreignColumn);
+
+        return $this->joinTableInsert($joinTable, $joinId, $joinColumn, $foreignData, $foreignColumn);
+    }
+    public function joinTableInsert($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
 
         if ($joinTable instanceof AbstractDbal) {
             /* @var $man AbstractDbal */
@@ -132,10 +283,10 @@ abstract class AbstractDbal
 
         $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($man && is_array($foreignIds[0])) {
+        if ($man && is_array($foreignData[0])) {
             $primary = $man->getPrimaryKey();
             $tmp = array();
-            foreach ($foreignIds as $key => &$d) {
+            foreach ($foreignData as $key => &$d) {
                 if (array_key_exists($primary, $d) && $d[$primary] != $key) {
                     $tmp[$d[$primary]] = $d;
                 }
@@ -143,31 +294,22 @@ abstract class AbstractDbal
                     $tmp[$key] = $d;
                 }
             }
-            $foreignIds = $tmp;
+            $foreignData = $tmp;
         }
 
-        if (!empty($foreignIds[0]) && !@is_array($foreignIds[0])) {
+        if (!empty($foreignData[0]) && !@is_array($foreignData[0])) {
             $tmp = array();
-            foreach ($foreignIds as &$id) {
+            foreach ($foreignData as &$id) {
                 $tmp[$id] = array();
             }
-            $foreignIds = $tmp;
-        }
-
-        foreach ($existing as &$d) {
-            if (!array_key_exists($d['jid'], $foreignIds)) {
-                $dbal->delete($joinTable ,array(
-                    $joinColumn     => $joinId,
-                    $foreignColumn  => $d['jid']
-                ));
-            }
+            $foreignData = $tmp;
         }
 
         $ex = array_map(function ($row) {
             return $row['jid'];
         }, $existing);
 
-        foreach ($foreignIds as $id => &$d) {
+        foreach ($foreignData as $id => &$d) {
             if (!in_array($id, $ex)) {
                 $tmp = array_merge($d, array(
                     $joinColumn     => $joinId,
@@ -179,6 +321,58 @@ abstract class AbstractDbal
                 }
 
                 $dbal->insert($joinTable, $tmp);
+            }
+        }
+
+        return $this;
+    }
+    public function joinTableDelete($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
+
+        if ($joinTable instanceof AbstractDbal) {
+            /* @var $man AbstractDbal */
+            $man = $joinTable;
+            $joinTable = $man::TABLE;
+        }
+        else {
+            $man = null;
+        }
+
+        $dbal = AbstractApp::getDbal();
+
+        $stmt = $dbal->prepare("SELECT `$joinColumn` id, `$foreignColumn` jid FROM `$joinTable` WHERE `$joinColumn` = :id");
+        $stmt->bindValue('id', $joinId);
+        $stmt->execute();
+
+        $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        if ($man && is_array($foreignData[0])) {
+            $primary = $man->getPrimaryKey();
+            $tmp = array();
+            foreach ($foreignData as $key => &$d) {
+                if (array_key_exists($primary, $d) && $d[$primary] != $key) {
+                    $tmp[$d[$primary]] = $d;
+                }
+                else {
+                    $tmp[$key] = $d;
+                }
+            }
+            $foreignData = $tmp;
+        }
+
+        if (!empty($foreignData[0]) && !@is_array($foreignData[0])) {
+            $tmp = array();
+            foreach ($foreignData as &$id) {
+                $tmp[$id] = array();
+            }
+            $foreignData = $tmp;
+        }
+
+        foreach ($existing as &$d) {
+            if (!array_key_exists($d['jid'], $foreignData)) {
+                $dbal->delete($joinTable ,array(
+                    $joinColumn     => $joinId,
+                    $foreignColumn  => $d['jid']
+                ));
             }
         }
 
@@ -226,7 +420,7 @@ abstract class AbstractDbal
 
         $primary = $this->getPrimaryKey();
 
-        if (in_array($primary, $data)) {
+        if (array_key_exists($primary, $data)) {
             return $this->persist($data, $data[$primary], $types, true);
         }
 
@@ -243,11 +437,11 @@ abstract class AbstractDbal
      */
     public function insert(array $data, array $types = array()) {
 
-        $data = $this->filterDataToExistingInDb($data);
-
         if (method_exists($this, 'create')) {
             $data = array_merge($this->create(), $data);
         }
+
+        $data = $this->filterDataToExistingInDb($data);
 
         $primary = $this->getPrimaryKey();
 
@@ -290,15 +484,21 @@ abstract class AbstractDbal
      */
     public function update(array $data, $identifier, array $types = array(), $throw = false)
     {
-        $data = $this->filterDataToExistingInDb($data);
-
         if (method_exists($this, 'create')) {
             $data = array_merge($this->create(), $data);
         }
 
+        $data = $this->filterDataToExistingInDb($data);
+
+        $primary = $this->getPrimaryKey();
+
+        if (!empty($data[$primary])) {
+            $id = $data[$primary];
+        }
+
         if (is_numeric($identifier)) {
             $identifier = array(
-                $this->getPrimaryKey() => $identifier
+                $primary => $identifier
             );
         }
 

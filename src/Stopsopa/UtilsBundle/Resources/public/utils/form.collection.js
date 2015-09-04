@@ -7,7 +7,13 @@
         return key.join('-');
     }
     function findPrefix(k) {
-        return k.replace(/^[.\s\S]*?id\s*=\s*["']([^"']+?)__name__[^"']+["'][.\s\S]*$/, '$1');
+        var prefix = k.replace(/^[.\s\S]*?id\s*=\s*["']([^"']+?)__name__[^"']+["'][.\s\S]*$/, '$1');
+
+        if (prefix.indexOf("\n") + 1) {
+            throw "prefix: (should be selector not html): "+prefix;
+        }
+
+        return prefix;
     }
     function getTitle(el) {
         if (el.is('input') || el.is('textarea')) {
@@ -50,14 +56,26 @@
             var t = $(this);
 
             var tdata = t.data(getKey(dataattr));
+            log('tdata')
+            log(tdata)
 
             var listselector = '['+tdata+']';
+            log('listselector')
+            log(listselector)
 
             var list = $(listselector);
+            log('getKey(tdata)')
+            log(getKey(tdata))
+            log("'['+list.data(getKey(tdata))+']'")
+            log('['+list.data(getKey(tdata))+']')
 
             var tmp  = $('['+list.data(getKey(tdata))+']').html();
 
+            log('tmp')
+            log(tmp)
+
             var id = findPrefix(tmp);
+            log('prefix found: '+id)
 
             var reg = new RegExp('^'+id+'(\\d+).*$');
 

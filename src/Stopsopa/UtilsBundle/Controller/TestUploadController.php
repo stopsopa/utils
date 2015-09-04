@@ -1,5 +1,9 @@
 <?php
 
+//stopsopautils:
+//    resource: "@StopsopaUtilsBundle/Controller/"
+//    type:     annotation
+
 namespace Stopsopa\UtilsBundle\Controller;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -139,7 +143,6 @@ class TestUploadController extends AbstractController
      */
     public function deleteAction(Request $request, $id)
     {
-
         /* @var $man UserManager */
         $man = $this->get(UserManager::SERVICE);
 

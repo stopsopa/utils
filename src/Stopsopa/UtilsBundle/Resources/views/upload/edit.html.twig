@@ -21,12 +21,14 @@
 
         {{ form_row(form.surname) }}
 
+
         <div class="header">
             <a href="javascript:void(0)" data-form-collection="data-collation-list">add</a>
             <table>
                 <tbody class="no-border-y" data-collation-list="data-collation-tmp">
-                    {% for c in form.comments %}
-        {#                {% form_theme a 'AppBundle::own_address.html.twig' %}#}
+
+                    {# UWAGA !!! UWAGA !!! - wskazanie pola nested jest TRZY razy nie zapomnieć o tym bo nie rzuci błędem #}
+                    {% for _c in form.comments %}
 
                         {{ block('row') }}
 
@@ -35,8 +37,7 @@
             </table>
         </div>
 
-
-            {{ block('collectionandblueimptemplates') }}
+        {{ block('collectionandblueimptemplates') }}
 
 <hr />
        {# {% form_theme form.file 'StopsopaUtilsBundle:upload:blueimp.html.twig' %}
@@ -48,9 +49,6 @@
 
 
     {{ form_end(form) }}
-
-
-
 
 {% endblock %}
 

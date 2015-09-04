@@ -11,6 +11,38 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 
 /**
  * Stopsopa\UtilsBundle\Entity\DataTransformers\CallbackTransformer.
+ * Jak już to zrobiłem to widzę że jest coś takiego standardowo w symfony:
+ * Symfony\Component\Form\CallbackTransformer
+ *
+ *
+            ->add( // lista encji jako checkboxy , patrz też jak zrobić transformer http://symfony.com/doc/master/cookbook/form/data_transformers.html
+                $builder->create( // jeśli chodzi o listowanie encji jako checkboxy to należy robić tak jak powyżej, nie jak tutaj
+                    'industries', // bo jak zrobimy tak to lista $list jest montowana ze wszystkich encji ale w oderwaniu od podzbioru już wybranych elementów w ramach encji
+                    'choice', // w rezultacie przy kolejnych wejściach do formularza edycji nie będzie nigdy nic zaznaczone że jest już wybrane
+                    array(
+                        'choices'     => $industries,
+                        'multiple'    => true,
+                    )
+                )
+                ->addModelTransformer(new CallbackTransformer(function ($list) {
+                    $tmp = array();
+
+                    foreach ($list as &$d) {
+                        $tmp[] = $d['id'];
+                    }
+
+                    return $tmp;
+                }, function ($list) {
+                    $tmp = array();
+
+                    foreach ($list as &$id) {
+                        $tmp[] = App::getDbalIndustries()->find($id);
+                    }
+
+                    return $tmp;
+                }))
+            )
+ *
  */
 class CallbackTransformer implements DataTransformerInterface
 {

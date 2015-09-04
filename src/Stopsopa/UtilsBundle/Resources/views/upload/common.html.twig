@@ -1,20 +1,21 @@
 
 {% block row %}
+{#    http://stackoverflow.com/questions/7555702/how-to-customize-the-data-prototype-attribute-in-symfony-2-forms#}
     <tr>
         <td class="width-30">
-            {{ form_widget(c.comment, {attr: {'data-title' : ''}}) }}
-            {{ form_errors(c.comment) }}
+            {{ form_widget(_c.comment, {attr: {'data-title' : ''}}) }}
+            {{ form_errors(_c.comment) }}
         </td>
         <td>
-            {{ form_widget(c.createdAt) }}
-            {{ form_errors(c.createdAt) }}
+            {{ form_widget(_c.createdAt) }}
+            {{ form_errors(_c.createdAt) }}
         </td>
         <td>
             <div data-dropzone data-pastezone data-sizelimit="268435456">
                 <div>
                     {#<input type="file" name="file[]" multiple data-sizelimit="<?php echo $uploader->getServerLimit() ?>">#}
-                    {% form_theme c.file 'StopsopaUtilsBundle:upload:blueimp.html.twig' %}
-                    {{ form_widget(c.file, {attr:{'data-dropzone':''}}) }}
+                    {% form_theme _c.file 'StopsopaUtilsBundle:upload:blueimp.html.twig' %}
+                    {{ form_widget(_c.file, {attr:{'data-dropzone':''}}) }}
                     <span>Click or drop file here</span>
                 </div>
             </div>
@@ -22,8 +23,8 @@
         </td>
         <td>
             <div data-list>
-                {% if c.vars.value %}
-                    {% set _e = c.vars.value %}
+                {% if _c.vars.value %}
+                    {% set _e = _c.vars.value %}
                     {{ block('tmpdone') }}
                 {% endif %}
             </div>
@@ -40,7 +41,10 @@
 <!-- templatki dla zagnieżdżonego uploadu, po jednym pliku -->
     <!-- ta jest do obsługi samego collection z form -->
         <script type="text/tmp" data-collation-tmp>
-            {% set c = form.comments.vars.prototype %}
+
+            {# UWAGA !!! UWAGA !!! - wskazanie pola nested jest TRZY razy nie zapomnieć o tym bo nie rzuci błędem #}
+            {% set _c = form.comments.vars.prototype %}
+
             {{ block('row') }}
         </script>
 
@@ -59,7 +63,7 @@
                 <button data-cancelone type="button">cancel</button>
             </div>
         </script>
- 
+
         <script type="text/tmp" data-tmp-done-comment>
 {#                comment: '<%= comment %>',#}
 {#                deleteUrl: '<%= deleteUrl %>',#}
@@ -91,7 +95,7 @@
             <button data-delete="{{ _e.deleteUrl|default('no link')|raw }}" type="button">delete</button>
 
             {% if _e.path is defined %}
-                {{ form_row(c.path) }}
+                {{ form_row(_c.path) }}
             {% endif %}
 
         {% else %}
