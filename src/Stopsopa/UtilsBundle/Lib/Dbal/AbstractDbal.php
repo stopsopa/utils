@@ -105,11 +105,20 @@ abstract class AbstractDbal
         $table = static::TABLE;
         throw new Exception("Not found primary key for table '$table'");
     }
+    /**
+     *
+     *  $this->relatedTableUpdate(App::getDbalEmployerLocations(), $id, 'employer_id', $data['locations']);
+     * @param \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal $relatedMan
+     * @param type $joinId
+     * @param type $joinColumn
+     * @param array $foreignData
+     * @return type
+     */
     public function relatedTableUpdate(AbstractDbal $relatedMan, $joinId, $joinColumn, array $foreignData) {
 
-        $this->relatedTableDelete($relatedMan, $joinId, $joinColumn, $foreignData);
+        /*$this = */ $this->relatedTableDelete($relatedMan, $joinId, $joinColumn, $foreignData);
 
-        $this->relatedTableInsert($relatedMan, $joinId, $joinColumn, $foreignData);
+        $foreignData = $this->relatedTableInsert($relatedMan, $joinId, $joinColumn, $foreignData);
 
         return $this->relatedTableModify($relatedMan, $joinId, $joinColumn, $foreignData);
     }
@@ -148,10 +157,12 @@ abstract class AbstractDbal
                 $insert = $relatedMan->filterDataToExistingInDb($insert);
 
                 $dbal->insert($relatedTable, $insert);
+
+                $data[$primary] = $dbal->lastInsertId();
             }
         }
 
-        return $this;
+        return $foreignData;
     }
     public function relatedTableModify(AbstractDbal $relatedMan, $joinId, $joinColumn, array $foreignData) {
 
@@ -184,14 +195,15 @@ abstract class AbstractDbal
                     $d = array_merge($relatedMan->create(), $d);
                 }
 
-                $dbal->update($relatedTable, $d, array(
+                $update = $relatedMan->filterDataToExistingInDb($d);
+
+                $dbal->update($relatedTable, $update, array(
                     $primary => $id
                 ));
             }
         }
 
-
-        return $this;
+        return $tmp;
     }
     /**
      * Zostawia tylko te co wylistujesz w $foreignData - resztę usuwa
@@ -257,13 +269,25 @@ abstract class AbstractDbal
      *      46 => array('name'=>'name2)),
      *      '47' => array('name'=>'name3)),
      * )
+     *
+     * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
      */
     public function joinTableUpdate($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
 
         $this->joinTableDelete($joinTable, $joinId, $joinColumn, $foreignData, $foreignColumn);
 
+
+        /**
+         * Tutaj w przyszłości trzeba dorobić update gdy tabela łącząca ma dodatkowe pola,
+         * bo z takiej tabeli ani nie będziemy usuwać ani dodawać wierszy ale za to trzeba je zmienić
+         */
+
+
         return $this->joinTableInsert($joinTable, $joinId, $joinColumn, $foreignData, $foreignColumn);
     }
+    /**
+     * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
+     */
     public function joinTableInsert($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
 
         if ($joinTable instanceof AbstractDbal) {
@@ -283,8 +307,8 @@ abstract class AbstractDbal
 
         $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($man && is_array($foreignData[0])) {
-            $primary = $man->getPrimaryKey();
+        if ($man && @is_array($foreignData[0])) {
+            $primary = $this->getPrimaryKey();
             $tmp = array();
             foreach ($foreignData as $key => &$d) {
                 if (array_key_exists($primary, $d) && $d[$primary] != $key) {
@@ -326,6 +350,9 @@ abstract class AbstractDbal
 
         return $this;
     }
+    /**
+     * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
+     */
     public function joinTableDelete($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
 
         if ($joinTable instanceof AbstractDbal) {
@@ -345,8 +372,8 @@ abstract class AbstractDbal
 
         $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        if ($man && is_array($foreignData[0])) {
-            $primary = $man->getPrimaryKey();
+        if ($man && @is_array($foreignData[0])) {
+            $primary = $this->getPrimaryKey();
             $tmp = array();
             foreach ($foreignData as $key => &$d) {
                 if (array_key_exists($primary, $d) && $d[$primary] != $key) {

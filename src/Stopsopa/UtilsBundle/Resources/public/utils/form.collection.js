@@ -46,7 +46,9 @@
 
             },
             remove: function (row, list, callback, name) {
-                callback();
+                if (prompt("Are you really want to delete '"+name+"'?")) {
+                    callback();
+                }
             }
         }, opt || {});
 
@@ -56,18 +58,10 @@
             var t = $(this);
 
             var tdata = t.data(getKey(dataattr));
-            log('tdata')
-            log(tdata)
 
             var listselector = '['+tdata+']';
-            log('listselector')
-            log(listselector)
 
             var list = $(listselector);
-            log('getKey(tdata)')
-            log(getKey(tdata))
-            log("'['+list.data(getKey(tdata))+']'")
-            log('['+list.data(getKey(tdata))+']')
 
             var tmp  = $('['+list.data(getKey(tdata))+']').html();
 
@@ -75,6 +69,7 @@
             log(tmp)
 
             var id = findPrefix(tmp);
+
             log('prefix found: '+id)
 
             var reg = new RegExp('^'+id+'(\\d+).*$');
@@ -103,14 +98,11 @@
             list.on('click', opt.del, function (e) {
                 e.preventDefault();
 
-                log('test remove');
-
                 var t = $(this).parents(listselector+' *').last();
 
                 var name = getTitle(t.find(opt.title));
 
                 opt.remove(t, list, function () {
-                    log('remove innerr')
                     t.remove();
                 }, name);
             });

@@ -57,13 +57,17 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
                     )
                 )
                 ->addModelTransformer(new CallbackTransformer(function ($list) {
-                    $tmp = array();
+                    if ($list) {
+                        $tmp = array();
 
-                    foreach ($list as &$d) {
-                        $tmp[] = $d['id'];
+                        foreach ($list as &$d) {
+                            $tmp[] = $d['id'];
+                        }
+
+                        return $tmp;
                     }
 
-                    return $tmp;
+                    return $list;
                 }, function ($list) {
                     $tmp = array();
 
