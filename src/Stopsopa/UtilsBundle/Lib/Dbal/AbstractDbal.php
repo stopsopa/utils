@@ -376,7 +376,7 @@ abstract class AbstractDbal
             $primary = $this->getPrimaryKey();
             $tmp = array();
             foreach ($foreignData as $key => &$d) {
-                if (array_key_exists($primary, $d) && $d[$primary] != $key) {
+                if (array_key_exists($primary, $d) && $d[$primary] != $key) { 
                     $tmp[$d[$primary]] = $d;
                 }
                 else {
