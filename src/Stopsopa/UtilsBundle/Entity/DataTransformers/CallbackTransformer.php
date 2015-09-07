@@ -15,6 +15,38 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
  * Symfony\Component\Form\CallbackTransformer
  *
  *
+ *
+            ->add( // lista encji jako checkboxy , patrz też jak zrobić transformer http://symfony.com/doc/master/cookbook/form/data_transformers.html
+                $builder->create( // jeśli chodzi o listowanie encji jako checkboxy to należy robić tak jak powyżej, nie jak tutaj
+                    'locations', // bo jak zrobimy tak to lista $list jest montowana ze wszystkich encji ale w oderwaniu od podzbioru już wybranych elementów w ramach encji
+                    'collection', // w rezultacie przy kolejnych wejściach do formularza edycji nie będzie nigdy nic zaznaczone że jest już wybrane
+                    array(
+                        'label' => 'Adresy',
+                        'allow_add'     => true,
+                        'allow_delete'  => true,
+                        'type' => new LocationType()
+                    )
+                )
+                ->addModelTransformer(new CallbackTransformer(function ($list) {
+                    return $list;
+                }, function ($list) {
+                    $tmp = array();
+
+                    foreach ($list as &$id) {
+                        if (is_array($id)) {
+                            $tmp[] = $id;
+                        }
+                        else {
+                            $tmp[] = App::getDbalEmployerLocations()->find($id);
+                        }
+                    }
+
+                    return $tmp;
+                }))
+            )
+ *
+ *
+ *
             ->add( // lista encji jako checkboxy , patrz też jak zrobić transformer http://symfony.com/doc/master/cookbook/form/data_transformers.html
                 $builder->create( // jeśli chodzi o listowanie encji jako checkboxy to należy robić tak jak powyżej, nie jak tutaj
                     'industries', // bo jak zrobimy tak to lista $list jest montowana ze wszystkich encji ale w oderwaniu od podzbioru już wybranych elementów w ramach encji
@@ -43,6 +75,7 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
                 }))
             )
  *
+ *
  */
 class CallbackTransformer implements DataTransformerInterface
 {
@@ -53,11 +86,9 @@ class CallbackTransformer implements DataTransformerInterface
         $this->reverse      = $reverse;
     }
     public function transform($list) {
-        $transform = $this->transform;
-        return $transform($list);
+        return call_user_func($this->transform, $list);
     }
     public function reverseTransform($list) {
-        $reverse = $this->reverse;
-        return $reverse($list);
+        return call_user_func($this->reverse, $list);
     }
 }

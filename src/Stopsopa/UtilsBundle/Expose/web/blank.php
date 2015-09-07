@@ -68,7 +68,10 @@ function setStatusCode($statusCode) {
 
 setStatusCode(503);
 
-?><!DOCTYPE HTML>
+?>
+
+<!--
+<!DOCTYPE HTML>
 <html lang="en-US">
 <head>
     <meta charset="UTF-8">
@@ -97,6 +100,55 @@ setStatusCode(503);
     </div>
 </body>
 </html>
+-->
+
+
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style type="text/css">
+        body {
+            font-family: tahoma;
+            text-align: center;
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            position: fixed;
+        }
+        body > div {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+        body > div > div {
+            position: absolute;
+            margin: auto;
+            width:   300px;
+            height:  46px;
+            top:     -9999px;
+            bottom:  -9999px;
+            left:   -9999px;
+            right:  -9999px;
+
+            border: 1px solid red;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <div>
+            <!-- przykład z: http://codepen.io/anon/pen/rOVOev?editors=110 -->
+            Trwa aktualizacja serwisu.<br />Zapraszamy za kilka minut.
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
 <?php
 
 die();
