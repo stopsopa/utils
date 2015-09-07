@@ -31,7 +31,7 @@
             up   : $.noop,
         }, opt || {});
 
-        var d = $(this), hold = false, tmp; // hold button
+        var t = $(this), hold = false, tmp; // hold button
 
         function move (e) {
             opt.move.apply(this, [e, tmp, {
@@ -50,10 +50,10 @@
             opt.up.apply(this, arguments);
             hold = false;
             doc.off('mousemove', move);
-            d.off('mousedown', down).off('mouseup', up)
+            t.off('mousedown', down).off('mouseup', up)
         }
 
-        d
+        return t
             .on('mouseenter', function () {
                 if (!hold) {
                     doc.on('mousedown', down).on('mouseup', up)
@@ -64,7 +64,5 @@
                     doc.off('mousedown', down).off('mouseup', up)
                 }
             });
-
-        return d;
     }
 })(jQuery);

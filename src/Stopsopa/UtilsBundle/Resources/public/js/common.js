@@ -177,6 +177,21 @@ if ('jQuery' in window) {
             site.error("A server error has occurred. " + site.status(jqXHR.status, "-"));
         };
     }(jQuery));
+
+
+
+    (function ($) {
+        if ($.ajaxstatus) {
+            if (!window.site) {
+                window.site = {};
+            }
+            $(function () {
+                $.ajaxstatus({/*options*/},site);
+            });
+        }
+    })(jQuery);
+
+
 }
 else {
     log('common.js: brak biblioteki jQuery');
@@ -212,7 +227,6 @@ if (window.Routing) {
         }
     }
 }
-
 
 if ('sweetAlert' in window) {
     swal = sweetAlert
