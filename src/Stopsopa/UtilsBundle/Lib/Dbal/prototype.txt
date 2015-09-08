@@ -249,6 +249,19 @@ abstract class AbstractDbal
 
         return $this;
     }
+    public function joinTableExists(AbstractDbal $man, $joinId, $joinColumn, $foreignColumn) {
+
+        $dbal = AbstractApp::getDbal();
+
+        $joinTable = $man::TABLE;
+
+        $stmt = $dbal->prepare("SELECT `$joinColumn` id, `$foreignColumn` jid FROM `$joinTable` WHERE `$joinColumn` = :id");
+        $stmt->bindValue('id', $joinId);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     /**
      * @param string|AbstractDbal $joinTable
      * @param type $joinColumn
@@ -272,59 +285,59 @@ abstract class AbstractDbal
      *
      * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
      */
-    public function joinTableUpdate($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
+    public function joinTableUpdate($man, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
 
-        $this->joinTableDelete($joinTable, $joinId, $joinColumn, $foreignData, $foreignColumn);
+        $exists = $this->joinTableExists($man, $joinId, $joinColumn, $foreignColumn);
 
+        $foreignData = $this->joinTableDelete($man, $joinId, $joinColumn, $foreignData, $foreignColumn, $exists);
 
-        /**
-         * Tutaj w przyszłości trzeba dorobić update gdy tabela łącząca ma dodatkowe pola,
-         * bo z takiej tabeli ani nie będziemy usuwać ani dodawać wierszy ale za to trzeba je zmienić
-         */
+        $foreignData = $this->joinTableInsert($man, $joinId, $joinColumn, $foreignData, $foreignColumn);
 
+        return $this->joinTableModify($man, $joinId, $joinColumn, $foreignData, $foreignColumn);
 
-        return $this->joinTableInsert($joinTable, $joinId, $joinColumn, $foreignData, $foreignColumn);
+        /// *$this = * // $this->relatedTableDelete($relatedMan, $joinId, $joinColumn, $foreignData);
+
+        //$foreignData = $this->relatedTableInsert($relatedMan, $joinId, $joinColumn, $foreignData);
+
+        //return $this->relatedTableModify($relatedMan, $joinId, $joinColumn, $foreignData);
     }
     /**
      * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
      */
-    public function joinTableInsert($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
+    public function joinTableModify($man, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
 
-        if ($joinTable instanceof AbstractDbal) {
-            /* @var $man AbstractDbal */
-            $man = $joinTable;
-            $joinTable = $man::TABLE;
+        if (!$exists) {
+            $exists = $this->joinTableExists($man, $joinId, $joinColumn, $foreignColumn);
         }
-        else {
-            $man = null;
-        }
+
+        $joinTable = $man::TABLE;
 
         $dbal = AbstractApp::getDbal();
 
-        $stmt = $dbal->prepare("SELECT `$joinColumn` id, `$foreignColumn` jid FROM `$joinTable` WHERE `$joinColumn` = :id");
-        $stmt->bindValue('id', $joinId);
-        $stmt->execute();
+        $primary = $this->getPrimaryKey();
 
-        $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $ex = array_map(function ($row) {
+            return $row['jid'];
+        }, $existing);
 
-        if ($man && @is_array($foreignData[0])) {
-            $primary = $this->getPrimaryKey();
-            $tmp = array();
-            foreach ($foreignData as $key => &$d) {
-                if (array_key_exists($primary, $d) && $d[$primary] != $key) {
-                    $tmp[$d[$primary]] = $d;
-                }
-                else {
-                    $tmp[$key] = $d;
-                }
-            }
-            $foreignData = $tmp;
+        if () {
+
         }
 
-        if (!empty($foreignData[0]) && !@is_array($foreignData[0])) {
+
+
+
+
+        if (!empty($foreignData[0])) { // jeśli w kluczach są id'ki to nigdy nie powinno być tutaj 0
             $tmp = array();
-            foreach ($foreignData as &$id) {
-                $tmp[$id] = array();
+            foreach ($foreignData as &$data) {
+                if (!is_array($data)) {
+                    $data = array(
+                        $primary => $data
+                    );
+                }
+
+                $tmp[] = $data;
             }
             $foreignData = $tmp;
         }
@@ -333,8 +346,8 @@ abstract class AbstractDbal
             return $row['jid'];
         }, $existing);
 
-        foreach ($foreignData as $id => &$d) {
-            if (!in_array($id, $ex)) {
+        foreach ($foreignData as $key => &$d) {
+            if (isset($d[$primary]) && !in_array($d[$primary], $d)) {
                 $tmp = array_merge($d, array(
                     $joinColumn     => $joinId,
                     $foreignColumn  => $id
@@ -345,65 +358,90 @@ abstract class AbstractDbal
                 }
 
                 $dbal->insert($joinTable, $tmp);
+
+                $foreignData[$key][$primary] = $dbal->lastInsertId();
             }
         }
 
-        return $this;
+        return $foreignData;
     }
-    /**
-     * @return \Stopsopa\UtilsBundle\Lib\Dbal\AbstractDbal
-     */
-    public function joinTableDelete($joinTable, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
+    public function joinTableInsert($man, $joinId, $joinColumn, array $foreignData, $foreignColumn) {
 
-        if ($joinTable instanceof AbstractDbal) {
-            /* @var $man AbstractDbal */
-            $man = $joinTable;
-            $joinTable = $man::TABLE;
+        if (!$exists) {
+            $exists = $this->joinTableExists($man, $joinId, $joinColumn, $foreignColumn);
         }
-        else {
-            $man = null;
-        }
+
+        $joinTable = $man::TABLE;
 
         $dbal = AbstractApp::getDbal();
 
-        $stmt = $dbal->prepare("SELECT `$joinColumn` id, `$foreignColumn` jid FROM `$joinTable` WHERE `$joinColumn` = :id");
-        $stmt->bindValue('id', $joinId);
-        $stmt->execute();
+        $primary = $this->getPrimaryKey();
 
-        $existing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($foreignData as $key => &$d) {
+            if (empty($d[$primary])) {
 
-        if ($man && @is_array($foreignData[0])) {
-            $primary = $this->getPrimaryKey();
-            $tmp = array();
-            foreach ($foreignData as $key => &$d) {
-                if (array_key_exists($primary, $d) && $d[$primary] != $key) {
-                    $tmp[$d[$primary]] = $d;
+                $tmp = array_merge($d, array(
+                    $joinColumn     => $joinId,
+                    $foreignColumn  => $d[$primary]
+                ));
+
+                if ($man) {
+                    $tmp = $man->filterDataToExistingInDb($tmp);
                 }
-                else {
-                    $tmp[$key] = $d;
-                }
+
+                $dbal->insert($joinTable, $tmp);
+
+                $foreignData[$key][$primary] = $dbal->lastInsertId();
             }
-            $foreignData = $tmp;
         }
 
-        if (!empty($foreignData[0]) && !@is_array($foreignData[0])) {
-            $tmp = array();
-            foreach ($foreignData as &$id) {
-                $tmp[$id] = array();
-            }
-            $foreignData = $tmp;
+        return $foreignData;
+    }
+    /**
+     *
+     * @param type $man
+     * @param type $joinId
+     * @param type $joinColumn
+     * @param array $foreignData - to arrayki bez kombinacji, tylko jak coś to znaczenie ma
+     *         czy jest id czy go nie ma, jeśli jest to próba update, jeśli nie ma to insert
+     * @param type $foreignColumn
+     * @param type $exists
+     * @return $foreignData
+     */
+    public function joinTableDelete($man, $joinId, $joinColumn, array $foreignData, $foreignColumn, $exists = null) {
+
+        if (!$exists) {
+            $exists = $this->joinTableExists($man, $joinId, $joinColumn, $foreignColumn);
         }
 
-        foreach ($existing as &$d) {
-            if (!array_key_exists($d['jid'], $foreignData)) {
+        $joinTable = $man::TABLE;
+
+        $dbal = AbstractApp::getDbal();
+
+        $primary = $this->getPrimaryKey();
+
+        $new = array_map(function ($row) use ($primary) {
+            return isset($row[$primary]) ? $row[$primary] : null ;
+        }, $foreignData);
+
+        $tmp = array();
+        foreach ($foreignData as &$d) {
+            if (!empty($foreignData[$primary])) {
+                $tmp[$foreignData[$primary]] = $d;
+            }
+        }
+
+        foreach ($exists as &$d) {
+            if (!array_key_exists($d['jid'], $tmp)) {
                 $dbal->delete($joinTable ,array(
                     $joinColumn     => $joinId,
                     $foreignColumn  => $d['jid']
                 ));
+                unset($tmp[$d['jid']]);
             }
         }
 
-        return $this;
+        return array_values($tmp);
     }
 
     protected $columns;
