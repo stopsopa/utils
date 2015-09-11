@@ -44,18 +44,15 @@ abstract class AbstractManager
             $this->table = $this->getTableName();
         }
     }
-    public function count()
+    public function count(callable $filter, $alias = 'x')
     {
-        $table = $this->table;
-        $stmt = $this->dbal->query("
-SELECT count(*) c FROM $table
-");
-        $stmt->execute();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            return (int) $row['c'];
+        $qb = $this->createQueryBuilder($alias);
+
+        if (is_callable($filter)) {
+            call_user_func($filter, $qb);
         }
 
-        return 0;
+        return intval($qb->select('count('.$alias.')')->getQuery()->getSingleScalarResult());
     }
     public function getTableName($class = null)
     {
@@ -385,21 +382,37 @@ SELECT count(*) c FROM $table
      * @param type $num
      * @return type
      */
-    public function findRandom($num = 1) {
+    public function findRandom($num = 1, callable $filter = null, $alias = 'x') {
 
-        $c = $this->count();
+        $c = $this->count($filter, $alias);
 
-        $qb = $this->createQueryBuilder('x');
+        $max = $c - $num;
 
-        return $qb
+        $first = ($max > 0) ? rand(0, $max) : 0;
+
+        $qb = $this->createQueryBuilder($alias);
+
+        $qb
             ->setMaxResults($num)
-            ->setFirstResult(rand(0, $c - $num))
+            ->setFirstResult($first)
+        ;
+
+        if (is_callable($filter)) {
+            call_user_func($filter, $qb);
+        }
+
+        $return = $qb
             ->getQuery()
             ->getResult()
         ;
+
+        // to w sumie trzeba przerobić bo teraz wyciąga mimo wszystko zawsze elementy znajdujące się koło siebie w bazie
+        shuffle($return);
+
+        return $return;
     }
-    public function findRandomOne() {
-        $list = $this->findRandom();
+    public function findRandomOne(callable $modifyQueryBuilder = null, $alias = 'x') {
+        $list = $this->findRandom($modifyQueryBuilder, $alias);
 
         if (count($list)) {
             return $list[0];
