@@ -44,7 +44,7 @@ abstract class AbstractManager
             $this->table = $this->getTableName();
         }
     }
-    public function count(callable $filter, $alias = 'x')
+    public function count(callable $filter = null, $alias = 'x')
     {
         $qb = $this->createQueryBuilder($alias);
 
