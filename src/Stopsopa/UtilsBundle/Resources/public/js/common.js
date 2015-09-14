@@ -5,6 +5,7 @@
 'use strict';
 
 //window.log = console ? console.log : function () {};
+// function log(l) {try{console.log(l)}catch(e){}}
 function log() {
     try {
         window.console.log.apply(window.console, arguments);
