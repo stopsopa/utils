@@ -378,24 +378,36 @@ abstract class AbstractManager
         return $this->dbal;
     }
     /**
-     * Tą metodę kiedyś trzebaby wzbogacić bo tera zwyciąga kilka ale występujących po sobie
+     *
      * @param type $num
+     * @param callable $filter Raczej nie wskazane jest tutaj używanie orderBy bo zepsuje to właściwość losowania tej metody - inaczej, przestanie działać random
+     * @param type $alias
      * @return type
      */
     public function findRandom($num = 1, callable $filter = null, $alias = 'x') {
 
         $c = $this->count($filter, $alias);
 
-        $max = $c - $num;
-
-        $first = ($max > 0) ? rand(0, $max) : 0;
-
         $qb = $this->createQueryBuilder($alias);
 
-        $qb
-            ->setMaxResults($num)
-            ->setFirstResult($first)
-        ;
+        if ($num === 1) {
+            $max = $c - $num;
+
+            $first = ($max > 0) ? rand(0, $max) : 0;
+
+            $qb
+                ->setFirstResult($first)
+            ;
+        }
+        else {
+            // select *, crc32(concat(c.id, rand())) c from cities c order by c
+            $qb
+                ->addSelect("CRC32(CONCAT(".$alias.".id, :rand_)) as HIDDEN rand_")
+                ->setParameter('rand_', substr(md5( uniqid().mt_rand(0, 10000) ), -5))
+                ->orderBy('rand_');
+        }
+
+        $qb->setMaxResults($num);
 
         if (is_callable($filter)) {
             call_user_func($filter, $qb);
