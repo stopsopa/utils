@@ -411,8 +411,8 @@ abstract class AbstractManager
 
         return $return;
     }
-    public function findRandomOne(callable $modifyQueryBuilder = null, $alias = 'x') {
-        $list = $this->findRandom($modifyQueryBuilder, $alias);
+    public function findRandomOne(callable $filter = null, $alias = 'x') {
+        $list = $this->findRandom(1, $filter, $alias);
 
         if (count($list)) {
             return $list[0];
