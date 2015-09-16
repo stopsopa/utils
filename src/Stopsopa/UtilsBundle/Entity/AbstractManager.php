@@ -378,7 +378,6 @@ abstract class AbstractManager
         return $this->dbal;
     }
     /**
-     *
      * @param type $num
      * @param callable $filter Raczej nie wskazane jest tutaj używanie orderBy bo zepsuje to właściwość losowania tej metody - inaczej, przestanie działać random
      * @param type $alias
@@ -395,15 +394,13 @@ abstract class AbstractManager
 
             $first = ($max > 0) ? rand(0, $max) : 0;
 
-            $qb
-                ->setFirstResult($first)
-            ;
+            $qb->setFirstResult($first);
         }
         else {
             // select *, crc32(concat(c.id, rand())) c from cities c order by c
             $qb
                 ->addSelect("CRC32(CONCAT(".$alias.".id, :rand_)) as HIDDEN rand_")
-                ->setParameter('rand_', substr(md5( uniqid().mt_rand(0, 10000) ), -5))
+                ->setParameter('rand_', '-'.substr(md5( uniqid().mt_rand(0, 10000) ), -5))
                 ->orderBy('rand_');
         }
 
@@ -413,15 +410,10 @@ abstract class AbstractManager
             call_user_func($filter, $qb);
         }
 
-        $return = $qb
+        return $qb
             ->getQuery()
             ->getResult()
         ;
-
-        // to w sumie trzeba przerobić bo teraz wyciąga mimo wszystko zawsze elementy znajdujące się koło siebie w bazie
-        shuffle($return);
-
-        return $return;
     }
     public function findRandomOne(callable $filter = null, $alias = 'x') {
         $list = $this->findRandom(1, $filter, $alias);
