@@ -2,13 +2,14 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
     return function (box, opt) {
         opt = $.extend({
             h: h,
-            onresize : $.noop
+            onresize : $.noop,
+            content: null
         }, opt || {});
 
         opt.onresize = _.debounce(opt.onresize, 200);
 
         box.html(tmp({
-            data: _.unescape(box.html())
+            data: _.unescape(opt.content || box.html())
         }))
 
         var widget = box.find('[data-widget]');
@@ -29,9 +30,9 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
                 valid_elements      : "a[href|!target=_blank|!rel=nofollow],strong/b,div,br,p,ul,li,em",
                 //invalid_elements    : "strong,em"
                 forced_root_block   : false,
-                language            : "pl",
-                body_class          : "tiny wys", // klasa tinymce // a na stronie robimy na przykład 'tiny web'
-                content_css         : "tiny.css"  // http://www.tinymce.com/wiki.php/Configuration:content_css
+                language            : "pl"//,
+                //body_class          : "tiny wys", // klasa tinymce // a na stronie robimy na przykład 'tiny web'
+                //content_css         : "tiny.css"  // http://www.tinymce.com/wiki.php/Configuration:content_css
             });
 
 
@@ -51,8 +52,28 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
             opt.onresize(widget.height());
 
         return {
+            tinymce : function () {
+                return widget.tinymce();
+            },
             get: function () {
-
+                return this.tinymce().getContent();
+            },
+            set: function (data) {
+                this.tinymce().setContent(data);
+                return this;
+            },
+            getH: function () {
+                return widget.height();
+            },
+            setH: function (h) {
+                var hh = parseInt(h);
+                if (hh > 0) {
+                    widget.css({minHeight: hh+'px'});
+                }
+                else {
+                    throw 'Wrong h: '.JSON.stringify(h);
+                }
+                return this;
             }
         };
     }
