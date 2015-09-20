@@ -24,7 +24,12 @@ class Json
                 $depth
             );
         } else {
-            $tmp = json_encode($data, $options, $depth);
+            if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+                $tmp = json_encode($data, $options);
+            }
+            else {
+                $tmp = json_encode($data, $options, $depth);
+            }
         }
 
         if ($tmp === false) {

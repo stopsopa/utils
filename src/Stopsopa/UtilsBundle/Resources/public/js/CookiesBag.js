@@ -23,7 +23,7 @@ window.CookiesBag = function (ckey, defopt) {
     function get() {
         t = cookies.get(ckey);
         try {
-            return JSON.parse(flipget(t));
+            return $.extend(defopt, JSON.parse(flipget(t)));
         }
         catch (e) {
             return defopt;
