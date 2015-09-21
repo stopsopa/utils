@@ -1,0 +1,6 @@
+parameters:
+    jirarest:
+        endpoint: https://absolvent.atlassian.net
+        user: jirauser
+        password:  jirapassowrd
+        project: CRAW
