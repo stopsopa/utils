@@ -278,7 +278,7 @@ class AbstractApp
      */
     public static function getDbal($type = 'default')
     {
-        return static::getEntityManager($type)->getConnection();
+        return static::getCont()->get("doctrine.dbal.{$type}_connection");
     }
 
     /**
