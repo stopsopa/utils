@@ -10,6 +10,9 @@
  *   MIT License http://www.opensource.org/licenses/mit-license
  *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
+ *   Modyfikowane - patrz sekcje /* simon vvv * / oraz /* simon ^^^ * /
+ *   dodałem .getQuery('nazwa parametru') - setQuery() jest i działa jakbyśmy sie spodziewali, dodatkowe użycie .getQuery('id', 'defaultjeslinieistnieje')
+ *
  */
 (function (root, factory) {
   'use strict';
@@ -112,7 +115,7 @@
     for (i = 0, length = data.length; i < length; i++) {
       /*jshint laxbreak: true */
       var _match = lookup && lookup[data[i]] !== undefined
-        || !lookup && value.test(data[i]);
+          || !lookup && value.test(data[i]);
       /*jshint laxbreak: false */
       if (_match) {
         data.splice(i, 1);
@@ -273,8 +276,8 @@
   function strictEncodeURIComponent(string) {
     // see https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/encodeURIComponent
     return encodeURIComponent(string)
-      .replace(/[!'()*]/g, escapeForDumbFirefox36)
-      .replace(/\*/g, '%2A');
+        .replace(/[!'()*]/g, escapeForDumbFirefox36)
+        .replace(/\*/g, '%2A');
   }
   URI.encode = strictEncodeURIComponent;
   URI.decode = decodeURIComponent;
@@ -832,7 +835,7 @@
 
       case 'Number':
         value = String(value);
-        /* falls through */
+      /* falls through */
       case 'String':
         if (!isArray(data[name])) {
           return data[name] === value;
@@ -1557,8 +1560,8 @@
     if (v === undefined) {
       /*jshint laxbreak: true */
       return segment === undefined
-        ? segments
-        : segments[segment];
+          ? segments
+          : segments[segment];
       /*jshint laxbreak: false */
     } else if (segment === null || segments[segment] === undefined) {
       if (isArray(v)) {
@@ -1650,6 +1653,12 @@
       return q.call(this, v, build);
     }
   };
+  /* simon vvv */
+  p.getQuery = function (key, def) {
+    var l = this.query(true);
+    return l[key] || def;
+  }
+  /* simon ^^^ */
   p.setQuery = function(name, value, build) {
     var data = URI.parseQuery(this._parts.query, this._parts.escapeQuerySpace);
 
@@ -1708,21 +1717,21 @@
   p.normalize = function() {
     if (this._parts.urn) {
       return this
+          .normalizeProtocol(false)
+          .normalizePath(false)
+          .normalizeQuery(false)
+          .normalizeFragment(false)
+          .build();
+    }
+
+    return this
         .normalizeProtocol(false)
+        .normalizeHostname(false)
+        .normalizePort(false)
         .normalizePath(false)
         .normalizeQuery(false)
         .normalizeFragment(false)
         .build();
-    }
-
-    return this
-      .normalizeProtocol(false)
-      .normalizeHostname(false)
-      .normalizePort(false)
-      .normalizePath(false)
-      .normalizeQuery(false)
-      .normalizeFragment(false)
-      .build();
   };
   p.normalizeProtocol = function(build) {
     if (typeof this._parts.protocol === 'string') {
@@ -1783,8 +1792,8 @@
 
     // resolve simples
     _path = _path
-      .replace(/(\/(\.\/)+)|(\/\.$)/g, '/')
-      .replace(/\/{2,}/g, '/');
+        .replace(/(\/(\.\/)+)|(\/\.$)/g, '/')
+        .replace(/\/{2,}/g, '/');
 
     // remember leading parents
     if (_was_relative) {
@@ -1910,11 +1919,11 @@
       for (var i = 0, qp = uri._parts.query.split('&'), l = qp.length; i < l; i++) {
         var kv = (qp[i] || '').split('=');
         q += '&' + URI.decodeQuery(kv[0], this._parts.escapeQuerySpace)
-          .replace(/&/g, '%26');
+                .replace(/&/g, '%26');
 
         if (kv[1] !== undefined) {
           q += '=' + URI.decodeQuery(kv[1], this._parts.escapeQuerySpace)
-            .replace(/&/g, '%26');
+                  .replace(/&/g, '%26');
         }
       }
       t += '?' + q.substring(1);
@@ -2024,9 +2033,9 @@
     }
 
     var parents = baseParts.path
-      .substring(common.length)
-      .replace(/[^\/]*$/, '')
-      .replace(/.*?\//g, '../');
+        .substring(common.length)
+        .replace(/[^\/]*$/, '')
+        .replace(/.*?\//g, '../');
 
     relativeParts.path = parents + relativeParts.path.substring(common.length);
 
