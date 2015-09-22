@@ -5,6 +5,7 @@ namespace Stopsopa\UtilsBundle\Lib\FileProcessors\Tools;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request as BaseRequest;
+use DateTime;
 
 class UploadHelper
 {
