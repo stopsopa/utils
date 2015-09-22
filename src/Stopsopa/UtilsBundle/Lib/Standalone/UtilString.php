@@ -659,4 +659,31 @@ class UtilString
 
         return implode('', $s);
     }
+    protected static $template;
+    /**
+     * Starsza wersja przed modyfikacjami : cHVibGljIHN0YXRpYyBmdW5jdGlvbiB0ZW1wbGF0ZSAoJF9fX2ZpbGUsJHZhcnMgPSBhcnJheSgpLCAkcmV3cml0ZV9zaG9ydF90YWdzICA9IGZhbHNlKSB7DQogICAgaWYgKHN0cnBvcygkX19fZmlsZSwgIlxuIikgPT09IGZhbHNlICAvKiYmIGlzX2ZpbGUoJGZpbGUpICovKQ0KICAgIHsNCiAgICAgIG9iX3N0YXJ0KCk7IA0KICAgICAgaWYgKGlzX2FycmF5KCR2YXJzKSkgZXh0cmFjdCgkdmFycyk7DQogICAgICBpZiAoJHJld3JpdGVfc2hvcnRfdGFncyBhbmQgKGJvb2wpIEBpbmlfZ2V0KCdzaG9ydF9vcGVuX3RhZycpID09PSBmYWxzZSkgew0KICAgICAgICBlY2hvIGV2YWwoJz8+Jy5wcmVnX3JlcGxhY2UgKCIvOypccypcPz4vIiwgJzsgPz4nICxzdHJfcmVwbGFjZSgnPD9waHA9JywnPD9waHAgZWNobyAnLHN0cl9yZXBsYWNlKCc8PycsJzw/cGhwJywgZmlsZV9nZXRfY29udGVudHMoJF9fX2ZpbGUpKSkpKTsgICAgICAgICAgDQogICAgICAgICRfcmV0dmFsID0gZmFsc2U7DQogICAgICB9DQogICAgICBlbHNlIHsgDQogICAgICAgICRfcmV0dmFsID0gaW5jbHVkZSgkX19fZmlsZSk7IC8vIGluY2x1ZGUoKSB2cyBpbmNsdWRlX29uY2UoKSBhbGxvd3MgZm9yIG11bHRpcGxlIHZpZXdzIHdpdGggdGhlIHNhbWUgbmFtZQ0KICAgICAgfQ0KICAgICAgJGNvbnRlbnQgPSBvYl9nZXRfY2xlYW4oKTsNCi8vICAgICAgICBlY2hvICRjb250ZW50OyANCg0KICAgICAgcmV0dXJuIGlzX2FycmF5KCRfcmV0dmFsKSA/ICRfcmV0dmFsIDogJGNvbnRlbnQ7DQogICAgfQ0KICAgIHRocm93IG5ldyBFeGNlcHRpb24oIkNvdWxkIG5vdCBsb2FkIHRlbXBsYXRlIGZpbGUgJyRfX19maWxlJyIpOw0KfQ==
+     * Przetwarza plik ze znacznikami i zwraca rezultat
+     * Logika z codeigniter
+     * oraz sfYaml.php - SVN: $Id: sfYaml.class.php 8988 2008-05-15 20:24:26Z fabien $
+     * oraz http://stackoverflow.com/questions/4752177/php-simple-template-engine
+     *
+     * w przyszłości może warto rozbudować do czegoś takiego jak w codeigniter: system/core/Loader.php
+     * Ciekawostka: funkcja zdaje się działać z tą samą prędkością w trybie wymuszonego short_open_tags
+     *      czyżby eval było różnie szybkie co include, pewnie include używa eval,
+            tylko w takim razie gdzie się podziewa czas przetwarzania replace ???
+     */
+    protected static function _template ($template, $vars = array(), $rewrite_short_tags  = false) {
+          static::$template = $template;
+          unset($template);
+
+          ob_start();
+          extract($vars);
+
+          if ($rewrite_short_tags and (bool) @ini_get('short_open_tag') === false)
+              echo eval('?>'.preg_replace ("/;*\s*\?>/", '; ?>' ,str_replace('<?php=','<?php echo ',str_replace('<?','<?php', file_get_contents(static::$template)))));
+          else
+              include(static::$template); // include() vs include_once() allows for multiple views with the same name
+
+          return ob_get_clean();
+    }
 }
