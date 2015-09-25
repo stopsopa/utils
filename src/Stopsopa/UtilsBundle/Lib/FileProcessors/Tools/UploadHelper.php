@@ -240,6 +240,18 @@ class UploadHelper
         }
     }
     /**
+     *
+    // do obadania vvv
+     * Http caching
+    // https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching?hl=en
+    // http://www.mobify.com/blog/beginners-guide-to-http-cache-headers/
+              https://js-agent.newrelic.com/nr-632.min.js wzorowy link zobacz nagłóki zwracane podczas response łąduje się na stronie talentdays
+    //        $mod    = new DateTime(date("c", filemtime($file)));
+    //        $mod->sub(new DateInterval("P"));
+    //        header('Cache-Control: public');
+    //        header('Cache-Control: Cache-Control: no-transform,public,max-age=300,s-maxage=900');
+    // do obadania ^^^
+     *
      * // $_SERVER[HTTP_IF_MODIFIED_SINCE] => Tue, 04 Aug 2015 15:34:00 GMT
      * aby zmienić czas modyfikacji pliku wystarczy echo 'console.log('go');' > test.js && date
      *
