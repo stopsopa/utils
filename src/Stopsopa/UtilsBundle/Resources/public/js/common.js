@@ -218,6 +218,20 @@ if ('jQuery' in window) {
                 }
                 return t;
             }
+            $.fn.svgHeight = function () {
+                return $(this).get(0).getBBox().height;
+            }
+            $.fn.svgWidth = function () {
+                return $(this).get(0).getBBox().width;
+            }
+            $.fn.svgRatio = function () {
+                var t = $(this).get(0).getBoundingClientRect();
+                return {
+                    // http://stackoverflow.com/questions/22962416/how-to-get-the-actual-size-of-an-embedded-svg-element-if-its-auto-resizing
+                    //w: t.
+                    //h:
+                }
+            }
     }(jQuery));
 
 }
