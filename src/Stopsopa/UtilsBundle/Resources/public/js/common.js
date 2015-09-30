@@ -213,6 +213,45 @@ if ('_' in window) {
         _.templateSettings = tmp; // odkładam domyślne delimitery na miejsce
         return ret;
     }
+
+
+    /**
+     * var tmp = _.template($(...).html());
+     *
+     * tmp.many([{raz: ..., dwa: ...},{raz: ..., dwa: ...}])
+     *
+     * lub z danymi wspólnymi
+     * tmp.many([{raz: ..., dwa: ...},{raz: ..., dwa: ...}], {commonval: ...}); // w każdej iteracji na common zostanie nałożony pojedynczy zbiór danych
+     *
+     * dla wywołania pojedynczego wystarczy powiązać te dane ręcznie:
+     * tmp({raz: ..., dwa: ..., commonval: ...});
+     */
+    (function (_old, _new) {
+        if (_.template.new) {
+            log('_.template.many already defined')
+        }
+        else {
+            log('defining _.template.many');
+            _old = _.template;
+            _new = function () {
+                var a = Array.prototype.slice.call(arguments, 0);
+                var tmp = _old.apply(this, a);
+                tmp.many = function (list, common) {
+                    common = (typeof common === 'object') ? common : {};
+                    var s = '';
+                    _.each(list, function (d) {
+                        log('jedna iteracja')
+                        log($.extend({}, common, d))
+                        s += tmp($.extend({}, common, d));
+                    });
+                    return s;
+                }
+                return tmp;
+            }
+            _new.old = _old;
+            _.template = _new;
+        }
+    }())
 }
 else {
     log('common.js: brak biblioteki underscore.js');
