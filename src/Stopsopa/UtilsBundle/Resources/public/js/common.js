@@ -193,6 +193,33 @@ if ('jQuery' in window) {
     })(jQuery);
 
 
+    (function ($) {
+            $.fn.svgHasClass = function (name) {
+                return (new RegExp('(\\s|^)'+name+'(\\s|$)')).test($(this).attr('class') || '');
+            }
+            $.fn.svgAddClass = function (name) {
+                var t = $(this);
+                if (!t.svgHasClass(name)) {
+                    var cls = t.attr('class') || '';
+                    cls += cls ? ' ' : '';
+                    cls += name;
+                    return t.attr('class', cls);
+                }
+                return t;
+            }
+            $.fn.svgRemoveClass = function (name) {
+                var t = $(this);
+                if (t.svgHasClass(name)) {
+                    var cls = t.attr('class') || '';
+                    cls = cls.replace(
+                        new RegExp('(\\s|^)'+name+'(\\s|$)'),' '
+                    ).replace(/^\s+|\s+$/g, '');
+                    return t.attr('class', cls);
+                }
+                return t;
+            }
+    }(jQuery));
+
 }
 else {
     log('common.js: brak biblioteki jQuery');
@@ -240,8 +267,6 @@ if ('_' in window) {
                     common = (typeof common === 'object') ? common : {};
                     var s = '';
                     _.each(list, function (d) {
-                        log('jedna iteracja')
-                        log($.extend({}, common, d))
                         s += tmp($.extend({}, common, d));
                     });
                     return s;
