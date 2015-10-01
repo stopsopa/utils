@@ -3,7 +3,8 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
         opt = $.extend({
             h: h,
             onresize : $.noop,
-            content: null
+            content: null,
+            change: $.noop
         }, opt || {});
 
         opt.onresize = _.debounce(opt.onresize, 200);
@@ -30,9 +31,23 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
                 valid_elements      : "a[href|!target=_blank|!rel=nofollow],strong/b,div,br,p,ul,li,em",
                 //invalid_elements    : "strong,em"
                 forced_root_block   : false,
-                language            : "pl"//,
+                language            : "pl",
                 //body_class          : "tiny wys", // klasa tinymce // a na stronie robimy na przykład 'tiny web'
                 //content_css         : "tiny.css"  // http://www.tinymce.com/wiki.php/Configuration:content_css
+                setup : function(ed) {
+                    //var ev = 'init|paste|cut|keydown|keyup'.split('|');
+                    var ev = 'paste|cut|keydown|keyup'.split('|'); // daruję sobie init bo pierniczy to permalink
+
+                    for (var i = 0, l = ev.length ; i < l ; i += 1 ) {
+                        ed.on(ev[i], (function (i) {
+                            return function(args) { // http://www.tinymce.com/wiki.php/api4:class.tinymce.Editor // g(tinymce.Editor)
+                                //var c = ed.getContent({format : 'text'}).length;
+                                //target.html(limit - c);
+                                opt.change();
+                            }
+                        })(i));
+                    }
+                }
             });
 
 
@@ -49,7 +64,7 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
                 });
             })();
 
-            opt.onresize(widget.height());
+            //opt.onresize(widget.height());
 
         return {
             tinymce : function () {

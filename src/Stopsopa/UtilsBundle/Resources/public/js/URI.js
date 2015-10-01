@@ -11,7 +11,13 @@
  *   GPL v3 http://opensource.org/licenses/GPL-3.0
  *
  *   Modyfikowane - patrz sekcje /* simon vvv * / oraz /* simon ^^^ * /
- *   dodałem .getQuery('nazwa parametru') - setQuery() jest i działa jakbyśmy sie spodziewali, dodatkowe użycie .getQuery('id', 'defaultjeslinieistnieje')
+ *   dodałem .getQuery('nazwa parametru') - setQuery() jest i działa jakbyśmy sie spodziewali, dodatkowe użycie z pobraniem defaultowej wartości .getQuery('id', 'defaultjeslinieistnieje')
+ *   var k = URI();
+ *   k.setQuery('test', 'val')
+ *   k.href() //  http://domain.com/some/url?test=val
+ *   k.search() // ?test=val
+ *   k.query() // test=val
+ *   itd...
  *
  */
 (function (root, factory) {

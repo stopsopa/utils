@@ -1,6 +1,11 @@
 /**
  * @author Szymon Działowski
  * ver 1.0 19.09.2015
+ * JSON.s() - stringify
+ * JSON.p() - parse
+ * porównanie dwóch zestawów stringów urli:
+ * przed : [(!t!-!c!*!d!-[(!t!-!w!*!d!-!<br./>f<br./>ds<br./>a<br./>\n<ul>\n<li>raz</li>\n<li>dwa</li>\n<li>trzy</li>\n</ul>\n<br./>koniec<br./> <br./><br./><em>fdsafdsa<br./></em>!*!h!-288*!g!-3)*(!t!-!v!*!d!-(!s!-(!b!-1*!o!-47*!c!-1*!v!-1)*!e!-(!b!-1*!o!-47*!c!-1*!v!-4))*!i!-!t!*!m!-!p!)])*(!t!-!c!*!d!-[(!t!-!v!*!d!-(!s!-(!b!-1*!o!-47*!c!-1*!v!-1)*!e!-(!b!-1*!o!-47*!c!-1*!v!-1))*!i!-!n!*!m!-!n!)*(!t!-!w!*!d!-!drugi.wysiwyg!*!h!-200)])]
+ * po    : [(t-!c!*d-[(t-!w!*d-!<br./>f<br./>ds<br./>a<br./>\n<ul>\n<li>raz</li>\n<li>dwa</li>\n<li>trzy</li>\n</ul>\n<br./>koniec<br./> <br./><br./><em>fdsafdsa<br./></em>!*h-272)*(t-!v!*d-(s-(b-1*o-47*c-1*v-1)*e-(b-1*o-47*c-1*v-4))*i-!n!*m-!p!)])*(t-!c!*d-[(t-!v!*d-(s-(b-1*o-47*c-1*v-1)*e-(b-1*o-47*c-1*v-4))*i-!t!*m-!n!)*(t-!w!*d-!drugi.wysiwyg!*h-179)])]
  */
 JSON.s = (function () {
     function isObject(obj) {
