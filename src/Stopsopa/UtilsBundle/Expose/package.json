@@ -1,0 +1,29 @@
+{
+    "name"        : "earea",
+    "version"     : "1.0.0",
+    "description" : "earea",
+    "main"        : "index.js",
+    "scripts": {
+        "test"  : "echo \"Error: no test specified\" && exit 1"
+    },
+    "dependencies": {
+        "browser-sync"  : "^2.x",
+        "uglify-js"     : "^2.4.23",
+        "uglifycss"     : "0.0.15"
+    },
+    "author": "",
+    "license": "MIT",
+    "directories" : {
+        "dist"    : "web/assets",
+        "lib"     : "web/bundles/**/gulp/**"
+    },
+    "provide": {
+        "$"       : "jquery",
+        "jQuery"  : "jquery",
+        "c"       : "console",
+        "site"    : "window.site"
+    },
+    "alias": {
+        "console" : "web/bundles/app/gulp/js/console"
+    }
+}
