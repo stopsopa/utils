@@ -30,6 +30,19 @@ function error() {
     });
 })(jQuery);
 
+//(function (fn) {
+//    (function call() {
+//        window.$ ? $(fn) : setTimeout(call, 200);
+//    }())
+//}(function () {
+//    var eid = parseInt('{{ enitity.id }}');
+//    alert('go: '+eid);
+//}));
+
+
+
+
+
 //window.site = {};
 //$(function () {
 //    $.ajaxstatus({/*options*/}, window.site);
