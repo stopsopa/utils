@@ -6,6 +6,9 @@ use AppBundle\Entity\AdManager;
 use Symfony\Component\DependencyInjection\Container;
 use Twig_Extension;
 use Twig_SimpleFunction;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
+use DateTime;
 
 /**
  * Stopsopa\UtilsBundle\Services\TwigExtensions
@@ -40,10 +43,24 @@ class TwigExtensions extends Twig_Extension
       return array(
             new Twig_SimpleFunction('ad', array($this, 'getAd'), array('is_safe' => array('html'))),
             new Twig_SimpleFunction('param', array($this, 'param'), array('is_safe' => array('html'))),
+            new Twig_SimpleFunction('ver', array($this, 'ver'), array('is_safe' => array('html'))),
   //        '__formparams' => new Twig_Function_Method($this, '__formparams'),
   //        'getPath'           => new Twig_Function_Method($this, 'getPath',        array('is_safe' => array('html'))),
   //        'getUrl'            => new Twig_Function_Method($this, 'getUrl' ,        array('is_safe' => array('html'))),
       );
+    }
+    protected $ver;
+    public function ver() {
+        if (!$this->ver) {
+            $file = AbstractApp::getRootDir().'/app/cache/prod/appProdUrlMatcher.php';
+
+            UtilFilesystem::checkFile($file);
+
+            $d = new DateTime(date("c", filemtime($file)));
+
+            $this->ver = $d->format('Y-m-d-H-i-s');
+        }
+        return $this->ver;
     }
     public function getAd($key) {
         return $this->container->get(AdManager::SERVICE)->getAd($key);
