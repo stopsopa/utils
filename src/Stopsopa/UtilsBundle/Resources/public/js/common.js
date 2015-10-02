@@ -253,7 +253,7 @@ if ('_' in window) {
         ret =  _.template.apply(this, arguments);
         _.templateSettings = tmp; // odkładam domyślne delimitery na miejsce
         return ret;
-    }
+    };
 
 
     /**
