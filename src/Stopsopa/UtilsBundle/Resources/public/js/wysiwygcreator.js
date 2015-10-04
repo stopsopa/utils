@@ -32,8 +32,8 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
                 //invalid_elements    : "strong,em"
                 forced_root_block   : false,
                 language            : "pl",
-                //body_class          : "tiny wys", // klasa tinymce // a na stronie robimy na przykład 'tiny web'
-                //content_css         : "tiny.css"  // http://www.tinymce.com/wiki.php/Configuration:content_css
+                //body_class          : "print html", // klasa tinymce // a na stronie robimy na przykład 'tiny web'
+                //content_css         : "/bundles/toolssitecommon/bible/css/tinymce-bible-pdf.css",  // http://www.tinymce.com/wiki.php/Configuration:content_css
                 setup : function(ed) {
                     //var ev = 'init|paste|cut|keydown|keyup'.split('|');
                     var ev = 'paste|cut|keydown|keyup'.split('|'); // daruję sobie init bo pierniczy to permalink
