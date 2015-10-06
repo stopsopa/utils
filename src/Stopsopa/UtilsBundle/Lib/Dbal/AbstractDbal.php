@@ -706,16 +706,14 @@ where         table_schema = DATABASE()
 
         $primary = $this->getPrimaryKey();
 
-        AbstractException::setErrorHandler();
-
         if ($primary) {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                try {
-                    $list[$row[$primary]] = $row;
-                }
-                catch (Exception $e) {
-                    niechginie($e);
-                }
+                $list[$row[$primary]] = $row;
+            }
+        }
+        else {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $list[] = $row;
             }
         }
 
