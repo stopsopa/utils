@@ -3,6 +3,7 @@
 namespace Stopsopa\UtilsBundle\Lib\Dbal;
 
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
+use Stopsopa\UtilsBundle\Lib\AbstractException;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
 use Exception;
 use PDO;
@@ -84,6 +85,10 @@ abstract class AbstractDbal
     protected $primaryKey;
     public function getPrimaryKey() {
 
+        if ($this->primaryKey === false) {
+            return false;
+        }
+
         if ($this->primaryKey) {
             return $this->primaryKey;
         }
@@ -103,7 +108,10 @@ abstract class AbstractDbal
         }
 
         $table = static::TABLE;
-        throw new Exception("Not found primary key for table '$table'");
+
+        $this->primaryKey = false;
+
+        return false;
     }
     /**
      *
@@ -614,15 +622,35 @@ abstract class AbstractDbal
 
         return $this->getHash($id);
     }
-    public function count()
-    {
-        $stmt = AbstractApp::getDbal()->query("SELECT count(*) c FROM " . static::TABLE);
+    public static function getVarcharLength($field, $table = null, $dbal = 'default') {
 
-        if ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            return (int)$row['c'];
+        if (!$table) {
+            $table = static::TABLE;
         }
 
-        return 0;
+        $length = AbstractApp::getDbal($dbal)->fetchColumn("
+select        CHARACTER_MAXIMUM_LENGTH l
+from          information_schema.columns
+where         table_schema = DATABASE()
+          AND table_name = '$table'
+          AND COLUMN_NAME = '$field'
+        ");
+
+        if ($length === false) {
+            return null;
+        }
+
+        return intval($length);
+    }
+    public function count()
+    {
+        $count = AbstractApp::getDbal()->fetchColumn("SELECT count(*) c FROM " . static::TABLE);
+
+        if ($count === false) {
+            return null;
+        }
+
+        return intval($count);
     }
     public function extend($data = false, $many = false)
     {
@@ -678,8 +706,17 @@ abstract class AbstractDbal
 
         $primary = $this->getPrimaryKey();
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $list[$row[$primary]] = $row;
+        AbstractException::setErrorHandler();
+
+        if ($primary) {
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                try {
+                    $list[$row[$primary]] = $row;
+                }
+                catch (Exception $e) {
+                    niechginie($e);
+                }
+            }
         }
 
         return $this->extend($list, true);
