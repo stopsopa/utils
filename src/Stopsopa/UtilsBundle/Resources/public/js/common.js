@@ -19,6 +19,16 @@ function error() {
     }
 }
 
+window.onexitsetup = function (ask) {
+    ask || (ask = "Niektóre dane nie zostały zapisane i mogą zostać utracone bezpowrotnie");
+    window.onexit = function (state) {
+        window.onbeforeunload = state ? function () {
+            return ask;
+        } : function () {};
+    }
+    onexit(false);
+}
+
 // http://stackoverflow.com/a/22337556/1338731
 // jquery plugin 'jquery.ready.fix.js'
 // @author Szymon Działowski
