@@ -440,6 +440,28 @@ abstract class AbstractDbal
     }
 
     /**
+     * używać w implementowanych metodach tak:
+        $id = parent::persist($data, $identifier, $types, $throw);
+
+        $data[$this->getPrimaryKey()] = $id;
+
+        if (!@is_array($data['stages'])) {
+            $data['stages'] = array();
+        }
+
+        $table = DbalEmployerJobInterviewJobInterviewStage::TABLE;
+        $dbal->delete($table, array(
+            'employer_job_interview_id' => $data[$this->getPrimaryKey()]
+        ));
+        foreach ($data['stages'] as &$d) {
+            $dbal->insert($table, array(
+                    'employer_job_interview_id' => $data[$this->getPrimaryKey()],
+                    'job_interview_stage_id'    => $d
+            ));
+        }
+        ..itd
+     *
+     *
      * Wrzuca do bazy jeśli nie podamy id
      * Jeśli podamy to najpierw szuka (jeśli nie znajdzie to exception) potem update na tym rekordzie
      * @param type $data
