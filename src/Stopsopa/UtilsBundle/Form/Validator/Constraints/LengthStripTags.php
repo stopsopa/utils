@@ -27,12 +27,14 @@ class LengthStripTags extends Constraint
 
     public function __construct($options = null)
     {
+
         if (null !== $options && !is_array($options)) {
             $options = array(
                 'min' => $options,
                 'max' => $options,
             );
         }
+
 
         parent::__construct($options);
 
