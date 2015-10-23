@@ -34,6 +34,8 @@
         var t = $(this), hold = false, tmp; // hold button
 
         function move (e) {
+            // http://stackoverflow.com/questions/4211909/disable-dragging-an-image-from-an-html-page
+            log('move')
             opt.move.apply(this, [e, tmp, {
                 x : e.pageX - tmp.pageX,
                 y : e.pageY - tmp.pageY
@@ -41,12 +43,14 @@
         }
 
         function down (e) {
+            log('down')
             tmp = e;
             opt.down.apply(this, arguments);
             hold = true;
             doc.on('mousemove', move)
         }
         function up() {
+            log('up')
             opt.up.apply(this, arguments);
             hold = false;
             doc.off('mousemove', move);
@@ -55,11 +59,13 @@
 
         return t
             .on('mouseenter', function () {
+                log('enter')
                 if (!hold) {
                     doc.on('mousedown', down).on('mouseup', up)
                 }
             })
             .on('mouseleave', function () {
+                log('leave')
                 if (!hold) {
                     doc.off('mousedown', down).off('mouseup', up)
                 }
