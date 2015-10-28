@@ -27,6 +27,9 @@
             }
         });
     })($('.map'));
+
+    alternative:
+        http://greensock.com/draggable g(green stock Draggable)
  */
 ;(function ($, name) {
 
