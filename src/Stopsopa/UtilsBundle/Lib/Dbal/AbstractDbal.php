@@ -855,4 +855,10 @@ where         table_schema = DATABASE()
     public function delete($identifier, $types = array()) {
         return AbstractApp::getDbal()->delete(static::TABLE, $identifier, $types);
     }
+    public function getAutoincrementNextValue() {
+//        SELECT `AUTO_INCREMENT`
+//FROM  INFORMATION_SCHEMA.TABLES
+//WHERE TABLE_SCHEMA = 'area_test_absolvent_pl'
+//        AND   TABLE_NAME   = 'cities';
+    }
 }

@@ -19,14 +19,18 @@ function error() {
     }
 }
 
+/**
+ *
+ * @param ask
+ * @returns {Function}
+ */
 window.onexitsetup = function (ask) {
     ask || (ask = "Niektóre dane nie zostały zapisane i mogą zostać utracone bezpowrotnie");
-    window.onexit = function (state) {
+    return function (state, altmsg) {
         window.onbeforeunload = state ? function () {
-            return ask;
+            return altmsg || ask;
         } : function () {};
     }
-    onexit(false);
 }
 
 // http://stackoverflow.com/a/22337556/1338731
@@ -202,8 +206,6 @@ if ('jQuery' in window) {
         };
     }(jQuery));
 
-
-
     (function ($) {
         if ($.ajaxstatus) {
             if (!window.site) {
@@ -335,7 +337,7 @@ if (window.Routing) {
 }
 
 if ('sweetAlert' in window) {
-    swal = sweetAlert
+    window.swal = sweetAlert
 }
 
 
