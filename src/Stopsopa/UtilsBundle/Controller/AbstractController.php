@@ -327,8 +327,7 @@ abstract class AbstractController extends Controller
                 }
                 break;
         }
-//
-//        niechginie($view);
+//        nieginie($view);
 
         return $this->render($view, $parameters, $response);
     }

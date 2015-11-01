@@ -223,29 +223,25 @@ if ('jQuery' in window) {
                 return (new RegExp('(\\s|^)'+name+'(\\s|$)')).test($(this).attr('class') || '');
             }
             $.fn.svgAddClass = function (name) {
-                var t, cls;
-                return $(this).each(function () {
-                    t = $(this);
-                    if (!t.svgHasClass(name)) {
-                        cls = t.attr('class') || '';
-                        cls += cls ? ' ' : '';
-                        cls += name;
-                        return t.attr('class', cls);
-                    }
-                });
+                var t = $(this);
+                if (!t.svgHasClass(name)) {
+                    var cls = t.attr('class') || '';
+                    cls += cls ? ' ' : '';
+                    cls += name;
+                    return t.attr('class', cls);
+                }
+                return t;
             }
             $.fn.svgRemoveClass = function (name) {
-                var t, cls;
-                return $(this).each(function () {
-                    t = $(this);
-                    if (t.svgHasClass(name)) {
-                        cls = t.attr('class') || '';
-                        cls = cls.replace(
-                            new RegExp('(\\s|^)'+name+'(\\s|$)'),' '
-                        ).replace(/^\s+|\s+$/g, '');
-                        return t.attr('class', cls);
-                    }
-                });
+                var t = $(this);
+                if (t.svgHasClass(name)) {
+                    var cls = t.attr('class') || '';
+                    cls = cls.replace(
+                        new RegExp('(\\s|^)'+name+'(\\s|$)'),' '
+                    ).replace(/^\s+|\s+$/g, '');
+                    return t.attr('class', cls);
+                }
+                return t;
             }
             $.fn.svgHeight = function () {
                 return $(this).get(0).getBBox().height;
