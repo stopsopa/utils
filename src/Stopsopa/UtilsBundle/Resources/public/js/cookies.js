@@ -5,8 +5,15 @@
 // cookies.set("test3", "Hello world!", new Date(2027, 2, 3), "/blog");
 // cookies.set("test4", "Hello world!", "Wed, 19 Feb 2127 01:04:55 GMT");
 // cookies.set("test5", "Hello world!", "Fri, 20 Aug 88354 14:07:15 GMT", "/home");
-// cookies.set("test6", "Hello world!", 150);
-// cookies.set("test7", "Hello world!", 245, "/content");
+
+// max-age format: WARNING in IE this will be session cookie tetter user expiere format lika bove
+// http://mrcoles.com/blog/cookies-max-age-vs-expires/
+    // cookies.set("test6", "Hello world!", 5*60); // 5 minutes
+    // cookies.set("test7", "Hello world!", 2*60*60, "/content"); // 2*60*60 - two hours
+
+// najlepiej używać:
+//    cookies.set('cookiename', 'cookievalue', cookies.hours(2))
+
 // cookies.set("test8", "Hello world!", null, null, "example.com");
 // cookies.set("test9", "Hello world!", null, null, null, true);
 // cookies.set("test1;=", "Safe character test;=", Infinity);
@@ -66,5 +73,21 @@ var cookies = {
             cookieEnabled = (document.cookie.indexOf("testcookie") != -1) ? true : false;
         }
         return cookieEnabled;
+    },
+    seconds: function (seconds) {
+        var k = new Date();
+        return new Date(k.getTime() + seconds * 1000 );
+    },
+    minutes : function (minutes) {
+        return this.seconds(minutes * 60);
+    },
+    hours: function (hours) {
+        return this.minutes(hours * 60);
+    },
+    days: function (days) {
+        return this.hours(days * 24);
+    },
+    years: function (years) {
+        return this.days(years * 365);
     }
 };
