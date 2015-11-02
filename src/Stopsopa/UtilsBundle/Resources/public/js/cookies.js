@@ -12,7 +12,8 @@
     // cookies.set("test7", "Hello world!", 2*60*60, "/content"); // 2*60*60 - two hours
 
 // najlepiej używać:
-//    cookies.set('cookiename', 'cookievalue', cookies.hours(2))
+//    cookies.set('name', 'val', cookies.hours(2));
+//    cookies.set("name", "val", Infinity);
 
 // cookies.set("test8", "Hello world!", null, null, "example.com");
 // cookies.set("test9", "Hello world!", null, null, null, true);
