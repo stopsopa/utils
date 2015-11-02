@@ -29,6 +29,11 @@
 // alert(cookies.get("unexistingCookie"));
 // alert(cookies.get());
 // alert(cookies.get("test1;="));
+
+
+// equivalent:
+// cookies.set(key, $(this).val() + '', Infinity, '/');
+// $response->headers->setCookie(new Cookie('cookieuser', $user->getUsername(), time() + (10 * 365 * 24 * 60 * 60), $path = '/', $domain = null, $secure = false, $httpOnly = false));
 var cookies = {
     get: function (sKey) {
       if (!sKey) { return null; }
