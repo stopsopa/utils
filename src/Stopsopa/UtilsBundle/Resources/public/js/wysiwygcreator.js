@@ -68,7 +68,11 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
 
         return {
             tinymce : function () {
-                return widget.tinymce();
+                var w = widget;
+                if (!w.is(':tinymce')) {
+                    w = w.find(':tinymce');
+                }
+                return w.tinymce();
             },
             get: function () {
                 return this.tinymce().getContent();
