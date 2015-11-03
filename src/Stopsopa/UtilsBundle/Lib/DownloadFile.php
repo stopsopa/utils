@@ -35,8 +35,8 @@ class DownloadFile
         $size = filesize($file);
 
         header('Content-Type: application/octet-stream');
-        header("Content-Disposition: attachment; filename=" . urlencode($file));
-        header("Content-Description: File Transfer ".urlencode($file));
+        header("Content-Disposition: attachment; filename=" . urlencode($filename));
+        header("Content-Description: File Transfer ".urlencode($filename));
         header('Last-Modified: '.date('D, d M Y H:i:s \G\M\T'));
         header("Content-Length: $size");
         header('Expires: 0');

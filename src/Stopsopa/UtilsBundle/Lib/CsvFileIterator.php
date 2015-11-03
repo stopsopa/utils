@@ -5,9 +5,6 @@ namespace Stopsopa\UtilsBundle\Lib;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Iterator;
 
-/**
- }
- */
 class CsvFileIterator implements Iterator
 {
     protected $file;
@@ -19,7 +16,9 @@ class CsvFileIterator implements Iterator
     public function __construct($file, $options = array())
     {
         UtilFilesystem::checkFile($file);
+
         $this->file = fopen($file, 'r');
+
         if (is_array($options)) {
             $this->options = array_merge(array(
                 'length' => 0,
@@ -39,6 +38,7 @@ class CsvFileIterator implements Iterator
     public function rewind()
     {
         rewind($this->file);
+
         $this->key = 0;
 
         if ($this->options['skip']) {
@@ -60,7 +60,7 @@ class CsvFileIterator implements Iterator
             $this->options['enclosure'],
             $this->options['escape']
         );
-        ++$this->key;
+        $this->key += 1;
     }
 
     public function valid()
