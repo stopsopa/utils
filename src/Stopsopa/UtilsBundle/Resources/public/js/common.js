@@ -263,6 +263,33 @@ if ('jQuery' in window) {
             }
     }(jQuery));
 
+
+
+    (function ($) {
+        if ($.browser) {
+
+            // detekcja czy to mobilka/tablet czy też desktop
+            (function ($, b, r) {
+                $.mobile = r.test(navigator.userAgent) || r.test(navigator.platform);
+                //($.mobile || true) && $('body').addClass('_mobile');
+                b.addClass($.mobile ? '_mobile' : '_desktop');
+            })(jQuery, $('html'), /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile/i);
+
+            // UWAGA: dorzucić klasę _html do html :UWAGA
+            // klasa do sterowania stylami dla różnych przeglądarek
+            // ._browser ._chrome ._webkit ._mozilla
+            (function(b, i) {
+                for (i in $.browser)
+                    (i == 'version') || b.addClass('_' + i);
+                $('html:first').addClass('_js').removeClass('_html');
+            })($('body'));
+
+        }
+        else {
+            log('Plugin $.browser is not included')
+        }
+    })(jQuery);
+
 }
 else {
     log('common.js: brak biblioteki jQuery');
@@ -339,6 +366,8 @@ if (window.Routing) {
 if ('sweetAlert' in window) {
     window.swal = sweetAlert
 }
+
+
 
 
 ;
