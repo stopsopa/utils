@@ -30,6 +30,9 @@
 
     alternative:
         http://greensock.com/draggable g(green stock Draggable)
+        hammer.js from https://github.com/fleveque/awesome-awesomes
+
+
  */
 ;(function ($, name) {
 
