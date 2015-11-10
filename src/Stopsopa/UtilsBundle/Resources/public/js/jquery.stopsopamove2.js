@@ -66,8 +66,6 @@
                 if (data) {
                     try {
                         t
-                            .off('mouseenter',   data.mouseenter)
-                            .off('mouseleave',   data.mouseleave)
                             .off('dragstart',    data.dragstart)
                         ;
                         doc
@@ -99,7 +97,6 @@
         return $(this).each(function () {
             var
                 t       = $(this),
-                hold    = false,
                 tmp     // hold button
             ;
 
@@ -134,51 +131,45 @@
                     y : e.pageY - tmp.pageY
                 }]);
             }
-
-            function down(e) {
-                if (e.changedTouches) {
-                    e = e.changedTouches;
-                }
-                tmp = e;
-                opt.down.apply(t, arguments);
-                hold = true;
-                doc.on('mousemove', move);
-            }
-            function up() {
-                opt.up.apply(t, arguments);
-                hold = false;
-                doc.off('mousemove', move);
-                t.off('mousedown', down).off('mouseup', up);
-            }
-
-            function mouseenter() {
-                if (!hold) {
-                    doc.on('mousedown', down).on('mouseup', up);
-                }
-            }
-            function mouseleave() {
-                if (!hold) {
-                    doc.off('mousedown', down).off('mouseup', up);
-                }
-            }
             function dragstart(e) { // http://stackoverflow.com/questions/4211909/disable-dragging-an-image-from-an-html-page
                 e.preventDefault();
             }
+            function up() {
+
+                opt.up.apply(t, arguments);
+
+                doc
+                    .off('mousemove', move)
+                    .off('mouseup', up)
+                ;
+            }
+            function down(e) {
+
+                if (e.changedTouches) {
+                    e = e.changedTouches;
+                }
+
+                tmp = e;
+
+                opt.down.apply(t, arguments);
+
+                doc
+                    .on('mousemove', move)
+                    .on('mouseup', up)
+                ;
+
+                t.on('dragstart', dragstart)
+            }
 
             t
-                .on('mouseenter',   mouseenter)
-                .on('mouseleave',   mouseleave)
-                .on('dragstart',    dragstart)
+                .on('mousedown', down)
+                .data(key, {
+                    dragstart:  dragstart,
+                    move:       move,
+                    up:         up,
+                    down:       down
+                })
             ;
-
-            t.data(key, {
-                mouseenter: mouseenter,
-                mouseleave: mouseleave,
-                dragstart:  dragstart,
-                move:       move,
-                up:         up,
-                down:       down
-            })
         });
     }
 })(jQuery, 'stopsopamove');
