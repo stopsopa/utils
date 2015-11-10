@@ -1,6 +1,8 @@
 /**
  * @author Szymon Działowski
  * @ver 1.0 - 2015-09-01
+ * @require:
+ *  - http://modernizr.com/download?-touchevents-dontmin
  *
  * Użycie:
  *
@@ -13,8 +15,9 @@
 
         box.find('[data-here]').stopsopamove({ // co draguję
             down: function () {
-                t = parseInt($(this).css('top'), 10);
-                l = parseInt($(this).css('left'), 10);
+                var tmp = $(this).position();
+                t = tmp.top;
+                l = tmp.left;
             },
             move: function (e, start, diff) {
                 $(this).addClass('move___').css({
@@ -32,6 +35,9 @@
         http://greensock.com/draggable g(green stock Draggable)
         hammer.js from https://github.com/fleveque/awesome-awesomes
 
+    docs:
+        https://developer.mozilla.org/en-US/docs/Web/Events/touchmove
+
 
  */
 ;(function ($, name) {
@@ -42,6 +48,9 @@
     var
         doc,
         key     = '_'+name,
+        ev      = function (type) { // start, move, end
+
+        },
         tools   = {
             destroy: function () {
                 var t = $(this).addClass('red');
@@ -107,6 +116,11 @@
             }, opt || {});
 
             function move(e) {
+                log('move')
+                if (e.changedTouches) {
+                    e = e.changedTouches;
+                }
+                log(e)
                 opt.move.apply(t, [e, tmp, {
                     x : e.pageX - tmp.pageX,
                     y : e.pageY - tmp.pageY
@@ -114,6 +128,9 @@
             }
 
             function down(e) {
+                if (e.changedTouches) {
+                    e = e.changedTouches;
+                }
                 tmp = e;
                 opt.down.apply(t, arguments);
                 hold = true;

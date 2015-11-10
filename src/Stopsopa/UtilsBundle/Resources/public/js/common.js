@@ -349,7 +349,7 @@ if ('_' in window) {
     }())
 }
 else {
-    log('common.js: brak biblioteki underscore.js');
+    log('Plugin underscore.js or lodash.js is not included');
 }
 
 if (window.Routing) {
