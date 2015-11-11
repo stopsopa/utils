@@ -1,4 +1,8 @@
 ;
+
+
+// .on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', fn);
+
 // // wymaga jquery
 // <script type="text/javascript"></script>
 // 'bundles/stopsopautils/js/common.js'
@@ -88,6 +92,71 @@ if (!window.site) {
     return to;
 }(site)); // przywiązuję do obiektu site bo on już istnieje
 
+
+
+/*!
+ * based on: http://benalman.com/projects/jquery-throttle-debounce-plugin/
+ */
+window.site || (window.site = {});
+
+(function (mount) {
+    var tmpthrottle = function(delay, no_trailing /* def: */, callback, debounce_mode) {
+        var timeout_id, last_exec = 0;
+        if (typeof no_trailing !== 'boolean') {
+            debounce_mode = callback;
+            callback = no_trailing;
+            no_trailing = undefined;
+        }
+        function wrapper() {
+            var that = this,
+                elapsed = +new Date() - last_exec,
+                args = arguments;
+            function exec() {
+                last_exec = +new Date();
+                callback.apply( that, args );
+            };
+            function clear() {
+                timeout_id = undefined;
+            };
+            if (debounce_mode && !timeout_id) {
+                exec();
+            }
+            timeout_id && clearTimeout(timeout_id);
+            if (debounce_mode === undefined && elapsed > delay) {
+                exec();
+            } else if (no_trailing !== true) {
+                timeout_id = setTimeout(debounce_mode ? clear : exec, debounce_mode === undefined ? delay - elapsed : delay);
+            }
+        };
+        return wrapper;
+    };
+    var tmpdebounce = function(delay, at_begin /* def true */, callback) {
+        (typeof at_begin === 'undefined') && (at_begin = false);
+        return callback === undefined ? tmpthrottle(delay, at_begin, false) : tmpthrottle(delay, callback, at_begin !== false);
+    };
+
+    // ( callback, delay, [ no_trailing (def: false) ])
+    mount.throttle = function () {
+        var a = arguments;
+        if (a.length === 3)
+            return tmpthrottle.call(this, a[1], a[2], a[0]);
+        if (a.length === 2)
+            return tmpthrottle.call(this, a[1], a[0]);
+        throw "Wrong number of arguments in throttle";
+    };
+
+    // ( callback, delay, [ at_begin = (def: false) ] ) )
+    mount.debounce = function () {
+        var a = arguments;
+        if (a.length === 3)
+            return tmpdebounce.call(this, a[1], a[2], a[0]);
+        if (a.length === 2) {
+            return tmpdebounce.call(this, a[1], false, a[0]);
+        }
+        throw "Wrong number of arguments in debounce";
+    };;
+
+}(window.site));
 
 if ('jQuery' in window) {
     /**
@@ -190,8 +259,8 @@ if ('jQuery' in window) {
         $.json.before = $.noop;
         $.json.always = $.noop;
     }(jQuery, {
-        type: "post",
-        contentType: "application/json; charset=utf-8"
+        type        : "post",
+        contentType : "application/json; charset=utf-8"
     }));
 
     (function ($) {

@@ -1,4 +1,12 @@
 /**
+ *
+ * Ostatecznie to nie działa na iphone - nie mam czasu tego znaleźć, dodatkowo nie wiem jak debugować web na iphone póki co
+ * Ostatecznie to nie działa na iphone - nie mam czasu tego znaleźć, dodatkowo nie wiem jak debugować web na iphone póki co
+ * Ostatecznie to nie działa na iphone - nie mam czasu tego znaleźć, dodatkowo nie wiem jak debugować web na iphone póki co
+ * Ostatecznie to nie działa na iphone - nie mam czasu tego znaleźć, dodatkowo nie wiem jak debugować web na iphone póki co
+ * Ostatecznie to nie działa na iphone - nie mam czasu tego znaleźć, dodatkowo nie wiem jak debugować web na iphone póki co
+ * Ostatecznie to nie działa na iphone - nie mam czasu tego znaleźć, dodatkowo nie wiem jak debugować web na iphone póki co
+ *
  * @author Szymon Działowski
  * @ver 1.0 - 2015-09-01
  * @require:
@@ -38,6 +46,9 @@
     docs:
         https://developer.mozilla.org/en-US/docs/Web/Events/touchmove
 
+    touch for jQuery UI:
+        http://touchpunch.furf.com/
+
 
  */
 ;(function ($, name) {
@@ -49,15 +60,30 @@
         doc,
         key     = '_'+name,
         ev      = function (type) { // start, move, end
-            if (type === 'move') {
-
+            if (Modernizr.touchevents) {
+                switch (type) {
+                    case 'move': return 'touchmove mousemove';
+                    case 'down': return 'touchstart mousedown';
+                    case 'up': return 'touchend mouseup';
+                }
             }
-            if (type === 'down') {
-
+            switch (type) {
+                case 'move': return 'mousemove';
+                case 'down': return 'mousedown';
+                case 'up': return 'mouseup';
             }
-            if (type === 'up') {
-                return (Modernizr.touchevents ? '' : '')+'';
+        },
+        gete = function (e) {
+            if (e.originalEvent) {
+                e = e.originalEvent;
+                if (e.changedTouches) {
+                    e = e.changedTouches;
+                    if (e['0']) {
+                        e = e['0'];
+                    }
+                }
             }
+            return e;
         },
         tools   = {
             destroy: function () {
@@ -66,14 +92,12 @@
                 if (data) {
                     try {
                         t
-                            .off('mouseenter',   data.mouseenter)
-                            .off('mouseleave',   data.mouseleave)
                             .off('dragstart',    data.dragstart)
                         ;
                         doc
-                            .off('mousemove',   data.move)
-                            .off('mousedown',   data.down)
-                            .off('mouseup',     data.up)
+                            .off(ev('move'),   data.move)
+                            .off(ev('down'),   data.down)
+                            .off(ev('up'),     data.up)
                         ;
                     }
                     catch (e) {
@@ -99,7 +123,6 @@
         return $(this).each(function () {
             var
                 t       = $(this),
-                hold    = false,
                 tmp     // hold button
             ;
 
@@ -118,67 +141,55 @@
             }
 
             opt = $.extend({
-                move : $.noop,
-                down : $.noop,
-                up   : $.noop
+                move        : $.noop,
+                down        : $.noop,
+                up          : $.noop
             }, opt || {});
 
             function move(e) {
-                log('move')
-                if (e.changedTouches) {
-                    e = e.changedTouches;
-                }
-                log(e)
-                opt.move.apply(t, [e, tmp, {
-                    x : e.pageX - tmp.pageX,
-                    y : e.pageY - tmp.pageY
+                var ee = gete(e);
+                opt.move.apply(t, [e, ee, tmp, {
+                    x : ee.pageX - tmp.pageX,
+                    y : ee.pageY - tmp.pageY
                 }]);
             }
 
-            function down(e) {
-                if (e.changedTouches) {
-                    e = e.changedTouches;
-                }
-                tmp = e;
-                opt.down.apply(t, arguments);
-                hold = true;
-                doc.on('mousemove', move);
-            }
-            function up() {
-                opt.up.apply(t, arguments);
-                hold = false;
-                doc.off('mousemove', move);
-                t.off('mousedown', down).off('mouseup', up);
-            }
-
-            function mouseenter() {
-                if (!hold) {
-                    doc.on('mousedown', down).on('mouseup', up);
-                }
-            }
-            function mouseleave() {
-                if (!hold) {
-                    doc.off('mousedown', down).off('mouseup', up);
-                }
-            }
             function dragstart(e) { // http://stackoverflow.com/questions/4211909/disable-dragging-an-image-from-an-html-page
                 e.preventDefault();
             }
+            function up() {
+
+                opt.up.apply(t, arguments);
+
+                doc
+                    .off(ev('move'), move)
+                    .off(ev('up'), up)
+                ;
+            }
+            function down(e) {
+                e = gete(e);
+
+                tmp = e;
+
+                opt.down.apply(t, arguments);
+
+                doc
+                    .on(ev('move'), move)
+                    .on(ev('up'), up)
+                ;
+
+                t.on('dragstart', dragstart)
+            }
 
             t
-                .on('mouseenter',   mouseenter)
-                .on('mouseleave',   mouseleave)
-                .on('dragstart',    dragstart)
+                .on(ev('down'), down)
+                .data(key, {
+                    dragstart:  dragstart,
+                    move:       move,
+                    up:         up,
+                    down:       down
+                })
             ;
-
-            t.data(key, {
-                mouseenter: mouseenter,
-                mouseleave: mouseleave,
-                dragstart:  dragstart,
-                move:       move,
-                up:         up,
-                down:       down
-            })
         });
     }
 })(jQuery, 'stopsopamove');
