@@ -37,6 +37,7 @@ class JiraRestService
     {
 
         /**
+         * curl_init url_setopt($ch,CURLOPT_ENCODING, '');
          *
          * http://stackoverflow.com/a/3277224
          * Just tell cURL to decode the response automatically whenever it's gzipped         *
