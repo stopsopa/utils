@@ -35,6 +35,18 @@ class JiraRestService
      */
     public function curljson($url, $method = 'GET', $data = array(), $headers = array())
     {
+
+        /**
+         *
+         * http://stackoverflow.com/a/3277224
+         * Just tell cURL to decode the response automatically whenever it's gzipped         *
+         * curl_setopt($ch,CURLOPT_ENCODING, ''); // dekodowanie automatyczne
+         *
+         *
+         *
+         */
+
+
         $url = $this->endpoint.$url;
 
         $method = strtoupper($method);
