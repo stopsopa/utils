@@ -5,6 +5,47 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
 class UtilCsv
 {
     public static $isbuildin;
+
+
+    /**
+       Kompletny Przykład użycia:
+
+
+     @-Route("/employer/{id}", name="surveys.employer")
+
+    public function employersAction (Request $request, $id) {
+
+        $man = $this->get(CityManager::SERVICE);
+
+        $city = $man->findOrThrow($id);
+
+        $data = '';
+
+        $dbal = AbstractApp::getDbal();
+
+        $stmt = $dbal->prepare("
+SELECT              e.id eid, e.name, es.*
+FROM                employer_survey es
+         INNER JOIN employers e
+                 ON e.id = es.employer_id
+WHERE               es.city_id = :id
+");
+        $stmt->bindValue('id', $city->getId());
+
+        $stmt->execute();
+
+        $first = true;
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if ($first) {
+                $first = false;
+                $data .= UtilCsv::putCsv(array_keys($row))."\n";
+            }
+            $data .= UtilCsv::putCsv($row)."\n";
+        }
+
+        return DownloadFile::downloadGenerated($data, 'employer_survey-'.$city->getSlug().'.csv');
+    }
+     */
     public static function putCsv($input, $delimiter = ',', $enclosure = '"')
     {
         if (static::$isbuildin === null) {
