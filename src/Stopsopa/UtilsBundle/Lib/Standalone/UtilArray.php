@@ -267,7 +267,7 @@ class UtilArray
 
         $list = array();
         foreach ($data as $d) {
-            if ($d == ':') {
+            if ($d === ':') {
                 continue;
             }
             $d = preg_split('#(?<!\\\\):#', $d, 2);

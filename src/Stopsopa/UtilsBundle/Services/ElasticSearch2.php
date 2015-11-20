@@ -3,6 +3,8 @@
 namespace Stopsopa\UtilsBundle\Services;
 use Doctrine\DBAL\Connection;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
+use Exception;
 
 /**
  * Stopsopa\UtilsBundle\Services\ElasticSearch2
@@ -27,9 +29,61 @@ class ElasticSearch2 {
         $this->esport   = $esport;
         $this->url      = $eshost.':'.$esport;
     }
-    public function buildIndexes() {
+
+    /**
+     * @param null|string $indexname (def: null) : null - wszystkie indexy, string - tylko konkretny index
+     * @throws Exception
+     */
+    public function buildIndexes($indexname = null) {
+
+        $list = UtilArray::cascadeGet($this->config, 'indexes');
+
+        if (is_array($list)) {
+
+            foreach ($list as $index => &$data) {
+
+                if (!$indexname || $indexname == $index) {
 
 
+                    // tworzenie indexu wraz z ustawieniami (analysis -> filter and analyzer
+                    $settings = UtilArray::cascadeGet($data, 'settings', array());
+
+                    $response = $this->_transport('PUT', "/$index?pretty", $settings);
+
+                    if ( ! ( !empty($response['body']['acknowledged']) && $response['body']['acknowledged'] ) ) {
+                        throw new Exception(print_r($response, true));
+                    }
+
+                    // tworzenie mappingów w indexach
+                    $types = UtilArray::cascadeGet($data, 'types', array());
+
+                    foreach ($types as $type => &$data) {
+
+                        $this->_transport('PUT', "/$index/_mapping/$type?pretty", array(
+                            $type => $data
+                        ));
+                    }
+                }
+            }
+        }
+        else {
+            throw new Exception('List is not an array');
+        }
+    }
+    public function dropIndexes($indexname = null) {
+
+        $list = UtilArray::cascadeGet($this->config, 'indexes');
+
+        if (is_array($list)) {
+            foreach ($list as $index => &$data) {
+                if (!$indexname || $indexname == $index) {
+                    $this->_transport('DELETE', "/$index");
+                }
+            }
+        }
+        else {
+            throw new Exception('List is not an array');
+        }
     }
     protected function _transport($method = null, $path = '', $data = array(), $headers = array())
     {
