@@ -77,6 +77,8 @@
 
         <parameter key="stopsopa.twig.twigextension">Stopsopa\UtilsBundle\Services\TwigExtensions</parameter>
 
+        <parameter key="elasctic2.class">Stopsopa\UtilsBundle\Services\ElasticSearch2</parameter>
+
     </parameters>
 
   <services>
@@ -86,6 +88,7 @@
             <argument>%test.user.entity%</argument>-->
         </service>
 
+
         <service id="test.user.manager" class="%test.user.entitymanager%">
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument>%test.user.entity%</argument>
@@ -94,6 +97,13 @@
         <service id="test.comment.manager" class="%test.comment.entitymanager%">
             <argument type="service" id="doctrine.orm.entity_manager"/>
             <argument>%test.comment.entity%</argument>
+        </service>
+
+        <service id="elastic2" class="%elasctic2.class%">
+            <argument type="service" id="doctrine.dbal.default_connection"/>
+            <argument>%elasticsearch2%</argument>
+            <argument>%elastic.host%</argument>
+            <argument>%elastic.port%</argument>
         </service>
 
         <!-- Rozszerzenia twig vvv -->
