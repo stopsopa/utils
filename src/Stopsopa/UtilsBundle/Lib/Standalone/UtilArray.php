@@ -4,6 +4,7 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
 
 use ArrayAccess;
 use Stopsopa\UtilsBundle\Lib\Exception\UtilArrayException;
+use Symfony\Component\Security\Acl\Exception\Exception;
 use Traversable;
 
 /**
@@ -154,28 +155,43 @@ class UtilArray
 
         return $data;
     }
-    public static function cascadeGet(&$source, $key = null, $default = null)
+
+    /**
+     * @param $source
+     * @param null $key
+     * @param $default = undefined : throw exception, mixed : return if can't find
+     * @return mixed
+     */
+    public static function cascadeGet(&$source, $key = null)
     {
         if ($key === null) {
             return $source;
         }
 
-        $key = self::cascadeExplode($key);
+        $keys = self::cascadeExplode($key);
         $element = &$source;
-        while (($d = array_shift($key)) !== null) {
+        while (($d = array_shift($keys)) !== null) {
             if (isset($element[$d])) {
-                if (count($key)) {
+                if (count($keys)) {
                     $element = &$element[$d];
                     continue;
                 } else {
                     return $element[$d];
                 }
             } else {
-                return $default;
+                if (func_num_args() < 3) {
+                    throw new Exception("Can't find inner element '$key'");
+                }
+
+                return func_get_arg(2);
             }
         }
 
-        return $default;
+        if (func_num_args() < 3) {
+            throw new Exception("Can't find element '$key'");
+        }
+
+        return func_get_arg(2);
     }
 
     /**

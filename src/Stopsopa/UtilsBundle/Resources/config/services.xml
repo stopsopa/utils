@@ -77,7 +77,7 @@
 
         <parameter key="stopsopa.twig.twigextension">Stopsopa\UtilsBundle\Services\TwigExtensions</parameter>
 
-        <parameter key="elasctic2.class">Stopsopa\UtilsBundle\Services\ElasticSearch2</parameter>
+        <parameter key="elasctic2.class">Stopsopa\UtilsBundle\Services\Elastic2\ElasticSearch2</parameter>
 
     </parameters>
 
@@ -100,6 +100,7 @@
         </service>
 
         <service id="elastic2" class="%elasctic2.class%">
+            <argument type="service" id="service_container" />
             <argument type="service" id="doctrine.dbal.default_connection"/>
             <argument>%elasticsearch2%</argument>
             <argument>%elastic.host%</argument>

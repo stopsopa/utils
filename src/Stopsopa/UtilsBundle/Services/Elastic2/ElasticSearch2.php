@@ -1,40 +1,50 @@
 <?php
 
-namespace Stopsopa\UtilsBundle\Services;
+namespace Stopsopa\UtilsBundle\Services\Elastic2;
+
 use Doctrine\DBAL\Connection;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 use Exception;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
+use PDO;
 
-/**
- * Stopsopa\UtilsBundle\Services\ElasticSearch2
- * Class ElasticSearch2
- * @package Stopsopa\UtilsBundle\Services
- */
+
 class ElasticSearch2 {
     /**
      * @var Connection
      */
     protected $dbal;
+    /**
+     * @var Container
+     */
+    protected $container;
     protected $config;
     protected $eshost;
     protected $esport;
     protected $url;
 
-    public function __construct(Connection $connection, $config, $eshost, $esport)
+    public function __construct(Container $container, Connection $connection, $config, $eshost, $esport)
     {
-        $this->dbal     = $connection;
-        $this->config   = $config;
-        $this->eshost   = $eshost;
-        $this->esport   = $esport;
-        $this->url      = $eshost.':'.$esport;
+        $this->container    = $container;
+        $this->dbal         = $connection;
+        $this->config       = $config;
+        $this->eshost       = $eshost;
+        $this->esport       = $esport;
+        $this->url          = $eshost.':'.$esport;
     }
 
     /**
      * @param null|string $indexname (def: null) : null - wszystkie indexy, string - tylko konkretny index
      * @throws Exception
      */
-    public function buildIndexes($indexname = null) {
+    public function buildIndexes($indexname = null, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
 
         $list = UtilArray::cascadeGet($this->config, 'indexes');
 
@@ -44,6 +54,7 @@ class ElasticSearch2 {
 
                 if (!$indexname || $indexname == $index) {
 
+                    $output->writeln("Create index: $index");
 
                     // tworzenie indexu wraz z ustawieniami (analysis -> filter and analyzer
                     $settings = UtilArray::cascadeGet($data, 'settings', array());
@@ -64,25 +75,83 @@ class ElasticSearch2 {
                         ));
                     }
                 }
+                else {
+                    $output->writeln("Ignore index: $index");
+                }
             }
         }
         else {
             throw new Exception('List is not an array');
         }
     }
-    public function dropIndexes($indexname = null) {
+    public function dropIndexes($indexname = null, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
 
         $list = UtilArray::cascadeGet($this->config, 'indexes');
 
         if (is_array($list)) {
             foreach ($list as $index => &$data) {
                 if (!$indexname || $indexname == $index) {
+                    $output->writeln("Delete index: $index");
                     $this->_transport('DELETE', "/$index");
+                }
+                else {
+                    $output->writeln("Ignore index: $index");
                 }
             }
         }
         else {
             throw new Exception('List is not an array');
+        }
+    }
+
+    /**
+     * https://www.elastic.co/guide/en/elasticsearch/guide/current/bulk.html
+     */
+    public function populate($indexname = null, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+
+        $list = UtilArray::cascadeGet($this->config, 'indexes');
+
+        if (is_array($list)) {
+
+            foreach ($list as $index => &$data) {
+
+                if (!$indexname || $indexname == $index) {
+                    $output->writeln("Populate index: $index");
+
+                    $service = $this->container->get(UtilArray::cascadeGet($data, 'persistence.service'));
+
+                    $this->_fixtures($service, $data, $output);
+                }
+                else {
+                    $output->writeln("Ignore index: $index");
+                }
+            }
+        }
+        else {
+            throw new Exception('List is not an array');
+        }
+    }
+    protected function _fixtures(AbstractElastic2ProviderService $service, $data, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+
+        $atonce = UtilArray::cascadeGet($data, 'persistence.bulk_at_once');
+
+        $qb = $service->
+        $stmt = $this->dbal->query("SELECT id, surname name FROM users u WHERE length(surname) > 0 GROUP BY surname");
+
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $this->_transport('PUT', '/testindexname/test/'.$row['id'], $row);
         }
     }
     protected function _transport($method = null, $path = '', $data = array(), $headers = array())
