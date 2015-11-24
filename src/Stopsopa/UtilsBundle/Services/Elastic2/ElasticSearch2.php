@@ -6,6 +6,7 @@ use Doctrine\DBAL\Connection;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 use Exception;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilNested;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
@@ -34,6 +35,19 @@ class ElasticSearch2 {
         $this->eshost       = $eshost;
         $this->esport       = $esport;
         $this->url          = $eshost.':'.$esport;
+
+        foreach ($this->config['indexes'] as &$data) {
+            foreach ($data['types'] as $type => &$tdata) {
+                foreach ($tdata['properties'] as $field => &$properties) {
+                    if (!isset($properties['mapping'])) {
+                        $properties['mapping'] = array();
+                    }
+                    if (!isset($properties['mapping']['field'])) {
+                        $properties['mapping']['field'] = $field;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -54,7 +68,7 @@ class ElasticSearch2 {
 
                 if (!$indexname || $indexname == $index) {
 
-                    $output->writeln("Create index: $index");
+                    $output->writeln("Create index: '$index'");
 
                     // tworzenie indexu wraz z ustawieniami (analysis -> filter and analyzer
                     $settings = UtilArray::cascadeGet($data, 'settings', array());
@@ -68,11 +82,27 @@ class ElasticSearch2 {
                     // tworzenie mappingów w indexach
                     $types = UtilArray::cascadeGet($data, 'types', array());
 
-                    foreach ($types as $type => &$data) {
+                    foreach ($types as $type => $data) {
 
-                        $this->_transport('PUT', "/$index/_mapping/$type?pretty", array(
+                        $output->writeln("    - crete mapping '".$type."' in this index");
+
+                        if (isset($data['mapping'])) {
+                            unset($data['mapping']);
+                        }
+
+                        foreach ($data['properties'] as &$d) {
+                            if (isset($d['mapping'])) {
+                                unset($d['mapping']);
+                            }
+                        }
+
+                        $res = $this->_transport('PUT', "/$index/_mapping/$type?pretty", array(
                             $type => $data
                         ));
+
+                        if ($res['status'] !== 200) {
+                            throw new Exception(print_r($res, true));
+                        }
                     }
                 }
                 else {
@@ -126,9 +156,12 @@ class ElasticSearch2 {
                 if (!$indexname || $indexname == $index) {
                     $output->writeln("Populate index: $index");
 
-                    $service = $this->container->get(UtilArray::cascadeGet($data, 'persistence.service'));
+                    foreach ($data['types'] as $type => &$tdata) {
 
-                    $this->_fixtures($service, $data, $output);
+                        $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+
+                        $this->_fixtures($service, $index, $type, $tdata, $output);
+                    }
                 }
                 else {
                     $output->writeln("Ignore index: $index");
@@ -139,19 +172,62 @@ class ElasticSearch2 {
             throw new Exception('List is not an array');
         }
     }
-    protected function _fixtures(AbstractElastic2ProviderService $service, $data, OutputInterface $output = null) {
+    protected function _fixtures($service, $index, $type, $tdata, OutputInterface $output = null) {
 
         if (!$output) {
             $output = new ConsoleOutput();
         }
 
-        $atonce = UtilArray::cascadeGet($data, 'persistence.bulk_at_once');
+        $output->writeln("    Populate type: '$type'");
 
-        $qb = $service->
-        $stmt = $this->dbal->query("SELECT id, surname name FROM users u WHERE length(surname) > 0 GROUP BY surname");
+        $atonce         = UtilArray::cascadeGet($tdata, 'mapping.maxresults');
 
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $this->_transport('PUT', '/testindexname/test/'.$row['id'], $row);
+        $initmethod     = UtilArray::cascadeGet($tdata, 'mapping.initmethod');
+
+        $idfield        = UtilArray::cascadeGet($tdata, 'mapping.idfield');
+
+        call_user_func(array($service, $initmethod), $atonce);
+
+
+        $i = 0;
+        foreach ($service as $offset => $group) {
+            // różnica między index a create w bulk https://www.elastic.co/guide/en/elasticsearch/guide/current/bulk.html
+            // index -> create or replace
+            // create -> create, if exist fail
+
+            $bulk = '';
+            foreach ($group as &$r) {
+
+                $row = array();
+
+                foreach ($tdata['properties'] as $name => &$f) {
+                    $row[$name] = UtilNested::get($r, $f['mapping']['field']);
+                }
+
+                $tmp = array(
+                    'index' => array(
+                        "_index"    => $index,
+                        "_type"     => $type,
+                        "_id"       => $row[$idfield]
+                    )
+                );
+
+                $bulk .= json_encode($tmp)."\n".json_encode($row)."\n";
+
+                $i += 1;
+            }
+
+            $output->write("    Populate: $offset\r");
+
+            $this->_transport('POST', "/_bulk", $bulk);
+        }
+
+        $output->writeln("    Last row: $i");
+    }
+    public function index($index, $type, $row, $setup = null) {
+        if (!$setup) {
+            $setup = &$this->config['indexes'][$index]['types'][$type];
+            niechginie($setup);
         }
     }
     protected function _transport($method = null, $path = '', $data = array(), $headers = array())
