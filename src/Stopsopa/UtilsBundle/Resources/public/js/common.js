@@ -1,4 +1,15 @@
-;
+// process.nextTick polifill
+;(function (main, d) {
+    main.process||(main.process = {});
+    if (!main.process.nextTick){
+        main.process.nextTick=(function(){
+            try{main.process.nextTick(d);return main.process.nextTick}catch(e){};
+            try{main.setImmediate(d);main.setImmediate(function(){});return main.setImmediate}catch(e){};
+            return function(f){setTimeout(f,0)};
+        })();
+    }
+}(self, function(){}));
+
 
 
 // .on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', fn);
