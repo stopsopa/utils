@@ -4,7 +4,7 @@
     if (!main.process.nextTick){
         main.process.nextTick=(function(){
             try{main.process.nextTick(d);return main.process.nextTick}catch(e){};
-            try{main.setImmediate(d);main.setImmediate(function(){});return main.setImmediate}catch(e){};
+            try{main.setImmediate(d);return main.setImmediate}catch(e){};
             return function(f){setTimeout(f,0)};
         })();
     }
