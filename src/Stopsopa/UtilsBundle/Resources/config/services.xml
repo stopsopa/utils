@@ -99,13 +99,13 @@
             <argument>%test.comment.entity%</argument>
         </service>
 
-        <service id="elastic2" class="%elasctic2.class%">
-            <argument type="service" id="service_container" />
-            <argument type="service" id="doctrine.dbal.default_connection"/>
-            <argument>%elasticsearch2%</argument>
-            <argument>%elastic.host%</argument>
-            <argument>%elastic.port%</argument>
-        </service>
+        <!--<service id="elastic2" class="%elasctic2.class%">-->
+            <!--<argument type="service" id="service_container" />-->
+            <!--<argument type="service" id="doctrine.dbal.default_connection"/>-->
+            <!--<argument>%elasticsearch2%</argument>-->
+            <!--<argument>%elastic.host%</argument>-->
+            <!--<argument>%elastic.port%</argument>-->
+        <!--</service>-->
 
         <!-- Rozszerzenia twig vvv -->
             <service id="stopsopa_twig.extensions" class="%stopsopa.twig.twigextension%" public="false">

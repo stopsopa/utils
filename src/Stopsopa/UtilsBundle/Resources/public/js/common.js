@@ -10,8 +10,6 @@
     }
 }(self, function(){}));
 
-
-
 // .on('transitionend webkitTransitionEnd oTransitionEnd otransitionend MSTransitionEnd', fn);
 
 // // wymaga jquery
