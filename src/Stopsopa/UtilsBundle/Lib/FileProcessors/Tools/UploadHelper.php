@@ -283,6 +283,43 @@ class UploadHelper
      * @param null $lastmodifiedheader
      * @return bool
      * @throws Exception
+     *
+     *
+     *
+     * Na produkcji używałem czegoś takiego vvv
+if (isset($_GET['cache']) || strpos($_SERVER['REQUEST_URI'], '__cache__') !== false) {
+
+    $file = isset($_GET['cache']) ? $_GET['cache'] : $_SERVER['REQUEST_URI'];
+
+    if (strpos($file, '?') !== false) {
+        $file = preg_replace('#^(.*?)\?[^\?]*$#', '$1', $file);
+    }
+
+    $ext = pathinfo($file, PATHINFO_EXTENSION);
+
+    if ( !in_array($ext, array('js', 'css')) ) {
+        die('access denied cache'); // zabezpieczenie co by nie wbili się do plików php
+    }
+
+    $file = dirname(__FILE__).$file;
+    $file = str_replace('__cache__', '', $file);
+
+    if (UploadHelper::isModified($file, @$_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+        if ($ext === 'js') {
+            header('Content-Type: application/javascript');
+        }
+        if ($ext === 'css') {
+            header('Content-Type: text/css');
+        }
+        header('Last-Modified: '.  gmdate("D, d M Y H:i:s T", filemtime($file))  );
+        readfile($file);
+    }
+    else {
+        header('HTTP/1.0 304 Not Modified');
+    }
+    die();
+}
+     * Na produkcji używałem czegoś takiego ^^^
      */
     public static function isModified($file, $lastmodifiedheader = null)
     {
