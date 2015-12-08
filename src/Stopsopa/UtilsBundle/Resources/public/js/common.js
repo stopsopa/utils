@@ -1,3 +1,4 @@
+// <script src="/bundles/stopsopautils/js/common.js"></script>
 // process.nextTick polifill
 ;(function (main, d) {
     main.process||(main.process = {});
