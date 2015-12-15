@@ -47,17 +47,6 @@ window.onexitsetup = function (ask) {
     }
 }
 
-// http://stackoverflow.com/a/22337556/1338731
-// jquery plugin 'jquery.ready.fix.js'
-// @author Szymon Działowski
-;(function ($) {
-    $.fn.ready.old || $(function (r) {
-        r = $.fn.ready;
-        $.fn.ready = function (fn) {    $.isReady ? fn() : r(fn);    };
-        $.fn.ready.old = r;
-    });
-})(jQuery);
-
 //(function (fn) {
 //    (function call() {
 //        window.$ ? $(fn) : setTimeout(call, 200);
@@ -170,6 +159,17 @@ window.site || (window.site = {});
 
 if ('jQuery' in window) {
 
+
+    // http://stackoverflow.com/a/22337556/1338731
+    // jquery plugin 'jquery.ready.fix.js'
+    // @author Szymon Działowski
+    ;(function ($) {
+        $.fn.ready.old || $(function (r) {
+            r = $.fn.ready;
+            $.fn.ready = function (fn) {    $.isReady ? fn() : r(fn);    };
+            $.fn.ready.old = r;
+        });
+    })(jQuery);
 
     (function ($) {
           $.toUrl = function (str, delimiter) {

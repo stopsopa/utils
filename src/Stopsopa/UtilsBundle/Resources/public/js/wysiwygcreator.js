@@ -51,6 +51,7 @@ var wysiwygcreator = function (tmp, h) { // h może być niezdefiniowane
             });
 
 
+        log('bind wysiwyg');
             (function () {
                 var h = widget.height();
                 box.find('[data-resize]').stopsopamove({

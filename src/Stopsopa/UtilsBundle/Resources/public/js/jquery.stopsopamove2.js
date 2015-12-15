@@ -121,11 +121,9 @@
             }, opt || {});
 
             function move(e) {
-                log('move')
                 if (e.changedTouches) {
                     e = e.changedTouches;
                 }
-                log(e)
                 opt.move.apply(t, [e, tmp, {
                     x : e.pageX - tmp.pageX,
                     y : e.pageY - tmp.pageY
