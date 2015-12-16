@@ -16,6 +16,7 @@ namespace Stopsopa\UtilsBundle\Lib;
     ), BasicAuth::MODE_COOKIE, $salt = 'svg', $message = "Zaloguj sie do systemu");
  */
 
+
 class BasicAuth {
     private static $credentials;
     private static $message;
