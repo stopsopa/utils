@@ -16,6 +16,15 @@
         <parameter key="test.comment.entity">Stopsopa\UtilsBundle\Entity\Comment</parameter>
 
         <parameter key="password.generator">Stopsopa\UtilsBundle\Services\GeneratePassword</parameter>
+
+        <!--Zmiana zachowania assetic w trybie dev
+            assetic:
+                use_controller: true
+
+        <parameter key="assetic.routing_loader.class">Stopsopa\UtilsBundle\Services\Overwrite\AsseticLoader</parameter>
+        -->
+
+
         <!--<parameter key="twig.loader.filesystem.class">Symfony\Bundle\TwigBundle\Loader\FilesystemLoader</parameter> oryginalny zapis-->
 
     <!--<parameter key="app.country.jirarestservice">AppBundle\Services\JiraRestService</parameter>-->
