@@ -23,7 +23,7 @@
  *             $formula = $this->am->getFormula($name);
  *
  * // simon
- * $asset->setTargetPath($formula[0][1]);
+ * // $asset->setTargetPath($formula[0][1]);
  *
  *             $this->loadRouteForAsset($routes, $asset, $name);
  *
@@ -35,7 +35,8 @@
  *                 $i = 0;
  *                 foreach ($asset as $leaf) {
  * // simon
- * $leaf->setTargetPath($leaf->getSourcePath());
+ * // $leaf->setTargetPath($leaf->getSourcePath());
+ * $leaf->setTargetPath($leaf->getTargetPath());
  *
  * Stopsopa\UtilsBundle\Services\Overwrite\AsseticLoader
  *
@@ -124,9 +125,9 @@ class AsseticLoader extends Loader
 
         // routes
         foreach ($this->am->getNames() as $name) {
-//            if (!$this->am->hasFormula($name)) {
-//                continue;
-//            }
+            if (!$this->am->hasFormula($name)) {
+                continue;
+            }
 
             $asset = $this->am->get($name);
             $formula = $this->am->getFormula($name);
@@ -145,7 +146,8 @@ class AsseticLoader extends Loader
                 $i = 0;
                 foreach ($asset as $leaf) {
 // simon
-$leaf->setTargetPath($leaf->getSourcePath());
+//$leaf->setTargetPath($leaf->getSourcePath());
+$leaf->setTargetPath($leaf->getTargetPath());
                     $this->loadRouteForAsset($routes, $leaf, $name, $i++);
                 }
             }
