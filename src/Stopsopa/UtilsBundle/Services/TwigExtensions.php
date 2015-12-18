@@ -55,15 +55,18 @@ class TwigExtensions extends Twig_Extension
         if (!$this->ver) {
             $file = AbstractApp::getRootDir().'/app/cache/prod/appProdUrlMatcher.php';
 
-            if (!file_exists($file)) {
-                die("File '$file'' not exists, please run project in production mode once to create it");
+            try {
+                UtilFilesystem::checkFile($file);
+
+                $d = new DateTime(date("c", filemtime($file)));
+
+                $this->ver = $d->format('Y-m-d-H-i-s');
             }
+            catch (\Exception $e) {
 
-            UtilFilesystem::checkFile($file);
-
-            $d = new DateTime(date("c", filemtime($file)));
-
-            $this->ver = $d->format('Y-m-d-H-i-s');
+                echo("File '$file'' not exists, please run project in production mode once to create it\n");
+                die($e->getMessage());
+            }
         }
         return $this->ver;
     }
