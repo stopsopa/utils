@@ -131,7 +131,9 @@ class AsseticLoader extends Loader
             $asset = $this->am->get($name);
             $formula = $this->am->getFormula($name);
 // simon
-$asset->setTargetPath($formula[0][1]);
+            if (!empty($formula[0][1])) {
+                $asset->setTargetPath($formula[0][1]);
+            }
 
             $this->loadRouteForAsset($routes, $asset, $name);
 
