@@ -38,6 +38,15 @@
  * $leaf->setTargetPath($leaf->getSourcePath());
  *
  * Stopsopa\UtilsBundle\Services\Overwrite\AsseticLoader
+ *
+ * do .htaccess dodać:
+ *
+ * <IfModule mod_rewrite.c>
+ * RewriteEngine On
+ * RewriteRule ^app_dev\.php/bundles/(.*)$ /bundles/$1 [L]
+ * # lub
+ * #    RewriteRule ^app_dev\.php/bundles/(.*)$ /bundles/$1 [R=301,L]
+ * </IfModule>
  */
 
 
@@ -111,9 +120,9 @@ class AsseticLoader extends Loader
 
         // routes
         foreach ($this->am->getNames() as $name) {
-            if (!$this->am->hasFormula($name)) {
-                continue;
-            }
+//            if (!$this->am->hasFormula($name)) {
+//                continue;
+//            }
 
             $asset = $this->am->get($name);
             $formula = $this->am->getFormula($name);
