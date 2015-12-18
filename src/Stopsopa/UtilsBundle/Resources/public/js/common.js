@@ -47,16 +47,6 @@ window.onexitsetup = function (ask) {
     }
 }
 
-//(function (fn) {
-//    (function call() {
-//        window.$ ? $(fn) : setTimeout(call, 200);
-//    }())
-//}(function () {
-//    var eid = parseInt('{{ enitity.id }}');
-//    alert('go: '+eid);
-//}));
-
-
 
 
 
@@ -68,6 +58,67 @@ window.onexitsetup = function (ask) {
 if (!window.site) {
     window.site = {};
 }
+
+
+/**
+ * Klasa Array sama jest funkcją ale Array.prototype jest obiektem z metodą na przykład indexOf()
+ *       var r = render(tmptr());
+ *       Array.prototype.forEach.call(r, function (e) {
+ *         tbody.appendChild(e)
+ *       });
+ */
+(site.dom) || (site.dom = {});
+site.dom.render = (function () {
+//            var find = " <b> \n\n <tr><td>inne<other>".replace(/^\s*?<([^>]+)>[\s\S]*$/i, '$1');
+    var find = /^\s*?<([^>]+)>[\s\S]*$/i;
+    var table = ['tbody', 'tr', 'td'];
+    var t1, t2;
+    return function (html) {
+        var first = html.replace(find, '$1').toLocaleLowerCase();
+        var t = document.createElement('table');
+        t.innerHTML = html;
+        if (table.indexOf(first) < 0 || first === 'tbody') {
+            return Array.prototype.slice.call(t.children, 0);
+        }
+        var t1 = [];
+        Array.prototype.forEach.call(t.children, function (e) {
+            Array.prototype.forEach.call(e.children, function (ee) {
+                t1.push(ee);
+            });
+        });
+        if (first === 'tr') {
+            return Array.prototype.slice.call(t1, 0);
+        }
+        var t2 = [];
+        Array.prototype.forEach.call(t1, function (e) {
+            Array.prototype.forEach.call(e.children, function (ee) {
+                t2.push(ee);
+            });
+        });
+        return Array.prototype.slice.call(t2, 0);
+    }
+}());
+
+// https://developer.mozilla.org/pl/docs/Web/API/Element/matches
+site.dom.match = (function () {
+    // nie działa to jak powinno
+    //if (Element.prototype.matches) {
+    //    return function (e, sel) {
+    //        return e.matches(e, sel);
+    //    }
+    //}
+    //if (Element.prototype.msMatchesSelector) {
+    //    return function (e, sel) {
+    //        return Element.prototype.msMatchesSelector.call(e, sel);
+    //    }
+    //}
+    return function (e, sel) { // jeśli nie ma to polifil
+        var matches = (e.document || e.ownerDocument).querySelectorAll(sel),
+            i = matches.length;
+        while (--i >= 0 && matches.item(i) !== e) ;
+        return i > -1;
+    }
+}());
 
 
 (function (to) {  // narzędzie do tłumaczeń kodów błedów http
@@ -170,6 +221,15 @@ if ('jQuery' in window) {
             $.fn.ready.old = r;
         });
     })(jQuery);
+
+    //(function (fn) {
+    //    (function call() {
+    //        window.$ ? $(fn) : setTimeout(call, 200);
+    //    }())
+    //}(function () {
+    //    var eid = parseInt('{{ enitity.id }}');
+    //    alert('go: '+eid);
+    //}));
 
     (function ($) {
           $.toUrl = function (str, delimiter) {
