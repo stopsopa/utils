@@ -47,6 +47,10 @@
  * # lub
  * #    RewriteRule ^app_dev\.php/bundles/(.*)$ /bundles/$1 [R=301,L]
  * </IfModule>
+ *
+ *  assetic:
+ *      use_controller: true
+ * <parameter key="assetic.routing_loader.class">Stopsopa\UtilsBundle\Services\Overwrite\AsseticLoader</parameter>
  */
 
 
