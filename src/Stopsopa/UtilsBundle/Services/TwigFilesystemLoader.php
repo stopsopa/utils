@@ -8,6 +8,7 @@ use Symfony\Component\Config\FileLocatorInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 
 /**
+ * <parameter key="twig.loader.filesystem.class">Stopsopa\UtilsBundle\Services\TwigFilesystemLoader</parameter>
  * Stopsopa\UtilsBundle\Services\TwigFilesystemLoader.
  */
 class TwigFilesystemLoader extends FilesystemLoader

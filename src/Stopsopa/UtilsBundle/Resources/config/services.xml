@@ -7,7 +7,6 @@
 
 
   <parameters>
-        <!--<parameter key="twig.loader.filesystem.class">Stopsopa\UtilsBundle\Services\TwigFilesystemLoader</parameter>-->
 
         <parameter key="test.user.entitymanager">Stopsopa\UtilsBundle\Entity\UserManager</parameter>
         <parameter key="test.user.entity">Stopsopa\UtilsBundle\Entity\User</parameter>
