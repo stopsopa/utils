@@ -34,7 +34,9 @@ class TwigFilesystemLoader extends FilesystemLoader
         if ($this->dev && preg_match('#\{%\s+(?:stylesheets|javascripts)#is', $data)) {
             $loader = $this->loader;
 
-            return preg_replace_callback('#([ ]*)\{%\s+(?:stylesheets|javascripts)((?:\s+[^\'"]*[\'"][^\'"]*[\'"])*?)\s+%\}([^\{]*?)\{\{\s*asset_url\s*\}\}([^\{]*?)\{%\s+end(?:stylesheets|javascripts)\s+%\}#is', function ($match) use ($loader) {
+            return preg_replace_callback(
+            //%}<script src="{{ asset_url }}?ver={{ ver() }}"></script>
+                '#([ ]*)\{%\s+(?:stylesheets|javascripts)((?:\s+[^\'"]*[\'"][^\'"]*[\'"])*?)\s+%\}([^\{]*?)\{\{\s*asset_url\s*\}\}([^%]*?)%\s+end(?:stylesheets|javascripts)\s+%\}#is', function ($match) use ($loader) {
                 if (substr_count($match[2], '"') > 1 || substr_count($match[2], "'") > 1) {
                     preg_match_all('#(\s+[^\'"]*[\'"][^\'"]*[\'"])*?#si', $match[2], $m);
                     $match[4] = rtrim($match[4]);

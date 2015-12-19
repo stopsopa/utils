@@ -53,20 +53,26 @@ class TwigExtensions extends Twig_Extension
     protected $ver;
     public function ver() {
         if (!$this->ver) {
-            $file = AbstractApp::getRootDir().'/app/cache/prod/appProdUrlMatcher.php';
+            $root = AbstractApp::getRootDir();
+            $file = $root.'/app/cache/prod/appProdUrlMatcher.php';
 
             try {
                 UtilFilesystem::checkFile($file);
-
-                $d = new DateTime(date("c", filemtime($file)));
-
-                $this->ver = $d->format('Y-m-d-H-i-s');
             }
             catch (\Exception $e) {
-
-                echo("File '$file'' not exists, please run project in production mode once to create it\n");
-                die($e->getMessage());
+                $file = $root.'/vendor/autoload.php';
+                try {
+                    UtilFilesystem::checkFile($file);
+                }
+                catch (\Exception $e) {
+                    echo("File '$file'' not exists, please run project in production mode once to create it\n");
+                    die($e->getMessage());
+                }
             }
+
+            $d = new DateTime(date("c", filemtime($file)));
+
+            $this->ver = $d->format('Y-m-d-H-i-s');
         }
         return $this->ver;
     }
