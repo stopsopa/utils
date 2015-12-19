@@ -47,10 +47,11 @@ class TwigFilesystemLoader extends FilesystemLoader
                         if ($d) {
                             if ($d[0] == '"' || $d[0] == "'") {
                                 $l[] = trim($d, '\'"');
-                            } elseif (substr($d, 0, 6) == 'output') {
-                                $output = explode('=', $d);
-                                $output = trim($output[1], '\'"');
                             }
+//                            elseif (substr($d, 0, 6) == 'output') {
+//                                $output = explode('=', $d);
+//                                $output = trim($output[1], '\'"');
+//                            }
                         }
                     }
 
