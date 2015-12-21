@@ -68,7 +68,8 @@ class TwigFilesystemLoader extends FilesystemLoader
 //                        $l[$k] = '[m1]'.$match[1].'[m3]'.$match[3].'[l]'.$loader.'[o]'.$output."=".'[e]'.$e.'[m4]'.$match[4];
 
 
-                        $l[$k] = str_replace('{', '', $match[1].$match[3].'/'.$e.$match[4]);
+
+                        $l[$k] = preg_replace('#^(.*?){(\s*)$#s', '$1$2', $match[1].$match[3].'/'.$e.$match[4]);
                     }
 
                     return implode("\n", $l)."\n";
