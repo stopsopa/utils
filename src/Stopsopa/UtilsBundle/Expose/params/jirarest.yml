@@ -1,0 +1,6 @@
+parameters:
+    jirarest:
+        endpoint: https://absolvent.atlassian.net
+        user: szymon.dzialowski
+        password: start1234
+        project: CRAW

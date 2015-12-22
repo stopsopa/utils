@@ -294,6 +294,14 @@ if (isset($_GET['cache']) || strpos($_SERVER['REQUEST_URI'], '__cache__') !== fa
     if (strpos($file, '?') !== false) {
         $file = preg_replace('#^(.*?)\?[^\?]*$#', '$1', $file);
     }
+     * lub to
+     * lub to
+     * lub to
+     * lub to
+    if (strpos($file, '?') !== false) {
+        $file = explode('?', $file);
+        $file = $file[0];
+    }
 
     $ext = pathinfo($file, PATHINFO_EXTENSION);
 
