@@ -298,7 +298,7 @@ abstract class AbstractController extends Controller
         $response   = $a->getFirst('Symfony\Component\HttpFoundation\Response', null);
 
         if (!is_string($view) || !$view) {
-            $rparams = $this->get('request')->attributes->get('_controller');
+            $rparams = AbstractApp::getRequest()->attributes->get('_controller');
 
             if (strpos($rparams, '\\Controller\\')) {
                 preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $rparams, $matches);

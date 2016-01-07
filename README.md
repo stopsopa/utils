@@ -1,3 +1,6 @@
+xcopy /E vendor\stopsopa proxy\stopsopa
+cp proxy/* vendor/ -R
+
 composer create-project symfony/framework-standard-edition runtime '2.5.*'
 
 

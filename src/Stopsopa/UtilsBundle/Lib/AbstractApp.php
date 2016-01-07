@@ -6,6 +6,7 @@ use Exception;
 use Stopsopa\UtilsBundle\Exception\NoFrameworkException;
 use ReflectionClass;
 // klasy do przerzucenia bo wymuszają zależności
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Kernel;
 use AppCache;
 use Doctrine\DBAL\Connection;
@@ -100,6 +101,10 @@ class AbstractApp
     public static function get($service)
     {
         return static::getCont()->get($service);
+    }
+    public static function has($service)
+    {
+        return static::getCont()->has($service);
     }
 
     /**
@@ -313,6 +318,13 @@ class AbstractApp
      */
     public static function getRequest()
     {
+        // http://symfony.com/blog/new-in-symfony-2-4-the-request-stack
+        // g(New in Symfony 2.4: The Request Stack)
+        if (static::has('request_stack')) {
+            $stack = static::get('request_stack');
+            /* @var $stack RequestStack */
+            return $stack->getMasterRequest();
+        }
         return static::get(static::SERVICE_REQUEST);
     }
 //    public static function isGoogleBoot($request = null) {
