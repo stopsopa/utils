@@ -316,7 +316,7 @@ abstract class AbstractController extends Controller
                 $view = $this->getBundleName().':'.$view;
                 break;
             default:
-                $rparams = $this->get('request')->attributes->get('_controller');
+                $rparams = AbstractApp::getRequest()->attributes->get('_controller');
 
                 if (strpos($rparams, '\\Controller\\')) {
                     preg_match('#^(?:.*?)\\\\Controller\\\\(.*?)Controller::(.*?)(?:Action)?$#', $rparams, $matches);
