@@ -318,14 +318,17 @@ class AbstractApp
      */
     public static function getRequest()
     {
+        if (static::has(static::SERVICE_REQUEST)) {
+            return static::get(static::SERVICE_REQUEST);
+        }
         // http://symfony.com/blog/new-in-symfony-2-4-the-request-stack
         // g(New in Symfony 2.4: The Request Stack)
-        if (static::has('request_stack')) {
+//        if (static::has('request_stack')) {
             $stack = static::get('request_stack');
             /* @var $stack RequestStack */
             return $stack->getMasterRequest();
-        }
-        return static::get(static::SERVICE_REQUEST);
+//        }
+//        return static::get(static::SERVICE_REQUEST);
     }
 //    public static function isGoogleBoot($request = null) {
 //      /* @var $request Request */
