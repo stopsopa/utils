@@ -27,7 +27,7 @@ class AbstractApp
  */
 //    const SERVICE_CONTAINER      = 'service_container'; // ContainerInterface
 //    const SERVICE_SECURITY       = 'security.context';
-//    const SERVICE_SESSION        = 'session';
+    const SERVICE_SESSION        = 'session';
 //    const SERVICE_EM             = 'doctrine.orm.default_entity_manager';
 //    const SERVICE_DBAL           = 'doctrine.dbal.default_connection';
 //    const SERVICE_TRANSLATOR     = 'translator';
@@ -340,9 +340,9 @@ class AbstractApp
     /**
      * @return Session
      */
-//    public static function getSession() {
-//      return static::get(self::SERVICE_SESSION);
-//    }
+    public static function getSession() {
+        return static::get(self::SERVICE_SESSION);
+    }
 //    /**
 //     * @return FlashBag
 //     */
