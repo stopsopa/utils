@@ -231,6 +231,20 @@ if ('jQuery' in window) {
     //    alert('go: '+eid);
     //}));
 
+    //var loadsecond = (function (load) {
+    //    var loadfirst = false;
+    //    return function () {
+    //        loadfirst && load();
+    //        loadfirst = true;
+    //    }
+    //})(function () {
+    //    // do sth
+    //});
+    //google.setOnLoadCallback(loadsecond);
+    //$(loadsecond);
+
+
+
     (function ($) {
           $.toUrl = function (str, delimiter) {
             delimiter = delimiter || '-'
