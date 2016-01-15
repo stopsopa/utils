@@ -208,16 +208,6 @@
         return param;
     }
 
-    function debounce(fn, delay) {
-      var timer = null;
-      return function () {
-        var context = this, args = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          fn.apply(context, args);
-        }, delay);
-      };
-    };
     function template(tmp, context) {
 
         if (typeof tmp === 'string' && tmp) {
@@ -524,9 +514,13 @@
 
                     });
                 },
-//                drop: function () {
-//                    log('drop')
-//                },
+                drop: oo.drop || $.noop,
+                //drop: function (e, data) {
+                //    log('drop')
+                //    log(e)
+                //    log(data)
+                //    log(data.files[0]);
+                //},
 //                change: function () {
 //                    log('change')
 //                },
