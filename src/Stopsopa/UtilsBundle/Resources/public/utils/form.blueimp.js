@@ -294,8 +294,9 @@
 
                     return true;
                 },
-                onstartupload: $.noop, // konkretnie przy rozpocząciu uploadu, function (context) {}
-                afterdone: $.noop // gdy upload skończony, function (context) {}
+                onstartupload       : $.noop, // konkretnie przy rozpocząciu uploadu, function (context) {}
+                afterdone           : $.noop, // gdy upload skończony, function (context) {}
+                _onerror            : $.noop
             }, o || {});
 
             var processing          = false;
@@ -411,6 +412,7 @@
                                     .fail(function (jqXHR, textStatus, errorThrown) {
                                         pall.remove(file);
                                         renderError(s.status(jqXHR.status), file, list, tmperror, o);
+                                        o._onerror(s.status(jqXHR.status))
                                     })
                                 ;
                                 data.context.data(bagname).jqxhr = processing;
@@ -429,6 +431,7 @@
                     }
                     else {
                         renderError("Plik jest zbyt duży - "+humanFileSize(file.size)+", dozwolona wielkość pliku to "+humanFileSize(maxsize), file, list, tmperror, o);
+                        o._onerror("Plik jest zbyt duży - "+humanFileSize(file.size)+", dozwolona wielkość pliku to "+humanFileSize(maxsize));
                     }
 
                 },
