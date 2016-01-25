@@ -3,6 +3,7 @@
 namespace Stopsopa\UtilsBundle\Services\Elastic2;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 use Exception;
@@ -66,14 +67,14 @@ class ElasticSearch2 {
 
             foreach ($list as $index => &$data) {
 
-                if (!$indexname || $indexname == $index) {
+                if (!$indexname || $indexname === $index) {
 
                     $output->writeln("Create index: '$index'");
 
                     // tworzenie indexu wraz z ustawieniami (analysis -> filter and analyzer
                     $settings = UtilArray::cascadeGet($data, 'settings', array());
 
-                    $response = $this->_transport('PUT', "/$index?pretty", $settings);
+                    $response = $this->_api('PUT', "/$index?pretty", $settings);
 
                     if ( ! ( !empty($response['body']['acknowledged']) && $response['body']['acknowledged'] ) ) {
                         throw new Exception(print_r($response, true));
@@ -96,7 +97,7 @@ class ElasticSearch2 {
                             }
                         }
 
-                        $res = $this->_transport('PUT', "/$index/_mapping/$type?pretty", array(
+                        $res = $this->_api('PUT', "/$index/_mapping/$type?pretty", array(
                             $type => $data
                         ));
 
@@ -124,9 +125,9 @@ class ElasticSearch2 {
 
         if (is_array($list)) {
             foreach ($list as $index => &$data) {
-                if (!$indexname || $indexname == $index) {
+                if (!$indexname || $indexname === $index) {
                     $output->writeln("Delete index: $index");
-                    $this->_transport('DELETE', "/$index");
+                    $this->_api('DELETE', "/$index");
                 }
                 else {
                     $output->writeln("Ignore index: $index");
@@ -136,6 +137,42 @@ class ElasticSearch2 {
         else {
             throw new Exception('List is not an array');
         }
+    }
+    public function update($indexname, $type, $id, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+
+        $list = UtilArray::cascadeGet($this->config, 'indexes');
+
+        if (is_array($list)) {
+
+            foreach ($list as $index => &$data) {
+
+                if (!$indexname || $indexname === $index) {
+                    $output->writeln("Populate index: $index");
+
+                    foreach ($data['types'] as $_type => &$tdata) {
+
+                        if ($_type === $type) {
+
+                            $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+
+                            $this->_update($service, $index, $type, $tdata, $id, $output);
+                        }
+
+                    }
+                }
+                else {
+                    $output->writeln("Ignore index: $index");
+                }
+            }
+        }
+        else {
+            throw new Exception('List is not an array');
+        }
+
     }
 
     /**
@@ -153,7 +190,7 @@ class ElasticSearch2 {
 
             foreach ($list as $index => &$data) {
 
-                if (!$indexname || $indexname == $index) {
+                if (!$indexname || $indexname === $index) {
                     $output->writeln("Populate index: $index");
 
                     foreach ($data['types'] as $type => &$tdata) {
@@ -172,6 +209,21 @@ class ElasticSearch2 {
             throw new Exception('List is not an array');
         }
     }
+    public function listIndexes(OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+
+        $data = $this->_api('GET', "/*/_stats/store");
+
+        $list = array_keys($data['body']['indices']);
+
+        foreach($list as $name) {
+            $output->writeln("index: $name");
+        }
+
+    }
     protected function _fixtures($service, $index, $type, $tdata, OutputInterface $output = null) {
 
         if (!$output) {
@@ -180,14 +232,17 @@ class ElasticSearch2 {
 
         $output->writeln("    Populate type: '$type'");
 
-        $atonce         = UtilArray::cascadeGet($tdata, 'mapping.maxresults');
+        $atonce                 = UtilArray::cascadeGet($tdata, 'mapping.maxresults');
 
-        $initmethod     = UtilArray::cascadeGet($tdata, 'mapping.initmethod');
+        $setupquerybuilder      = UtilArray::cascadeGet($tdata, 'mapping.setupquerybuilder');
 
-        $idfield        = UtilArray::cascadeGet($tdata, 'mapping.idfield');
+        $useidfrom              = UtilArray::cascadeGet($tdata, 'mapping.useidfrom');
 
-        call_user_func(array($service, $initmethod), $atonce);
+        call_user_func(array($service, 'setMaxResults'), $atonce);
 
+        call_user_func(array($service, $setupquerybuilder), $atonce);
+
+        call_user_func(array($service, 'count'));
 
         $i = 0;
         foreach ($service as $offset => $group) {
@@ -208,7 +263,7 @@ class ElasticSearch2 {
                     'index' => array(
                         "_index"    => $index,
                         "_type"     => $type,
-                        "_id"       => $row[$idfield]
+                        "_id"       => $row[$useidfrom]
                     )
                 );
 
@@ -219,18 +274,60 @@ class ElasticSearch2 {
 
             $output->write("    Populate: $offset\r");
 
-            $this->_transport('POST', "/_bulk", $bulk);
+            $this->_api('POST', "/_bulk", $bulk);
         }
 
         $output->writeln("    Last row: $i");
     }
-    public function index($index, $type, $row, $setup = null) {
-        if (!$setup) {
-            $setup = &$this->config['indexes'][$index]['types'][$type];
-            niechginie($setup);
+    protected function _update($service, $index, $type, $tdata, $id, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
         }
+
+        $output->writeln("    Update element '$id' of type: '$type'");
+
+//        $atonce                 = UtilArray::cascadeGet($tdata, 'mapping.maxresults');
+
+//        $useidfrom              = UtilArray::cascadeGet($tdata, 'mapping.useidfrom');
+
+        $setupquerybuilder      = UtilArray::cascadeGet($tdata, 'mapping.setupquerybuilder');
+
+        $findbyid               = UtilArray::cascadeGet($tdata, 'mapping.findbyid');
+
+        /* @var $qb QueryBuilder */
+        $qb = call_user_func(array($service, $findbyid), $id);
+
+        $r = $this->dbal->fetchAssoc($qb->getSQL());
+
+        $row = array();
+
+        foreach ($tdata['properties'] as $name => &$f) {
+            $row[$name] = UtilNested::get($r, $f['mapping']['field']);
+        }
+
+        $output->write("    Update: $id\r");
+
+        $result = $this->_api('POST', "/$index/$type/$id/_update", array(
+            'doc' => $row
+        ));
+
+        nieginie(array(
+            'url' => "/$index/$type/$id/_update",
+            'data' => array(
+                'doc' => $row
+            )
+        ), 2);
+
+        $output->writeln(\Stopsopa\UtilsBundle\Lib\Json\Pretty\Json::encode($result));
     }
-    protected function _transport($method = null, $path = '', $data = array(), $headers = array())
+//    public function index($index, $type, $row, $setup = null) {
+//        if (!$setup) {
+//            $setup = &$this->config['indexes'][$index]['types'][$type];
+//            niechginie($setup);
+//        }
+//    }
+    protected function _api($method = null, $path = '', $data = array(), $headers = array())
     {
         if (!$method) {
             $method = 'GET';

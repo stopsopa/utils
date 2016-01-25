@@ -135,7 +135,7 @@ abstract class AbstractManager
         return new $this->class();
     }
 
-    protected $idfield;
+    protected $useidfrom;
     public function find($id, $alias = null, $select = array(), $hydrationMode = null)
     {
         if (!$alias) {
@@ -146,9 +146,9 @@ abstract class AbstractManager
             $hydrationMode = Query::HYDRATE_OBJECT;
         }
 
-        if (!$this->idfield) {
+        if (!$this->useidfrom) {
             $meta = $this->getClassMetadata();
-            $this->idfield = $meta->identifier[0];
+            $this->useidfrom = $meta->identifier[0];
         }
 
         $qb = $this->_prepareSelect($alias, $select);
@@ -156,7 +156,7 @@ abstract class AbstractManager
         return $qb
             ->where(
                 $qb->expr()->eq(
-                    $alias.'.'.$this->idfield,
+                    $alias.'.'.$this->useidfrom,
                     $qb->expr()->literal($id)
                 )
             )
