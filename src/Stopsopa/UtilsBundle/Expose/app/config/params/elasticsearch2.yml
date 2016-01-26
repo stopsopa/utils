@@ -1,0 +1,89 @@
+parameters:
+    elasticsearch2:
+        indexes:
+            testindexname: # https://www.elastic.co/guide/en/elasticsearch/guide/current/_creating_an_index.html
+                settings :
+                    analysis :
+                        filter :
+                            my_stopwords :
+                                type : stop
+                                stopwords :
+                                    - the
+                                    - a
+#                            my_stopwords :
+#                                stopwords_path : /home/elasticsearch/elasticsearch/pl/stopwords.txt
+#                                type : stop
+                        analyzer :
+                            # https://www.elastic.co/guide/en/elasticsearch/guide/current/custom-analyzers.html
+                            # najiperw leci do filtrów
+                            # potem tokenizer
+                            # na sam koniec leci przez token filters w kolejności ich podania
+                            my_analyzer :
+                                type : custom
+                                char_filter : # 1) character filter
+                                    - html_strip
+                                tokenizer : standard # 2) tokenizer
+                                filter : # 3) Token filters
+#                                    - ascii_folding
+                                    - lowercase
+                                    - my_stopwords
+                types:
+                    test :
+                        properties :
+                            id :
+                                type : integer
+                                store : true
+                            name :
+                                type : string
+                                store : true
+                                mapping:
+                                    field: name
+                        mapping :
+                            service: elastic.testindexname.provider
+
+                            setupquerybuilder: test_Qb
+                            findbyid: test_FindById
+                            useidfrom: id
+                            maxresults: 100
+                    test2 :
+                        properties :
+                            id :
+                                type : integer
+                                store : true
+                            name :
+                                type : string
+                                store : true
+                        mapping :
+                            service: elastic.testindexname.provider
+
+                            setupquerybuilder: test2_Qb
+                            findbyid: test2_FindById
+                            useidfrom: id
+                            maxresults: 100
+
+#                    # the driver can be orm, mongodb or propel
+#                    # listener and finder are not supported by
+#                    # propel and should be removed
+#                    driver: orm
+#                    model: AppBundle\Entity\User
+##                        provider: ~
+#                    provider:
+##                            query_builder_method: createListPlQueryBuilder
+##                            https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/Resources/doc/types.md
+#                        batch_size: 34
+#                    finder: ~
+#                    listener:
+##                            immediate: ~
+##                            insert: true
+##                            update: true
+##                            delete: true
+#                        is_indexable_callback: isPl
+##                            is_indexable_callback: [ %custom_service_id%, isIndexable ]
+#                    elastica_to_model_transformer:
+#                        query_builder_method: createSearchQueryBuilder
+##                            https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/Resources/doc/types.md#handling-missing-results-with-foselasticabundle
+##                            ignore_missing: true
+##                        model_to_elastica_transformer: ~
+
+
+

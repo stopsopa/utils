@@ -12,6 +12,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use PDO;
+use Stopsopa\UtilsBundle\Lib\Json\Pretty\Json as PrettyJson;
 
 
 class ElasticSearch2 {
@@ -184,6 +185,7 @@ class ElasticSearch2 {
             $output = new ConsoleOutput();
         }
 
+
         $list = UtilArray::cascadeGet($this->config, 'indexes');
 
         if (is_array($list)) {
@@ -256,7 +258,15 @@ class ElasticSearch2 {
                 $row = array();
 
                 foreach ($tdata['properties'] as $name => &$f) {
-                    $row[$name] = UtilNested::get($r, $f['mapping']['field']);
+//                    try {
+                        $row[$name] = UtilNested::get($r, $f['mapping']['field']);
+//                    }
+//                    catch (Exception $e) {
+//                        niechginie(array(
+//                            'row' => $r,
+//                            'messa' => $e->getMessage()
+//                        ), 2);
+//                    }
                 }
 
                 $tmp = array(
@@ -278,6 +288,17 @@ class ElasticSearch2 {
         }
 
         $output->writeln("    Last row: $i");
+    }
+    public function delete($indexname, $type, $id, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+
+        $response = $this->_api('DELETE', "/$indexname/$type/$id");
+
+        $output->writeln(PrettyJson::encode($response));
+
     }
     protected function _update($service, $index, $type, $tdata, $id, OutputInterface $output = null) {
 
@@ -312,14 +333,7 @@ class ElasticSearch2 {
             'doc' => $row
         ));
 
-        nieginie(array(
-            'url' => "/$index/$type/$id/_update",
-            'data' => array(
-                'doc' => $row
-            )
-        ), 2);
-
-        $output->writeln(\Stopsopa\UtilsBundle\Lib\Json\Pretty\Json::encode($result));
+        $output->writeln(PrettyJson::encode($result));
     }
 //    public function index($index, $type, $row, $setup = null) {
 //        if (!$setup) {

@@ -107,6 +107,15 @@
             <argument>%test.comment.entity%</argument>
         </service>
 
+
+
+
+      <!-- Elasticsearch 2 vvv -->
+
+        <!--<service id="elastic.testindexname.provider" class="%elastic.testindexname.provider.class%">-->
+            <!--<argument type="service" id="doctrine.dbal.default_connection"/>-->
+        <!--</service>-->
+
         <!--<service id="elastic2" class="%elasctic2.class%">-->
             <!--<argument type="service" id="service_container" />-->
             <!--<argument type="service" id="doctrine.dbal.default_connection"/>-->
@@ -114,6 +123,8 @@
             <!--<argument>%elastic.host%</argument>-->
             <!--<argument>%elastic.port%</argument>-->
         <!--</service>-->
+
+      <!-- Elasticsearch 2 ^^^ -->
 
         <!-- Rozszerzenia twig vvv -->
             <service id="stopsopa_twig.extensions" class="%stopsopa.twig.twigextension%" public="false">
