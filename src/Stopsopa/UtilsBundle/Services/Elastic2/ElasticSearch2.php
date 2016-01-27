@@ -236,7 +236,7 @@ class ElasticSearch2 {
 
         $useidfrom              = UtilArray::cascadeGet($tdata, 'mapping.useidfrom');
 
-        $transform              = UtilArray::cascadeGet($tdata, 'mapping.transformermethod');
+        $transform              = UtilArray::cascadeGet($tdata, 'mapping.transformermethod', null);
 
         call_user_func(array($service, 'setMaxResults'), $atonce);
 
