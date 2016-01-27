@@ -43,6 +43,8 @@ parameters:
 
                             setupquerybuilder: test_Qb
                             findbyid: test_FindById
+                            # może być transformer ale nie musi
+#                            transformermethod: user_Transform
                             useidfrom: id
                             maxresults: 100
                     test2 :
@@ -58,6 +60,8 @@ parameters:
 
                             setupquerybuilder: test2_Qb
                             findbyid: test2_FindById
+                            # może być transformer ale nie musi
+#                            transformermethod: user_Transform
                             useidfrom: id
                             maxresults: 100
 

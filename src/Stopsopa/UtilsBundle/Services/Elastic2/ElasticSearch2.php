@@ -148,7 +148,6 @@ class ElasticSearch2 {
         $list = UtilArray::cascadeGet($this->config, 'indexes');
 
         if (is_array($list)) {
-
             foreach ($list as $index => &$data) {
 
                 if (!$indexname || $indexname === $index) {
@@ -162,7 +161,6 @@ class ElasticSearch2 {
 
                             $this->_update($service, $index, $type, $tdata, $id, $output);
                         }
-
                     }
                 }
                 else {
@@ -173,7 +171,6 @@ class ElasticSearch2 {
         else {
             throw new Exception('List is not an array');
         }
-
     }
 
     /**
@@ -184,7 +181,6 @@ class ElasticSearch2 {
         if (!$output) {
             $output = new ConsoleOutput();
         }
-
 
         $list = UtilArray::cascadeGet($this->config, 'indexes');
 
@@ -240,6 +236,8 @@ class ElasticSearch2 {
 
         $useidfrom              = UtilArray::cascadeGet($tdata, 'mapping.useidfrom');
 
+        $transform              = UtilArray::cascadeGet($tdata, 'mapping.transformermethod');
+
         call_user_func(array($service, 'setMaxResults'), $atonce);
 
         call_user_func(array($service, $setupquerybuilder), $atonce);
@@ -254,8 +252,11 @@ class ElasticSearch2 {
 
             $bulk = '';
             foreach ($group as &$r) {
-
                 $row = array();
+
+                if ($transform) {
+                    $r = call_user_func(array($service, $transform), $r);
+                }
 
                 foreach ($tdata['properties'] as $name => &$f) {
 //                    try {
@@ -316,10 +317,16 @@ class ElasticSearch2 {
 
         $findbyid               = UtilArray::cascadeGet($tdata, 'mapping.findbyid');
 
+        $transform              = UtilArray::cascadeGet($tdata, 'mapping.transformermethod');
+
         /* @var $qb QueryBuilder */
         $qb = call_user_func(array($service, $findbyid), $id);
 
         $r = $this->dbal->fetchAssoc($qb->getSQL());
+
+        if ($transform) {
+            $r = call_user_func(array($service, $transform), $r);
+        }
 
         $row = array();
 
