@@ -258,27 +258,46 @@ class ElasticSearch2 {
                     $r = call_user_func(array($service, $transform), $r);
                 }
 
-                foreach ($tdata['properties'] as $name => &$f) {
-//                    try {
-                        $row[$name] = UtilNested::get($r, $f['mapping']['field']);
-//                    }
-//                    catch (Exception $e) {
-//                        niechginie(array(
-//                            'row' => $r,
-//                            'messa' => $e->getMessage()
-//                        ), 2);
-//                    }
+                try {
+                    foreach ($tdata['properties'] as $name => &$f) {
+                        try {
+                            $row[$name] = UtilNested::get($r, $f['mapping']['field']);
+                        }
+                        catch (Exception $e) {
+
+                            if (is_array($r)) {
+                                $dump = print_r($r, true);
+                            }
+                            else {
+                                $dump = get_class($r);
+                            }
+
+                            throw new Exception("Exception message: '{$e->getMessage()}' data: '$dump'");
+                        }
+                    }
+
+
+                    $tmp = array(
+                        'index' => array(
+                            "_index"    => $index,
+                            "_type"     => $type,
+                            "_id"       => $r[$useidfrom]
+                        )
+                    );
+                }
+                catch (Exception $e) {
+
+                    if (is_array($r)) {
+                        $dump = print_r($r, true);
+                    }
+                    else {
+                        $dump = get_class($r);
+                    }
+
+                    throw new Exception("Exception message: '{$e->getMessage()}' data: '$dump'");
                 }
 
-                $tmp = array(
-                    'index' => array(
-                        "_index"    => $index,
-                        "_type"     => $type,
-                        "_id"       => $row[$useidfrom]
-                    )
-                );
-
-                $bulk .= json_encode($tmp)."\n".json_encode($row)."\n";
+                $bulk .= json_encode($tmp, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n".json_encode($row, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n";
 
                 $i += 1;
             }
