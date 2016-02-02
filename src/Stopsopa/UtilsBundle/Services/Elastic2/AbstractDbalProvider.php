@@ -32,7 +32,8 @@ abstract class AbstractDbalProvider implements Iterator {
         $qb = clone $this->qb;
 
         $row = $this->dbal->fetchAssoc($qb->select('count(*) c')->getSQL());
-        $this->count = intval($row['c']);
+
+        return $this->count = intval($row['c']);
     }
     public function rewind() {
 

@@ -182,6 +182,8 @@ class ElasticSearch2 {
             $output = new ConsoleOutput();
         }
 
+        $output->writeln("Start time: ".date('Y-m-d H:i:s'));
+
         $list = UtilArray::cascadeGet($this->config, 'indexes');
 
         if (is_array($list)) {
@@ -206,6 +208,8 @@ class ElasticSearch2 {
         else {
             throw new Exception('List is not an array');
         }
+
+        $output->writeln("End time: ".date('Y-m-d H:i:s'));
     }
     public function listIndexes(OutputInterface $output = null) {
 
@@ -223,6 +227,8 @@ class ElasticSearch2 {
 
     }
     protected function _fixtures($service, $index, $type, $tdata, OutputInterface $output = null) {
+
+        /* @var $service AbstractDbalProvider */
 
         if (!$output) {
             $output = new ConsoleOutput();
@@ -242,7 +248,7 @@ class ElasticSearch2 {
 
         call_user_func(array($service, $setupquerybuilder), $atonce);
 
-        call_user_func(array($service, 'count'));
+        $count = call_user_func(array($service, 'count'));
 
         $i = 0;
         foreach ($service as $offset => $group) {
@@ -302,7 +308,7 @@ class ElasticSearch2 {
                 $i += 1;
             }
 
-            $output->write("    Populate: $offset\r");
+            $output->write("    Populate: $offset from $count\r");
 
             $this->_api('POST', "/_bulk", $bulk);
         }
