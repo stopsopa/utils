@@ -686,4 +686,32 @@ class UtilString
 
           return ob_get_clean();
     }
+
+    /**
+     * Finds nth occurrence of char/string in given string, if not found return -1
+     * if not found nth occurrence then return offset of last one
+     *
+     * @param string $haystack
+     * @param string $needle
+     * @param int $nth
+     * @param string $encoding
+     *
+     * @return int - offset in string
+     */
+    public static function nthOccurrenceInString($haystack, $needle, $nth = 1, $encoding = 'utf-8') {
+
+        $offset = -1;
+
+        while ($nth) {
+            $nth -= 1;
+            if ( ($k = mb_strpos($haystack, $needle, $offset + 1, $encoding)) > -1 ) {
+                $offset = $k;
+            }
+            else {
+                break;
+            }
+        }
+
+        return $offset;
+    }
 }
