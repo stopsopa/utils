@@ -7,6 +7,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 use Exception;
+use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilNested;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,15 +28,33 @@ class ElasticSearch2 {
     protected $config;
     protected $eshost;
     protected $esport;
+    protected $eslog;
     protected $url;
 
-    public function __construct(Container $container, Connection $connection, $config, $eshost, $esport)
+    public function __construct(Container $container, Connection $connection, $config, $eshost, $esport, $eslog)
     {
         $this->container    = $container;
         $this->dbal         = $connection;
         $this->config       = $config;
         $this->eshost       = $eshost;
         $this->esport       = $esport;
+        $this->eslog        = $eslog;
+        $this->eslogh       = $this->eslog;
+        $this->eslogi       = 0;
+
+
+        if (!file_exists($this->eslog)) {
+            if (!mkdir($this->eslog, 0777, true)) {
+                throw new Exception("Can't create direcoty '{$this->eslog}'");
+            }
+        }
+
+        $this->eslog .= DIRECTORY_SEPARATOR.date('Y_m_d_H_i_s')."_populate.log";
+
+        UtilFilesystem::checkIfFileExistOrICanCreate($this->eslog, true);
+
+        $this->eslogh = fopen($this->eslog, 'a');
+
         $this->url          = $eshost.':'.$esport;
 
         foreach ($this->config['indexes'] as &$data) {
@@ -52,6 +71,15 @@ class ElasticSearch2 {
         }
     }
 
+    protected function _log($data) {
+        $this->eslogi += 1;
+
+        if (!is_string($data)) {
+            $data = print_r($data, true);
+        }
+
+        fwrite($this->eslogh, "\n".date('Y-m-d H:i:s')."-------\n".$data);
+    }
     /**
      * @param null|string $indexname (def: null) : null - wszystkie indexy, string - tylko konkretny index
      * @throws Exception
@@ -210,6 +238,18 @@ class ElasticSearch2 {
         }
 
         $output->writeln("End time: ".date('Y-m-d H:i:s'));
+
+        fclose($this->eslogh);
+
+        if ($this->eslogi) {
+            $output->writeln("\n\n Check errorfile: {$this->eslog}");
+        }
+        else {
+            if (file_exists($this->eslog)) {
+                unlink($this->eslog);
+            }
+        }
+
     }
     public function listIndexes(OutputInterface $output = null) {
 
@@ -251,6 +291,9 @@ class ElasticSearch2 {
         $count = call_user_func(array($service, 'count'));
 
         $i = 0;
+
+        $stack = array();
+
         foreach ($service as $offset => $group) {
             // różnica między index a create w bulk https://www.elastic.co/guide/en/elasticsearch/guide/current/bulk.html
             // index -> create or replace
@@ -305,12 +348,25 @@ class ElasticSearch2 {
 
                 $bulk .= json_encode($tmp, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n".json_encode($row, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n";
 
+                $stack[$i] = $row;
+
                 $i += 1;
             }
 
-            $output->write("    Populate: $offset from $count\r");
+            $output->write("    Populate: $offset from $count, errors: {$this->eslogi}\r");
 
-            $this->_api('POST', "/_bulk", $bulk);
+            $ret = $this->_api('POST', "/_bulk", $bulk);
+
+            foreach ($ret['body']['items'] as $i => $ii) {
+                if ($ii['index']['status'] !== 200) {
+                    $this->_log(
+                        "Indexing error on data:\n    ".
+                        json_encode($stack[$i])."\n".
+                        "error:\n    ".json_encode($ii)."\n".
+                        "bulk:\n    ".$bulk."\n"
+                    );
+                }
+            }
         }
 
         $output->writeln("    Last row: $i");
