@@ -204,8 +204,60 @@ window.site || (window.site = {});
             return tmpdebounce.call(this, a[1], false, a[0]);
         }
         throw "Wrong number of arguments in debounce";
-    };;
+    };
 
+
+
+
+    mount.sticki = function (k, parent, encls, discls) {
+
+        //.stickien .k-grid-header {
+        //    position: fixed;
+        //    top: 0;
+        //    z-index: 100;
+        //}
+        //.stickien [data-role="pager"]:first-child {
+        //    margin-bottom: 31px;
+        //}
+
+        //var k = $('.k-grid-header');
+        //k.width(k.width());
+        //site.sticki(k, grid, 'stickien', 'stickidis');
+
+        var d = $(document);
+
+        var h = k.offset().top;
+        log('h')
+        log(h)
+
+        var lastcond;
+
+        function cycle(e) {
+
+            var hh = e ? (e.originalEvent.pageY) : d.scrollTop();
+
+            log('hh')
+            log(hh)
+
+            var cond = (h > hh);
+
+            log('cond')
+            log(cond)
+
+            if (cond !== lastcond) {
+
+                lastcond = cond;
+
+                parent[(cond ? 'remove' : 'add')+'Class'](encls);
+
+                parent[(cond ? 'add' : 'remove')+'Class'](discls);
+            }
+        }
+
+        cycle();
+
+        $(window).on('scroll', site.debounce(cycle, 20));
+    }
 }(window.site));
 
 if ('jQuery' in window) {
@@ -550,40 +602,6 @@ if ('sweetAlert' in window) {
 
 
 
-//window.sticki = function (k, parent, encls, discls) {
-//
-//    //.stickien .k-grid-header {
-//    //    position: fixed;
-//    //    top: 0;
-//    //    z-index: 100;
-//    //}
-//    //.stickien [data-role="pager"]:first-child {
-//    //    margin-bottom: 31px;
-//    //}
-//
-//    //window.sticki($('.k-grid-header'), grid, 'stickien', 'stickidis');
-//
-//    var init = false;
-//
-//    var h = k.offset().top;
-//
-//    function cycle(e) {
-//
-//        if (!init) {
-//            init = true;
-//            k.width(k.width())
-//        }
-//
-//        var cond = (h > e.originalEvent.pageY);
-//
-//        parent[(cond ? 'remove' : 'add')+'Class'](encls);
-//        parent[(cond ? 'add' : 'remove')+'Class'](discls);
-//    }
-//
-//    $(window).on('scroll', site.debounce(cycle, 20));
-//
-//    cycle();
-//}
 
 
 ;
