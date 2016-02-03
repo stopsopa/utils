@@ -549,4 +549,41 @@ if ('sweetAlert' in window) {
 
 
 
+
+//window.sticki = function (k, parent, encls, discls) {
+//
+//    //.stickien .k-grid-header {
+//    //    position: fixed;
+//    //    top: 0;
+//    //    z-index: 100;
+//    //}
+//    //.stickien [data-role="pager"]:first-child {
+//    //    margin-bottom: 31px;
+//    //}
+//
+//    //window.sticki($('.k-grid-header'), grid, 'stickien', 'stickidis');
+//
+//    var init = false;
+//
+//    var h = k.offset().top;
+//
+//    function cycle(e) {
+//
+//        if (!init) {
+//            init = true;
+//            k.width(k.width())
+//        }
+//
+//        var cond = (h > e.originalEvent.pageY);
+//
+//        parent[(cond ? 'remove' : 'add')+'Class'](encls);
+//        parent[(cond ? 'add' : 'remove')+'Class'](discls);
+//    }
+//
+//    $(window).on('scroll', site.debounce(cycle, 20));
+//
+//    cycle();
+//}
+
+
 ;
