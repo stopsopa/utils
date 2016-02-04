@@ -1,0 +1,18 @@
+# This file is auto-generated during the composer install
+parameters:
+    database_host: domain.co.uk
+    database_port: null
+    database_name: dbname
+    database_user: user
+    database_password: password
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    secret: verysecret
+    locale: pl
+    abso: 'http://domain.co.uk'
+
+    elastic.host  : http://domain.co.uk
+    elastic.port  : 9200
+    elastic.log   : %kernel.root_dir%/../app/logs/elastic-populate

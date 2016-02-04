@@ -21,6 +21,10 @@ class ListIndexesCommand extends AbstractCommand {
         $man = AbstractApp::get('elastic2');
         /* @var $man ElasticSearch2 */
 
-        $man->listIndexes($output);
+        $list = $man->listIndexes($output);
+
+        foreach($list as $name) {
+            $output->writeln("index: $name");
+        }
     }
 }

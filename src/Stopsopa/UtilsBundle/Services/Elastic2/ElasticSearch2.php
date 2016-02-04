@@ -251,6 +251,9 @@ class ElasticSearch2 {
         }
 
     }
+    public function getConfig() {
+        return $this->config;
+    }
     public function listIndexes(OutputInterface $output = null) {
 
         if (!$output) {
@@ -259,12 +262,7 @@ class ElasticSearch2 {
 
         $data = $this->_api('GET', "/*/_stats/store");
 
-        $list = array_keys($data['body']['indices']);
-
-        foreach($list as $name) {
-            $output->writeln("index: $name");
-        }
-
+        return array_keys($data['body']['indices']);
     }
     protected function _fixtures($service, $index, $type, $tdata, OutputInterface $output = null) {
 
@@ -358,16 +356,21 @@ class ElasticSearch2 {
             $ret = $this->_api('POST', "/_bulk", $bulk);
 
             foreach ($ret['body']['items'] as $i => $ii) {
-                if ($ii['index']['status'] !== 200) {
-                    $this->_log(
-                        "Indexing error on data:\n    ".
-                        json_encode($stack[$i])."\n".
-                        "error:\n    ".json_encode($ii)."\n".
-                        "bulk:\n    ".$bulk."\n"
-                    );
+                if (!in_array($ii['index']['status'], array(200, 201))) {
+                    $data   = json_encode($stack[$i]);
+                    $error  = json_encode($ii);
+                    $this->_log("
+Indexing error on data:
+    $data
+Error:
+    $error
+");
                 }
             }
         }
+
+        $offset = $count - $this->eslogi;
+        $output->write("    Populate: $offset from $count, errors: {$this->eslogi}\r");
 
         $output->writeln("    Last row: $i");
     }
@@ -495,5 +498,13 @@ class ElasticSearch2 {
         $data['header'] = $hlist;
 
         return $data;
+    }
+    public function __destruct()
+    {
+        if (!$this->eslogi) {
+            if (file_exists($this->eslog)) {
+                unlink($this->eslog);
+            }
+        }
     }
 }

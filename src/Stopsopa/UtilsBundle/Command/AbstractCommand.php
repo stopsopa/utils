@@ -6,12 +6,13 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use InvalidArgumentException;
-use Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressHelper;
+use Symfony\Component\Console\Helper\DialogHelper;
+use Symfony\Component\Console\Helper\QuestionHelper;
 
 /**
  * Cms\BaseBundle\Command\AbstractCommand.
@@ -224,14 +225,18 @@ abstract class AbstractCommand extends Command
         return trim($signs[0].str_repeat($signs[1], $fill).str_repeat($signs[2], $empty).$signs[3]);
     }
 
+    /**
+     * @return mixed
+     */
     public function getDialog()
     {
-        $dialog = $this->getHelperSet()->get('dialog');
+        return $this->getHelper('dialog');
+    }
 
-        if (!$dialog || get_class($dialog) !== 'Sensio\Bundle\GeneratorBundle\Command\Helper\DialogHelper') {
-            $this->getHelperSet()->set($dialog = new DialogHelper());
-        }
-
-        return $dialog;
+    /**
+     * @return QuestionHelper
+     */
+    public function getQuestion() {
+        return $this->getHelper('question');
     }
 }
