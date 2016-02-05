@@ -14,9 +14,9 @@ class DeleteCommand extends AbstractCommand {
     {
         $this
             ->setName('es2:delete')
-            ->addOption('index', null, InputOption::VALUE_REQUIRED, 'If only one index then specify it name here', null)
-            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'If only one index then specify it name here', null)
-            ->addOption('id', null, InputOption::VALUE_REQUIRED, 'If only one index then specify it name here', null)
+            ->addOption('index', null, InputOption::VALUE_REQUIRED, 'If only one index then specify it name here')
+            ->addOption('type', null, InputOption::VALUE_REQUIRED, 'If only one index then specify it name here')
+            ->addOption('id', null, InputOption::VALUE_REQUIRED, 'If only one index then specify it name here')
         ;
     }
     public function execute(InputInterface $input, OutputInterface $output)

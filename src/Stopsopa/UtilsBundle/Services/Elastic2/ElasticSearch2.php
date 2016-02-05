@@ -355,9 +355,9 @@ class ElasticSearch2 {
 
             $ret = $this->_api('POST', "/_bulk", $bulk);
 
-            foreach ($ret['body']['items'] as $i => $ii) {
+            foreach ($ret['body']['items'] as $_i => $ii) {
                 if (!in_array($ii['index']['status'], array(200, 201))) {
-                    $data   = json_encode($stack[$i]);
+                    $data   = json_encode($stack[$_i]);
                     $error  = json_encode($ii);
                     $this->_log("
 Indexing error on data:
@@ -368,9 +368,6 @@ Error:
                 }
             }
         }
-
-        $offset = $count - $this->eslogi;
-        $output->write("    Populate: $offset from $count, errors: {$this->eslogi}\r");
 
         $output->writeln("    Last row: $i");
     }

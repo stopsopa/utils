@@ -1,7 +1,8 @@
 <?php
 namespace Stopsopa\UtilsBundle\Command\Es2;
 
-use Stopsopa\UtilsBundle\Command\AbstractCommand;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Stopsopa\UtilsBundle\Services\Elastic2\ElasticSearch2;
 use Symfony\Component\Console\Input\InputArgument;
@@ -9,7 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class BuildIndexesCommand extends AbstractCommand {
+class BuildIndexesCommand extends ContainerAwareCommand {
     public function configure()
     {
         $this
@@ -22,6 +23,20 @@ class BuildIndexesCommand extends AbstractCommand {
         $man = AbstractApp::get('elastic2');
         /* @var $man ElasticSearch2 */
 
-        $man->buildIndexes($input->getOption('index'), $output);
+
+        $host = $this->getContainer()->getParameter('elastic.host');
+
+        $output->writeln("<info>Server: $host</info>");
+
+        $helper = $this->getHelper('question');
+
+        $question = new ConfirmationQuestion("Target server is: <info>$host</info>, do you want to continue? (y|n) : ", false, '/^(y|j)/i');
+
+        if ($helper->ask($input, $output, $question)) {
+            $man->buildIndexes($input->getOption('index'), $output);
+        }
+        else {
+            $output->writeln("Aborted");
+        }
     }
 }
