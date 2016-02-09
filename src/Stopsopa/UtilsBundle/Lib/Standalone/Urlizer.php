@@ -1,4 +1,11 @@
 <?php
+/**
+ * Z tego co widzę obecnie gedmo urlizer bazuje na tym
+ * https://github.com/Behat/Transliterator
+ */
+
+
+
 
 namespace Stopsopa\UtilsBundle\Lib\Standalone;
 
