@@ -42,7 +42,6 @@ class ElasticSearch2 {
         $this->eslogh       = $this->eslog;
         $this->eslogi       = 0;
 
-
         if (!file_exists($this->eslog)) {
             if (!mkdir($this->eslog, 0777, true)) {
                 throw new Exception("Can't create direcoty '{$this->eslog}'");
@@ -153,6 +152,7 @@ class ElasticSearch2 {
         $list = UtilArray::cascadeGet($this->config, 'indexes');
 
         if (is_array($list)) {
+
             foreach ($list as $index => &$data) {
                 if (!$indexname || $indexname === $index) {
                     $output->writeln("Delete index: $index");
@@ -369,7 +369,7 @@ Error:
             }
         }
 
-        $output->writeln("    Last row: $i");
+        $output->writeln("    Last row: $i ");
     }
     public function delete($indexname, $type, $id, OutputInterface $output = null) {
 
