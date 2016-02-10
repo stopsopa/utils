@@ -19,6 +19,10 @@ class Currency {
             return $data;
         }
 
+        if (!is_string($data) && !is_numeric($data)) {
+            throw new Exception("Can't cast to int value '".gettype($data)."'");
+        }
+
         $d = trim($data . '');
 
         $minus = false;
