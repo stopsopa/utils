@@ -60,14 +60,14 @@ class Currency {
 
         $d .= '';
 
-        $d = str_pad($d, 2, '0', STR_PAD_LEFT);
-
         $minus = false;
         if (strlen($d) && $d[0] === '-') {
             $minus = true;
         }
 
         $d = trim($d, '-');
+
+        $d = str_pad($d, 2, '0', STR_PAD_LEFT);
 
         $one = substr($d, 0, -2);
 
