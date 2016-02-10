@@ -19,7 +19,14 @@ class Currency {
             return $data;
         }
 
-        $d = $data . '';
+        $d = trim($data . '');
+
+        $minus = false;
+        if (strlen($d)  && $d[0] === '-') {
+            $minus = true;
+        }
+
+        $d = trim($d, '-');
 
         $d = preg_split('#[^\d]#', $d);
 
@@ -27,9 +34,9 @@ class Currency {
 
         switch ($c) {
             case 1;
-                return intval($d[0].'00');
+                return intval(($minus ? '-' : '') . $d[0].'00');
             case 2;
-                return intval($d[0].str_pad(substr($d[1], 0, 2), 2, '0', STR_PAD_RIGHT));
+                return intval(($minus ? '-' : '') . $d[0].str_pad(substr($d[1], 0, 2), 2, '0', STR_PAD_RIGHT));
             default:
                 throw new Exception("Can't cast to int value '".print_r($data, true)."'");
         }
@@ -49,6 +56,15 @@ class Currency {
 
         $d .= '';
 
+        $d = str_pad($d, 2, '0', STR_PAD_LEFT);
+
+        $minus = false;
+        if (strlen($d) && $d[0] === '-') {
+            $minus = true;
+        }
+
+        $d = trim($d, '-');
+
         $one = substr($d, 0, -2);
 
         $one = str_pad($one, 1, '0');
@@ -57,6 +73,6 @@ class Currency {
 
         $two = str_pad($two, 2, '0', STR_PAD_RIGHT);
 
-        return "$one.$two";
+        return ($minus ? '-' : '') . "$one.$two";
     }
 }
