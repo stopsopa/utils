@@ -4,6 +4,8 @@ namespace Stopsopa\UtilsBundle\Lib;
 
 class Currency {
     /**
+     * Uwaga jak przyjdzie integer to nie dokonuje przekształceń w ogóle, zwraca jak jest
+     *
      * Tutaj domyślnie obrąbuje do dwóch miejsc po przecinku, no ale w sumie przy walutach czy ma sens więcej?
      * Może w kantorach... do przemyślenia
      *
@@ -12,6 +14,10 @@ class Currency {
      * @throws Exception
      */
     public static function toInt($data) {
+
+        if (is_int($data)) {
+            return $data;
+        }
 
         $d = $data . '';
 
