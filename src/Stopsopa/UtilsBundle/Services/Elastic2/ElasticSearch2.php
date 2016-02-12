@@ -480,6 +480,10 @@ Error:
         $data['body']   = Json::decode($body) ?: $body;
         $data['status'] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+        if ($data['status'] === 0) {
+            throw new Exception("Unable to connect to elasticsearch {$this->url}");
+        }
+
         curl_close($ch);
 
         $header = explode("\n", $header);
