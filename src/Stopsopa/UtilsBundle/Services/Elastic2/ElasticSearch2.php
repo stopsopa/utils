@@ -201,6 +201,39 @@ class ElasticSearch2 {
             throw new Exception('List is not an array');
         }
     }
+    public function index($indexname, $type, $id, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+
+        $list = UtilArray::cascadeGet($this->config, 'indexes');
+
+        if (is_array($list)) {
+            foreach ($list as $index => &$data) {
+
+                if (!$indexname || $indexname === $index) {
+                    $output->writeln("Populate index: $index");
+
+                    foreach ($data['types'] as $_type => &$tdata) {
+
+                        if ($_type === $type) {
+
+                            $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+
+                            $this->_index($service, $index, $type, $tdata, $id, $output);
+                        }
+                    }
+                }
+                else {
+                    $output->writeln("Ignore index: $index");
+                }
+            }
+        }
+        else {
+            throw new Exception('List is not an array');
+        }
+    }
 
     /**
      * https://www.elastic.co/guide/en/elasticsearch/guide/current/bulk.html
@@ -421,6 +454,45 @@ Error:
         $result = $this->_api('POST', "/$index/$type/$id/_update", array(
             'doc' => $row
         ));
+
+        $output->writeln(PrettyJson::encode($result));
+    }
+    protected function _index($service, $index, $type, $tdata, $id, OutputInterface $output = null) {
+
+        if (!$output) {
+            $output = new ConsoleOutput();
+        }
+
+        $output->writeln("    Update element '$id' of type: '$type'");
+
+//        $atonce                 = UtilArray::cascadeGet($tdata, 'mapping.maxresults');
+
+//        $useidfrom              = UtilArray::cascadeGet($tdata, 'mapping.useidfrom');
+
+        $setupquerybuilder      = UtilArray::cascadeGet($tdata, 'mapping.setupquerybuilder');
+
+        $findbyid               = UtilArray::cascadeGet($tdata, 'mapping.findbyid');
+
+        $transform              = UtilArray::cascadeGet($tdata, 'mapping.transformermethod');
+
+        /* @var $qb QueryBuilder */
+        $qb = call_user_func(array($service, $findbyid), $id);
+
+        $r = $this->dbal->fetchAssoc($qb->getSQL());
+
+        if ($transform) {
+            $r = call_user_func(array($service, $transform), $r);
+        }
+
+        $row = array();
+
+        foreach ($tdata['properties'] as $name => &$f) {
+            $row[$name] = UtilNested::get($r, $f['mapping']['field']);
+        }
+
+        $output->write("    Update: $id\r");
+
+        $result = $this->_api('PUT', "/$index/$type/$id", $row);
 
         $output->writeln(PrettyJson::encode($result));
     }
