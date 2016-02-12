@@ -17,6 +17,7 @@ use Stopsopa\UtilsBundle\Lib\Json\Pretty\Json as PrettyJson;
 
 
 class ElasticSearch2 {
+    const SERVICE = 'elastic2';
     /**
      * @var Connection
      */
