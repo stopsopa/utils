@@ -1,6 +1,7 @@
 <?php
 
 namespace Stopsopa\UtilsBundle\Services\Elastic2;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Iterator;
 use Doctrine\DBAL\Connection;
 
@@ -29,9 +30,17 @@ abstract class AbstractDbalProvider implements Iterator {
     public function count() {
 
         // tutaj zrobić clone bo nadpisujemy ->select()
-        $qb = clone $this->qb;
+        /* @var $qb QueryBuilder */
+//        $qb = clone $this->qb;
 
-        $row = $this->dbal->fetchAssoc($qb->select('count(*) c')->getSQL());
+        $qb = $this->dbal->createQueryBuilder();
+
+        $qb
+            ->select('count(*) c')
+            ->from('(' . $this->qb->getSQL() . ')', 'xxx')
+        ;
+
+        $row = $this->dbal->fetchAssoc($qb->getSQL());
 
         return $this->count = intval($row['c']);
     }
