@@ -259,7 +259,7 @@ class ElasticSearch2 {
 
                         $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
 
-                        $this->_fixtures($service, $index, $type, $tdata, $output);
+                        $this->_populate($service, $index, $type, $tdata, $output);
                     }
                 }
                 else {
@@ -298,7 +298,7 @@ class ElasticSearch2 {
 
         return array_keys($data['body']['indices']);
     }
-    protected function _fixtures($service, $index, $type, $tdata, OutputInterface $output = null) {
+    protected function _populate($service, $index, $type, $tdata, OutputInterface $output = null) {
 
         /* @var $service AbstractDbalProvider */
 
@@ -357,7 +357,6 @@ class ElasticSearch2 {
                         }
                     }
 
-
                     $tmp = array(
                         'index' => array(
                             "_index"    => $index,
@@ -378,12 +377,16 @@ class ElasticSearch2 {
                     throw new Exception("Exception message: '{$e->getMessage()}' data: '$dump'");
                 }
 
-                $bulk .= json_encode($tmp, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n".json_encode($row, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n";
+                $tmp = json_encode($tmp, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n".json_encode($row, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE)."\n";
 
-                $stack[$i] = $row;
+                $stack[$i] = $tmp;
+
+                $bulk .= $tmp;
 
                 $i += 1;
             }
+
+//            $bulk .= "\n";
 
             $output->write("    Populate: $offset from $count, errors: {$this->eslogi}\r");
 
@@ -391,13 +394,16 @@ class ElasticSearch2 {
 
             foreach ($ret['body']['items'] as $_i => $ii) {
                 if (!in_array($ii['index']['status'], array(200, 201))) {
-                    $data   = json_encode($stack[$_i]);
+                    $data   = $stack[$_i];
+                    $status = $ii['index']['status'];
                     $error  = json_encode($ii);
                     $this->_log("
-Indexing error on data:
++++ Status:: $status
++++ Indexing error on data::
     $data
-Error:
++++ Error::
     $error
+
 ");
                 }
             }
