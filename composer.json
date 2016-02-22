@@ -2,8 +2,7 @@
     "name": "stopsopa/utils",
     "description": "Utils libraries",
     "license": "MIT",
-    "authors": [
-    
+    "authors": [    
         {
             "name": "Szymon Działowski",
             "email": "szymon.dzialowski@gmail.com"

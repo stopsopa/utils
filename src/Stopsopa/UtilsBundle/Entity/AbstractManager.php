@@ -392,7 +392,7 @@ abstract class AbstractManager
         if ($num === 1) {
             $max = $c - $num;
 
-            $first = ($max > 0) ? rand(0, $max) : 0;
+            $first = ($max > 0) ? mt_rand(0, $max) : 0;
 
             $qb->setFirstResult($first);
         }
