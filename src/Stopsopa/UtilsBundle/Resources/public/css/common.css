@@ -1,6 +1,9 @@
 /*
 <link rel="stylesheet" type="text/css" href="/bundles/stopsopautils/public/css/common.css" />
 */
+/*!
+ * common.css utils
+ */
 .btn span {
     display: inline-block;
     transition: all 0.2s linear;
@@ -15,12 +18,12 @@
     padding-left: 0;
     padding-right: 0;
 }
-.btn:hover span {
-    width: 40px;
-    opacity: 1;
-    padding-left: 4px;
-    padding-right: 4px;
-}
+/*.btn:hover span {*/
+    /*width: 40px;*/
+    /*opacity: 1;*/
+    /*padding-left: 4px;*/
+    /*padding-right: 4px;*/
+/*}*/
 
 .hidden {
     display: none;

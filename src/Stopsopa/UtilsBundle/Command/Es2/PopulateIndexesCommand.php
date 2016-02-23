@@ -10,12 +10,18 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class PopulateIndexesCommand
+ * @package Stopsopa\UtilsBundle\Command\Es2
+ * echo 'y' | con es2:index:populate --index=mailing --env=prod --force=true > populate.log & disown
+ */
 class PopulateIndexesCommand extends ContainerAwareCommand {
     public function configure()
     {
         $this
             ->setName('es2:index:populate')
             ->addOption('index', null, InputOption::VALUE_OPTIONAL, 'If only one index then specify it name here', null)
+            ->addOption('force', null, InputOption::VALUE_OPTIONAL, "Don't ask me 'if you sure?'", false)
         ;
     }
     public function execute(InputInterface $input, OutputInterface $output)
@@ -32,7 +38,7 @@ class PopulateIndexesCommand extends ContainerAwareCommand {
 
         $question = new ConfirmationQuestion("Target server is: <info>$host</info>, do you want to continue? (y|n) : ", false, '/^(y|j)/i');
 
-        if ($helper->ask($input, $output, $question)) {
+        if ($input->getOption('force') || $helper->ask($input, $output, $question)) {
             $man->populate($input->getOption('index'), $output);
         }
         else {
