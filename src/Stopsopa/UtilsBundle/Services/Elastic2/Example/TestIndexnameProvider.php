@@ -14,8 +14,7 @@ class TestIndexnameProvider extends AbstractDbalProvider {
     /**
      * @return QueryBuilder
      */
-    public function test_Qb() {
-
+    protected function _test_createQb() {
         $qb = $this->dbal->createQueryBuilder();
 
         $this->qb = $qb
@@ -28,6 +27,12 @@ class TestIndexnameProvider extends AbstractDbalProvider {
             ->andWhere($qb->expr()->notLike("u.surname", $qb->expr()->literal("%b%")))
         ;
     }
+    /**
+     * @return QueryBuilder
+     */
+    public function test_Qb() {
+        $this->qb = $this->_test_createQb();
+    }
 
     /**
      * @param $id
@@ -35,23 +40,22 @@ class TestIndexnameProvider extends AbstractDbalProvider {
      */
     public function test_FindById($id) {
 
-        $qb = $this->dbal->createQueryBuilder();
         /* @var $qb QueryBuilder */
+        $qb = $this->_test_createQb();
 
-        return $qb
-            ->from('es_users', 'u')
-            ->select(array(
-                'u.id',
-                'u.surname name'
-            ))
-            ->where($qb->expr()->eq('u.id', $qb->expr()->literal($id)))
-        ;
+        $qb->where($qb->expr()->eq('u.id', $qb->expr()->literal($id)));
+
+        return $qb;
     }
+
+
+    // ===================
+
+
     /**
      * @return QueryBuilder
      */
-    public function test2_Qb() {
-
+    protected function _test2_createQb() {
         $qb = $this->dbal->createQueryBuilder();
 
         $this->qb = $qb
@@ -60,9 +64,14 @@ class TestIndexnameProvider extends AbstractDbalProvider {
                 'u.id',
                 'u.surname name'
             ))
-            ->where($qb->expr()->like("u.surname", $qb->expr()->literal("%b%")))
-            ->andWhere($qb->expr()->notLike("u.surname", $qb->expr()->literal("%a%")))
+//            ->where($qb->expr()->eq('u.id', $qb->expr()->literal($id)))
         ;
+    }
+    /**
+     * @return QueryBuilder
+     */
+    public function test2_Qb() {
+        return $this->_test2_createQb();
     }
     /**
      * @param $id
@@ -70,17 +79,12 @@ class TestIndexnameProvider extends AbstractDbalProvider {
      */
     public function test2_FindById($id) {
 
-        $qb = $this->dbal->createQueryBuilder();
         /* @var $qb QueryBuilder */
+        $qb = $this->_test2_createQb();
 
-        return $qb
-            ->from('es_users', 'u')
-            ->select(array(
-                'u.id',
-                'u.surname name'
-            ))
-            ->where($qb->expr()->eq('u.id', $qb->expr()->literal($id)))
-        ;
+        $qb->where($qb->expr()->eq('u.id', $qb->expr()->literal($id)));
+
+        return $qb;
     }
 
 }
