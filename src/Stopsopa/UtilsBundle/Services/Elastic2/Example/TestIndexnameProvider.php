@@ -23,8 +23,8 @@ class TestIndexnameProvider extends AbstractDbalProvider {
                 'u.id',
                 'u.surname name'
             ))
-            ->where($qb->expr()->like("u.surname", $qb->expr()->literal("%a%")))
-            ->andWhere($qb->expr()->notLike("u.surname", $qb->expr()->literal("%b%")))
+//            ->where($qb->expr()->like("u.surname", $qb->expr()->literal("%a%")))
+//            ->andWhere($qb->expr()->notLike("u.surname", $qb->expr()->literal("%b%")))
         ;
     }
     /**
