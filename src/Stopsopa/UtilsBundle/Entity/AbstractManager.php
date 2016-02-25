@@ -316,7 +316,7 @@ abstract class AbstractManager
 
         $obj = $this;
         set_error_handler(function ($err_severity, $err_msg, $err_file, $err_line, array $err_context) use ($obj, $method) {
-              throw new Exception("Method '$method' doesn't exist in object '".$this->class."'");
+              throw new Exception("Method '$method' doesn't exist in object '".$this->class."-Manager'");
         });
         $data = call_user_func_array(array($this->repository, $method), $args);
         restore_error_handler();
