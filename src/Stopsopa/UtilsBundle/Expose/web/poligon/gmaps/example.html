@@ -36,12 +36,14 @@
 
                 var map = new google.maps.Map(document.getElementById('map'), {
                     center: {
-                        lat: 0.5, // london 51.5, 51.7 pionowo
-                        lng: 0 // london -0.4 , 0.3 poziomo
+                        lat: 0.51, // london 51.3, 51.7 pionowo
+                        lng: 0 // london -0.48 , 0.3 poziomo
+//                        'lat' => mt_rand(5130, 5170) / 100,
+//                        'lon' => mt_rand(-48, 30) / 100,
                     },
                     zoom: 12
                 });
-
+ 
                 var bounds = new google.maps.LatLngBounds();
 
                 var t, p = [
