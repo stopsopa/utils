@@ -390,7 +390,7 @@ class ElasticSearch2 {
 
             $output->write("    Populate: $offset from $count, errors: {$this->eslogi}\r");
 
-            $ret = $this->_api('POST', "/_bulk", $bulk);
+            $ret = $this->api('POST', "/_bulk", $bulk);
 
             foreach ($ret['body']['items'] as $_i => $ii) {
                 if (!in_array($ii['index']['status'], array(200, 201))) {
@@ -417,7 +417,7 @@ class ElasticSearch2 {
             $output = new ConsoleOutput();
         }
 
-        $response = $this->_api('DELETE', "/$indexname/$type/$id");
+        $response = $this->api('DELETE', "/$indexname/$type/$id");
 
         $output->writeln(PrettyJson::encode($response));
 
@@ -457,7 +457,7 @@ class ElasticSearch2 {
 
         $output->write("    Update: $id\r");
 
-        $result = $this->_api('POST', "/$index/$type/$id/_update", array(
+        $result = $this->api('POST', "/$index/$type/$id/_update", array(
             'doc' => $row
         ));
 
@@ -498,7 +498,7 @@ class ElasticSearch2 {
 
         $output->write("    Update: $id\r");
 
-        $result = $this->_api('PUT', "/$index/$type/$id", $row);
+        $result = $this->api('PUT', "/$index/$type/$id", $row);
 
         $output->writeln(PrettyJson::encode($result));
     }
@@ -508,7 +508,7 @@ class ElasticSearch2 {
 //            niechginie($setup);
 //        }
 //    }
-    protected function _api($method = null, $path = '', $data = array(), $headers = array())
+    public function api($method = null, $path = '', $data = array(), $headers = array())
     {
         if (!$method) {
             $method = 'GET';
