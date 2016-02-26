@@ -41,17 +41,20 @@
 //                        'lat' => mt_rand(5130, 5170) / 100,
 //                        'lon' => mt_rand(-48, 30) / 100,
                     },
+                    scaleControl: true,
                     zoom: 12
                 });
 
                 var bounds = new google.maps.LatLngBounds();
 
                 var t, p = [
-                    {lat: 51.5, lng: 0.3, title: 'point1'},
-                    {lat: 51.7, lng: -0.4, title: 'point2'},
-                    {lat: 51.6, lng: 0, title: 'point3'},
-                    {lat: 51.4, lng: -0.5, title: 'point4'}
+                    {lat: 51.5, lng: 0.3,  title: 'point 1'},
+                    {lat: 51.7, lng: -0.4, title: 'point 2'},
+                    {lat: 51.6, lng: 0,    title: 'point 3'},
+                    {lat: 51.4, lng: -0.5, title: 'point 4'}
                 ];
+
+                // p = {{ data|json_encode|raw }};
 
                 for (var i = 0 ; i < p.length ; i += 1 ) {
                     t = p[i];

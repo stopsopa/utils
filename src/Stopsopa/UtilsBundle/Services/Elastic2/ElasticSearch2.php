@@ -507,7 +507,17 @@ class ElasticSearch2 {
 //            $setup = &$this->config['indexes'][$index]['types'][$type];
 //            niechginie($setup);
 //        }
+//
 //    }
+    /**
+     * @param null $method
+     * @param string $path
+     * @param array $data
+     * @param array $headers
+     * @return array|string
+     * @throws Exception
+     * http://httpd.pl/bundles/toolssitecommon/tools/transform.php
+     */
     public function api($method = null, $path = '', $data = array(), $headers = array())
     {
         if (!$method) {
