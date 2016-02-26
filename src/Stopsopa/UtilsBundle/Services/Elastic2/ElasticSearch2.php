@@ -103,7 +103,7 @@ class ElasticSearch2 {
                     // tworzenie indexu wraz z ustawieniami (analysis -> filter and analyzer
                     $settings = UtilArray::cascadeGet($data, 'settings', array());
 
-                    $response = $this->_api('PUT', "/$index?pretty", $settings);
+                    $response = $this->api('PUT', "/$index?pretty", $settings);
 
                     if ( ! ( !empty($response['body']['acknowledged']) && $response['body']['acknowledged'] ) ) {
                         throw new Exception(print_r($response, true));
@@ -126,7 +126,7 @@ class ElasticSearch2 {
                             }
                         }
 
-                        $res = $this->_api('PUT', "/$index/_mapping/$type?pretty", array(
+                        $res = $this->api('PUT', "/$index/_mapping/$type?pretty", array(
                             $type => $data
                         ));
 
@@ -157,7 +157,7 @@ class ElasticSearch2 {
             foreach ($list as $index => &$data) {
                 if (!$indexname || $indexname === $index) {
                     $output->writeln("Delete index: $index");
-                    $this->_api('DELETE', "/$index");
+                    $this->api('DELETE', "/$index");
                 }
                 else {
                     $output->writeln("Ignore index: $index");
@@ -294,7 +294,7 @@ class ElasticSearch2 {
             $output = new ConsoleOutput();
         }
 
-        $data = $this->_api('GET', "/*/_stats/store");
+        $data = $this->api('GET', "/*/_stats/store");
 
         return array_keys($data['body']['indices']);
     }

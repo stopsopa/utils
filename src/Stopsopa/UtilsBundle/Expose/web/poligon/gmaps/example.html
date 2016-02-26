@@ -36,10 +36,15 @@
 
                 var map = new google.maps.Map(document.getElementById('map'), {
                     center: {
-                        lat: 51.5, // london 51.3, 51.7 pionowo
-                        lng: -0.09 // london -0.48 , 0.3 poziomo
-//                        'lat' => mt_rand(5130, 5170) / 100,
-//                        'lon' => mt_rand(-48, 30) / 100,
+                        // london 51.3, 51.7 pionowo
+                        // london -0.48 , 0.3 poziomo
+
+                        lat: 51.5, // center
+                        lng: -0.09 // center
+//                        'lat' => mt_rand(5130, 5170) / 100, // rand for php
+//                        'lon' => mt_rand(-48, 30) / 100,    // rand for php
+                        // rand for mysql
+                        // update locations set longitude = round((RAND() * ((0.3) - (-0.48))) + (-0.48), 2), latitude = round((RAND() * (51.70 - 51.30)) + 51.30, 2)
                     },
                     scaleControl: true,
                     zoom: 12
