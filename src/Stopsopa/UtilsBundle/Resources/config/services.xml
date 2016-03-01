@@ -123,6 +123,7 @@
             <!--<argument>%elastic.host%</argument>-->
             <!--<argument>%elastic.port%</argument>-->
             <!--<argument>%elastic.log%</argument>-->
+            <!--<argument>%elastic.files%</argument>-->
         <!--</service>-->
 
       <!-- Elasticsearch 2 ^^^ -->

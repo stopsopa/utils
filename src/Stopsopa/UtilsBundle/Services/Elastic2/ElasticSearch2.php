@@ -30,9 +30,10 @@ class ElasticSearch2 {
     protected $eshost;
     protected $esport;
     protected $eslog;
+    protected $files;
     protected $url;
 
-    public function __construct(Container $container, Connection $connection, $config, $eshost, $esport, $eslog)
+    public function __construct(Container $container, Connection $connection, $config, $eshost, $esport, $eslog, $files)
     {
         $this->container    = $container;
         $this->dbal         = $connection;
@@ -40,6 +41,7 @@ class ElasticSearch2 {
         $this->eshost       = $eshost;
         $this->esport       = $esport;
         $this->eslog        = $eslog;
+        $this->files        = $files;
         $this->eslogh       = $this->eslog;
         $this->eslogi       = 0;
 
