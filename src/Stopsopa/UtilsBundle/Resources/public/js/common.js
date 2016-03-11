@@ -205,6 +205,17 @@ window.site || (window.site = {});
         }
         throw "Wrong number of arguments in debounce";
     };
+    mount.one = function (fn) {
+        var one = true;
+        var tmp;
+        return function () {
+            if (one) {
+                one = false;
+                return tmp = fn.apply(this, arguments);
+            }
+            return tmp;
+        }
+    }
 
 
 
@@ -227,8 +238,6 @@ window.site || (window.site = {});
         var d = $(document);
 
         var h = k.offset().top;
-        log('h')
-        log(h)
 
         var lastcond;
 
@@ -236,13 +245,7 @@ window.site || (window.site = {});
 
             var hh = e ? (e.originalEvent.pageY) : d.scrollTop();
 
-            log('hh')
-            log(hh)
-
             var cond = (h > hh);
-
-            log('cond')
-            log(cond)
 
             if (cond !== lastcond) {
 
