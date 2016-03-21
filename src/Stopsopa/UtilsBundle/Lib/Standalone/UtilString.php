@@ -714,4 +714,12 @@ class UtilString
 
         return $offset;
     }
+
+    /**
+     * @return array
+     * http://php.net/manual/en/function.mb-split.php#99851
+     */
+    public static function toArray($string) {
+        return preg_split('/(?<!^)(?!$)/u', $string);
+    }
 }

@@ -59,7 +59,7 @@ class Sms
      */
     public function sendMultipleMessages($message, $params, $idx = null)
     {
-        //        die('nie wysyłam teraz nic stop');
+                die('nie wysyłam teraz nic stop');
         $res = [];
 
         $data = [
