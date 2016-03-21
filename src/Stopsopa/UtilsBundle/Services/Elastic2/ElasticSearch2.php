@@ -4,6 +4,7 @@ namespace Stopsopa\UtilsBundle\Services\Elastic2;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Stopsopa\UtilsBundle\Lib\AbstractApp;
 use Stopsopa\UtilsBundle\Lib\Json\Json;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilArray;
 use Exception;
@@ -11,7 +12,6 @@ use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilNested;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\Container;
 use PDO;
 use Stopsopa\UtilsBundle\Lib\Json\Pretty\Json as PrettyJson;
 
@@ -22,10 +22,6 @@ class ElasticSearch2 {
      * @var Connection
      */
     protected $dbal;
-    /**
-     * @var Container
-     */
-    protected $container;
     protected $config;
     protected $eshost;
     protected $esport;
@@ -33,9 +29,8 @@ class ElasticSearch2 {
     protected $files;
     protected $url;
 
-    public function __construct(Container $container, Connection $connection, $config, $eshost, $esport, $eslog, $files)
+    public function __construct(Connection $connection, $config, $eshost, $esport, $eslog, $files)
     {
-        $this->container    = $container;
         $this->dbal         = $connection;
         $this->config       = $config;
         $this->eshost       = $eshost;
@@ -188,7 +183,8 @@ class ElasticSearch2 {
 
                         if ($_type === $type) {
 
-                            $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+                            $service = $this->getService(UtilArray::cascadeGet($tdata, 'mapping.service'));
+//                            $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
 
                             $this->_update($service, $index, $type, $tdata, $id, $output);
                         }
@@ -202,6 +198,10 @@ class ElasticSearch2 {
         else {
             throw new Exception('List is not an array');
         }
+    }
+    public function getService($name) {
+//        $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+        return AbstractApp::get($name);
     }
     public function index($indexname, $type, $id, OutputInterface $output = null) {
 
@@ -221,10 +221,12 @@ class ElasticSearch2 {
 
                         if ($_type === $type) {
 
-                            $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+//                            $service = $this->container->get();
+                            $service = $this->getService(UtilArray::cascadeGet($tdata, 'mapping.service'));
 
                             $this->_index($service, $index, $type, $tdata, $id, $output);
                         }
+
                     }
                 }
                 else {
@@ -259,7 +261,8 @@ class ElasticSearch2 {
 
                     foreach ($data['types'] as $type => &$tdata) {
 
-                        $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+//                        $service = $this->container->get(UtilArray::cascadeGet($tdata, 'mapping.service'));
+                            $service = $this->getService(UtilArray::cascadeGet($tdata, 'mapping.service'));
 
                         $this->_populate($service, $index, $type, $tdata, $output);
                     }
