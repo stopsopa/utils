@@ -15,7 +15,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use PDO;
 use Stopsopa\UtilsBundle\Lib\Json\Pretty\Json as PrettyJson;
 
-
 class ElasticSearch2 {
     const SERVICE = 'elastic2';
     /**
@@ -53,6 +52,10 @@ class ElasticSearch2 {
         $this->eslogh = fopen($this->eslog, 'a');
 
         $this->url          = $eshost.':'.$esport;
+
+        if (!@is_array($this->config['indexes'])) {
+            throw new Exception("Invalid config, no 'indexes' key");
+        }
 
         foreach ($this->config['indexes'] as &$data) {
             foreach ($data['types'] as $type => &$tdata) {
@@ -598,7 +601,7 @@ class ElasticSearch2 {
     {
         if (!$this->eslogi) {
             if (file_exists($this->eslog)) {
-                unlink($this->eslog);
+                @unlink($this->eslog);
             }
         }
     }

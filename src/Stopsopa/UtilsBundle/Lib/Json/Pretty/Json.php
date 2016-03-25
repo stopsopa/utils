@@ -9,7 +9,7 @@ use Exception;
  * Wyszperane po rozebraniu composera z pliku phar
  * This is the JSON encoder lifted from Composer.
  * It will minimise the unnecessary differences made to composer.json files
- * Zawsze wyrzuca dane w formie czytelnej dla człowieka (z wzięciami).
+ * Zawsze wyrzuca dane w formie czytelnej dla człowieka (z wcięciami).
  */
 class Json
 {

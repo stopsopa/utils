@@ -196,6 +196,7 @@ class UtilArray
 
     /**
      * @param string $key
+     *  also works keys like '..k.' or 'k.t...'
      * @param mix    $val
      *
      * @return bool
@@ -211,13 +212,23 @@ class UtilArray
         $element = &$source;
         while (($d = array_shift($key)) !== null) {
             if (count($key)) {
-                if (!(isset($element[$d]) && is_array($element[$d]))) {
-                    $element[$d] = array();
+                if (strlen($d)) {
+                    if (!(isset($element[$d]) && is_array($element[$d]))) {
+                        $element[$d] = array();
+                    }
+                    $element = &$element[$d];
                 }
-
-                $element = &$element[$d];
+                else {
+                    $element[] = array();
+                    $element = &$element[count($element)-1];
+                }
             } else {
-                $element[$d] = $val;
+                if (strlen($d)) {
+                    $element[$d] = $val;
+                }
+                else {
+                    $element[] = $val;
+                }
 
                 return true;
             }
