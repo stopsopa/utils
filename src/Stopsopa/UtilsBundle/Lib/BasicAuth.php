@@ -47,7 +47,7 @@ ob_start()?>
      * @param array $credentials - tablica z loginami (jako klucze tablicy) i hasłami (jako wartości)
      * @param string $message  - (def: null)  - Wiadomośc która ma być wyświetlona użytkownikowi w oknie w którym podaje się login i hasło
      */
-    public static function login($credentials, $mode = null, $salt = null, $message = null) {
+    public static function login($credentials, $mode = null, $salt = null, $message = null, $redirectToGet = true) {
         self::$CN = self::generateCookieName($salt);
         if (!in_array($mode, array(1,2))) {
           die("Nie ustawiony lub źle ustawiony parametr 'mode' -> BasicAuth::test(credentials, message, mode)");
@@ -67,10 +67,18 @@ ob_start()?>
             if(!self::basicCheck()) {
               header("WWW-Authenticate: Basic realm=\"$message\"");
               header('HTTP/1.0 401 Unauthorized');
-              die("I'm sorry - authentication failed");
+              die("Authentication failed");
             }
             break;
           default:
+        }
+
+        if ($redirectToGet) {
+            $s = &$_SERVER;
+            if ($s['REQUEST_METHOD'] !== 'GET') {
+                header("Location: {$s['REQUEST_URI']}");
+                die();
+            }
         }
     }
     protected static function generateCookieName($salt) {
