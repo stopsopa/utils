@@ -73,7 +73,7 @@ ob_start()?>
           default:
         }
 
-        if ($redirectToGet) {
+        if ($redirectToGet && @$_POST['_basicauth_redirect'] === '_basicauth_redirect') {
             $s = &$_SERVER;
             if ($s['REQUEST_METHOD'] !== 'GET') {
                 header("Location: {$s['REQUEST_URI']}");
@@ -181,7 +181,7 @@ ob_start()?>
                     <div class="control-group">
                         <label class="control-label"></label>
                         <div>
-                            <button type="submit" class="btn btn-primary" data-val="login">
+                            <button type="submit" class="btn btn-primary" data-val="login" value="_basicauth_redirect" name="_basicauth_redirect">
                               <i class="glyphicon glyphicon-ok"></i> zaloguj
                             </button>
                         </div>
