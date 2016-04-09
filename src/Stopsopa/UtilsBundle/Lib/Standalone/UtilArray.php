@@ -5,6 +5,7 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
 use ArrayAccess;
 use Stopsopa\UtilsBundle\Lib\Exception\UtilArrayException;
 use Symfony\Component\Security\Acl\Exception\Exception;
+use Symfony\Component\Validator\Constraints\Callback;
 use Traversable;
 
 /**
@@ -45,6 +46,26 @@ class UtilArray
         }
 
         return $target;
+    }
+    public static function sortRecursive(&$data, $param = 0, $reverse = false) {
+
+        if (is_array($data)) {
+
+            if ($reverse) {
+                krsort($data, $param ?: SORT_REGULAR);
+            }
+            else if (is_callable($param)) {
+                uksort($data, $param);
+            }
+            else {
+                ksort($data, $param ?: SORT_REGULAR);
+            }
+
+            foreach ($data as &$d) {
+                static::sortRecursive($d, $param, $reverse);
+            }
+        }
+        
     }
     public static function &serialize(array $array)
     {

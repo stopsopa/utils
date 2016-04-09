@@ -430,7 +430,7 @@ class UtilString
         return $html;
     }
 
-    public static function formatMonay($str)
+    public static function formatMoney($str)
     {
         return number_format(str_replace(',', '.', (double) $str), 2, ',', ' ');
     }
