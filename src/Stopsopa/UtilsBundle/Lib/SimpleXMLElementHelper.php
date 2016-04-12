@@ -43,7 +43,7 @@ class SimpleXMLElementHelper {
 
         return $obj;
     }
-    public static function parseFile($file) {
+    public static function parseFile($file, $force = false, $addNative = false) {
 
         if (!file_exists($file)) {
             throw new Exception("File '$file' doesn't exists");
@@ -53,9 +53,9 @@ class SimpleXMLElementHelper {
             throw new Exception("File '$file' is not readdable");
         }
 
-        return static::parseString(file_get_contents($file));
+        return static::parseString(file_get_contents($file), $force, $addNative);
     }
-    public static function parseString($xml) {
+    public static function parseString($xml, $force = false, $addNative = false) {
 
         $libxml_previous_state = libxml_use_internal_errors(true);
 
@@ -69,8 +69,8 @@ class SimpleXMLElementHelper {
         libxml_use_internal_errors($libxml_previous_state);
 
         return array(
-            'xml' => $xml,
-            'errors' => $errors ?: array()
+            'xml'       => static::normalize($xml, $force, $addNative),
+            'errors'    => $errors ?: array()
         );
     }
 }
