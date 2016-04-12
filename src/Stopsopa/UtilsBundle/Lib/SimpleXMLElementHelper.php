@@ -62,6 +62,15 @@ class SimpleXMLElementHelper {
 
         return static::parseString(file_get_contents($file), $force, $addNative, $getRidOfNamespaces);
     }
+
+    /**
+     * @param $xml
+     * @param bool $force set to true to always create 'text', 'attribute', and 'children' even if empty
+     * @param bool $addNative, add native SimpleXMLElement in each node of returned array under key 'native'
+     * @param null $getRidOfNamespaces, here it is possible to implement function
+     *                                  to remove namepsaces attributes from input xml
+     * @return array
+     */
     public static function parseString($xml, $force = false, $addNative = false, $getRidOfNamespaces = null) {
 
         if (!is_callable($getRidOfNamespaces)) {
