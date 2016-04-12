@@ -5,6 +5,13 @@ use SimpleXMLElement;
 use Exception;
 use stdClass;
 
+/**
+ * Read more:
+ *   http://www.w3schools.com/xml/xml_namespaces.asp
+ *   http://twigstechtips.blogspot.com/2011/01/php-parsing-simplexml-nodes-with.html
+ * Class SimpleXMLElementHelper
+ * @package Stopsopa\UtilsBundle\Lib
+ */
 class SimpleXMLElementHelper {
     /**
      * Because working with pure SimpleXMLElement is really shitty
@@ -24,11 +31,11 @@ class SimpleXMLElementHelper {
             $obj->native = $xml;
         }
 
-        foreach($xml->attributes() as $k => $v){
+        foreach($xml->attributes() as $k => $v) {
             $attributes[$k]  = (string)$v;
         }
 
-        foreach($xml->children() as $k => $v){
+        foreach($xml->children() as $k => $v) {
             $children[] = static::normalize($v, $force);
         }
 
@@ -43,7 +50,7 @@ class SimpleXMLElementHelper {
 
         return $obj;
     }
-    public static function parseFile($file, $force = false, $addNative = false) {
+    public static function parseFile($file, $force = false, $addNative = false, $getRidOfNamespaces = null) {
 
         if (!file_exists($file)) {
             throw new Exception("File '$file' doesn't exists");
@@ -53,9 +60,17 @@ class SimpleXMLElementHelper {
             throw new Exception("File '$file' is not readdable");
         }
 
-        return static::parseString(file_get_contents($file), $force, $addNative);
+        return static::parseString(file_get_contents($file), $force, $addNative, $getRidOfNamespaces);
     }
-    public static function parseString($xml, $force = false, $addNative = false) {
+    public static function parseString($xml, $force = false, $addNative = false, $getRidOfNamespaces = null) {
+
+        if (!is_callable($getRidOfNamespaces)) {
+            $getRidOfNamespaces = function ($xml) {
+                return str_replace('xmlns=', 'ns=', str_replace('xmlns:', 'ns:', $xml));
+            };
+        }
+
+        $xml = call_user_func($getRidOfNamespaces, $xml);
 
         $libxml_previous_state = libxml_use_internal_errors(true);
 
