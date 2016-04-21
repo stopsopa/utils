@@ -60,6 +60,50 @@ if (!window.site) {
 }
 
 
+site.scrollPermalink = function (time, offset, stoponclick) {
+    offset || (offset = 0);
+    (typeof stoponclick === 'undefined') && (stoponclick = false);
+
+    if (stoponclick) {
+
+        var stop = false;
+        $(function () {
+            $('body').one('click', function () {
+                stop = true;
+            });
+        });
+
+        return function () {
+            if (!stop) {
+                log('do scroll')
+                site.scrollPermalink();
+            }
+            else {
+                log('after one click')
+            }
+        }
+    }
+    else {
+        var h = $.trim(location.hash)
+        if (h) {
+            h = $(h);
+            if (h.length) {
+                if (time) {
+                    log('no time: '+h.offset().top + offset)
+                    return $("html, body").animate({scrollTop: h.offset().top + offset }, 400);
+                }
+                else {
+                    return $('html, body').scrollTop( h.offset().top + offset );
+                }
+            }
+            else {
+                return log('h not found');
+            }
+        }
+        log('hash not found');
+    }
+};
+
 /**
  * Klasa Array sama jest funkcją ale Array.prototype jest obiektem z metodą na przykład indexOf()
  *       var r = render(tmptr());
