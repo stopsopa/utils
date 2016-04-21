@@ -68,7 +68,7 @@ site.scrollPermalink = function (time, offset, stoponclick) {
 
         var stop = false;
         $(function () {
-            $('body').one('click', function () {
+            $('body').one('mousedown', function () {
                 stop = true;
             });
         });
