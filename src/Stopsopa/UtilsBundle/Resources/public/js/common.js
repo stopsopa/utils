@@ -568,6 +568,43 @@ if ('jQuery' in window) {
         }
     })(jQuery);
 
+    window.site.autoresize = (function () {
+
+        var mozilla = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+        var win = $(window);
+
+        // textarea autoresize vvvv
+        function functionToUnbind() {
+            var that = $(this),
+                t    = that.get(0),
+                s;
+            if (that.is(':visible')) {
+                that
+                    .unbind('focus', functionToUnbind)
+                    .css('overflow', 'hidden')
+                    .bind("keyup", function() {
+                        s = win.scrollTop(); // fix dla textarea wychodzących u dołu poza wysokość window
+                        that.height(1);
+                        var diff = 0,
+                            pt = parseInt(that.css('paddingTop')),
+                            pb = parseInt(that.css('paddingBottom'));
+                        mozilla || (diff = pt + pb); // nie mozilla - ona nie dodaje do scrollheight padding
+                        that.height(t.scrollHeight - diff);
+                        win.scrollTop(s);
+                    });
+            }
+        }
+
+        return function (textarea) {
+
+            textarea.bind('focus', functionToUnbind);
+
+            setTimeout(function () {
+                textarea.trigger('focus').trigger('keyup');
+            }, 100);
+        }
+
+    }());
 }
 else {
     log('common.js: brak biblioteki jQuery');
