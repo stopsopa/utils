@@ -80,6 +80,24 @@ class AbstractApp
 
         return static::$issymfony;
     }
+    public static function unserialize($d) {
+
+        if (!is_string($d)) {
+            return $d;
+        }
+
+        if ($d === 'b:0;') {
+            return false;
+        }
+
+        $t = unserialize($d);
+
+        if ($t !== false) {
+            return $t;
+        }
+
+        return $d;
+    }
 
     /**
      * @return ContainerInterface
