@@ -18,7 +18,7 @@ class JiraRestService
     const SERVICE = 'jirarest';
     protected $user;
     protected $password;
-    protected $endpoint;
+    protected $endpoint; // https://phase-ii.atlassian.net/rest/api/2
     public function __construct($config)
     {
         $this->endpoint = $config['endpoint'];
