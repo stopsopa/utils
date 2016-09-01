@@ -52,6 +52,24 @@ class UtilString
             $len = strlen($str);
         }
     }
+    public static function unserialize($d) {
+
+        if (!is_string($d)) {
+            return $d;
+        }
+
+        if ($d === 'b:0;') {
+            return false;
+        }
+
+        $t = unserialize($d);
+
+        if ($t !== false) {
+            return $t;
+        }
+
+        return $d;
+    }
 
     /**
      * Redukuje wystapnienia grup spacji do jednej, usuwa też znaki nowej linii
