@@ -6,7 +6,7 @@ use Exception;
 
 /**
  * Pisane z api wersja: JIRA 6.4.8 REST API
- *     https://docs.atlassian.com/jira/REST/6.4.8/.
+ *     https://docs.atlassian.com/jira/REST/6.4.8/
  *
  * dostępne werjse to:
  *     https://docs.atlassian.com/jira/REST/
