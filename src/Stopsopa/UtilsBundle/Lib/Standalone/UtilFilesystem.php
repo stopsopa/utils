@@ -10,6 +10,41 @@ use Exception;
  */
 class UtilFilesystem
 {
+    /**
+     * See also: http://stackoverflow.com/a/3352564/5560682
+     */
+    public static function deleteEntireDir($directory, $empty = false)
+    {
+        // [http://lixlpixel.org/recursive_function/php/recursive_directory_delete/] g(delete directory recursively php)
+        if (substr($directory, -1) == '/') {
+            $directory = substr($directory, 0, -1);
+        }
+        if (!file_exists($directory) || !is_dir($directory)) {
+            return false;
+        } elseif (!is_readable($directory)) {
+            return false;
+        } else {
+            $handle = opendir($directory);
+            while (false !== ($item = readdir($handle))) {
+                if ($item != '.' && $item != '..') {
+                    $path = $directory.'/'.$item;
+                    if (is_dir($path)) {
+                        self::deleteEntireDir($path);
+                    } else {
+                        unlink($path);
+                    }
+                }
+            }
+            closedir($handle);
+            if ($empty == false) {
+                if (!rmdir($directory)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
     public static function checkIfFileExistOrICanCreate($file, $createIfNotExist = false)
     {
         if (file_exists($file)) {
