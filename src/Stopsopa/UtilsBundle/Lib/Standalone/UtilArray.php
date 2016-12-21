@@ -220,13 +220,15 @@ class UtilArray
      *  also works keys like '..k.' or 'k.t...'
      * @param mix    $val
      *
-     * @return bool
+     * @return stack of generated keys
      */
-    public static function cascadeSet(&$source, $key, $val)
+    public static function cascadeSet(&$source, $key, $val, $returnOnlyLasGeneratedKey = true)
     {
         if (!is_string($key)) {
             return false;
         }
+
+        $stack = array();
 
         $key = static::cascadeExplode($key);
 
@@ -241,21 +243,35 @@ class UtilArray
                 }
                 else {
                     $element[] = array();
-                    $element = &$element[count($element)-1];
+                    $generatedKey = count($element)-1;
+                    $stack[] = $generatedKey;
+                    $element = &$element[$generatedKey];
                 }
             } else {
                 if (strlen($d)) {
                     $element[$d] = $val;
                 }
                 else {
+                    $generatedKey = count($element);
+                    $stack[] = $generatedKey;
                     $element[] = $val;
                 }
 
-                return true;
+                if ($returnOnlyLasGeneratedKey) {
+
+                    return array_pop($stack);
+                }
+
+                return $stack;
             }
         }
 
-        return true;
+        if ($returnOnlyLasGeneratedKey) {
+
+            return array_pop($stack);
+        }
+
+        return $stack;
     }
     public static function cascadeExplode($key)
     {
