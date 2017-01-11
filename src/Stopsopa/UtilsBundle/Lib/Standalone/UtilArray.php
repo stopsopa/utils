@@ -222,7 +222,7 @@ class UtilArray
      *
      * @return stack of generated keys
      */
-    public static function cascadeSet(&$source, $key, $val, $returnOnlyLasGeneratedKey = true)
+    public static function cascadeSet(&$source, $key, $val, $returnOnlyLastGeneratedKey = true)
     {
         if (!is_string($key)) {
             return false;
@@ -257,7 +257,7 @@ class UtilArray
                     $element[] = $val;
                 }
 
-                if ($returnOnlyLasGeneratedKey) {
+                if ($returnOnlyLastGeneratedKey) {
 
                     return array_pop($stack);
                 }
@@ -266,7 +266,7 @@ class UtilArray
             }
         }
 
-        if ($returnOnlyLasGeneratedKey) {
+        if ($returnOnlyLastGeneratedKey) {
 
             return array_pop($stack);
         }
