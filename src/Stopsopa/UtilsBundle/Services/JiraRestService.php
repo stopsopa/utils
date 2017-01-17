@@ -53,6 +53,8 @@ class JiraRestService
         $method = strtoupper($method);
 
         $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 10); 
 
         curl_setopt($ch, CURLOPT_USERPWD, $this->user.':'.$this->password);
 
