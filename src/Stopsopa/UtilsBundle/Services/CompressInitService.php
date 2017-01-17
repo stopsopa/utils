@@ -46,7 +46,8 @@ class CompressInitService
                 'version' => $ver,
             ), true);
 
-            $ch = curl_init($url);
+            $ch = curl_init($url);                    
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 10); 
             curl_setopt($ch, CURLOPT_HEADER, false);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             $return = curl_exec($ch);
