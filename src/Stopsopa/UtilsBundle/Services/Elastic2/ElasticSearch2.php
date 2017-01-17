@@ -535,6 +535,8 @@ class ElasticSearch2 {
         $method = strtoupper($method);
 
         $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 10); 
 
         curl_setopt($ch, CURLOPT_ENCODING, '');
 
