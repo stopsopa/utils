@@ -260,6 +260,8 @@ class Sms
         $this->status = $this->result = null;
 
         $ch = curl_init();
+        
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 10); 
 
         if ($this->test) {
             $sms['test'] = 1;
