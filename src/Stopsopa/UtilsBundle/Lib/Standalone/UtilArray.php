@@ -47,6 +47,17 @@ class UtilArray
 
         return $target;
     }
+    
+    public static function recurKsort(&$input) {
+
+        if (is_array($input)) {
+            ksort($input);
+            foreach ($input as &$d) {
+                static::recurKsort($d);
+            }
+        }
+    }
+    
     public static function sortKeysRecursive(&$data, $param = 0, $reverse = false) {
 
         if (is_array($data)) {
