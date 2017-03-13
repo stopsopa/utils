@@ -454,7 +454,51 @@ class UtilString
     }
 
     /**
-     * test: JHN0cmluZyA9ICd8ZnN8Z2dzYV9kc3Nhc3NffGZkc2E5fGZzYXNzZGY5OXxmZHNhZnNkYTAwfGZkc2Fmc2RhMDAwOXxmZGFzXzl8ZmRhc2RmYXNfMDl8ZmRzYV8wMDA4OHxmZHNhXzB8ZmRzYV8wMDAnOw0KZWNobyAnPHByZT4nOw0KZm9yZWFjaCAoZXhwbG9kZSgnfCcsICRzdHJpbmcpIGFzICRkKSB7DQogIHdyaXRlbG4oIickZCcgLSAnIi51cCgkZCkuIiciKTsNCn0NCg0KZnVuY3Rpb24gd3JpdGVsbigkc3RyKSB7DQogIGVjaG8gUEhQX0VPTC4kc3RyOw0KfQ==.
+     
+<?php
+
+namespace Tests\CoreBundle\Lib;
+
+use CoreBundle\Libs\UtilString;
+use Tests\Tools\WebTestCasePhaseii;
+
+class UtilStringTest extends WebTestCasePhaseii {
+    public function dataProvider() {
+        return [
+            ['', '_1'],
+            ['_', '_1'],
+            ['_1', '_2'],
+            ['_2', '_3'],
+            ['test', 'test_1'],
+            ['', '-1', '-'],
+            ['_', '_-1', '-'],
+            ['_1', '_1-1', '-'],
+            ['_2', '_2-1', '-'],
+            ['test', 'test-1', '-'],
+            ['', '-2', '-', 2],
+            ['_', '_-2', '-', 2],
+            ['_1', '_1-2', '-', 2],
+            ['_2', '_2-2', '-', 2],
+            ['test', 'test-2', '-', 2]
+        ];
+    }
+
+    /**
+     * @dataProvider dataProvider
+     *-/
+    public function testIncrementString($input, $expected, $delimiter = '_', $first = 1) {
+
+        if (!$delimiter) {
+            $delimiter = '_';
+        }
+
+        if (!$first) {
+            $first = 1;
+        }
+
+        $this->assertSameKsort($expected, UtilString::incrementString($input, $delimiter, $first));
+    }
+}     
      */
     public static function incrementString($string, $delimiter = '_', $first = 1)
     {
