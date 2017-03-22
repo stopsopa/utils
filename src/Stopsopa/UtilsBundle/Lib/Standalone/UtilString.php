@@ -309,6 +309,21 @@ class UtilString
 
         return str_replace($this->keys, $this->data, $str);
     }
+    /**
+     * http://stackoverflow.com/a/1734255
+     */
+    public static function encodeURIComponent($str, $double = false) {
+
+        $revert = array('%21'=>'!', '%2A'=>'*', '%27'=>"'", '%28'=>'(', '%29'=>')');
+
+        $data = strtr(rawurlencode($str), $revert);
+
+        if ($double) {
+            $data = static::encodeURIComponent($data);
+        }
+
+        return $data;
+    }
 
     /**
      * Przycina bez obcinania w połowie słowa.
