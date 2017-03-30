@@ -794,8 +794,13 @@ class UtilStringTest extends WebTestCasePhaseii {
         }
 
         return $offset;
+    }    
+    public static function tinyMceTextStripTags($string) {
+        return trim(preg_replace('/[\t\r\n\s]{2,}/mu', ' ', html_entity_decode(preg_replace('/(<[^>]+?>)/', ' ', $string))));
     }
-
+    public static function tinyMceTextSlugify($string) {
+        return static::urlizeTrim(static::tinyMceTextStripTags($string));
+    }
     /**
      * @return array
      * http://php.net/manual/en/function.mb-split.php#99851
