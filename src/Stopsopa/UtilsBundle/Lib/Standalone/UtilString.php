@@ -80,9 +80,9 @@ class UtilString
     public static function reduceSpaces($data)
     {
         // http://erisds.co.uk/code/getting-rid-of-non-breaking-spaces-nbsp  g(Getting Rid of Non Breaking Spaces) g(white space characters tinymce) g(Have you ever tried to parse, process or preg_replace some HTML? Ever tried to do it when the HTML is UTF-8 encoded? Getting rid of white space can be tricky, here’s a few tricks I’ve learned)
-    $data = str_replace('&nbsp;', ' ', $data);
+        $data = str_replace('&nbsp;', ' ', $data);
 
-        return trim(preg_replace("/[\s\r\n\t\xC2\xA0]+/i", ' ', $data));
+        return trim(preg_replace("/[\s\r\n\t\xC2\xA0]{2,}/i", ' ', $data));
     }
 
     protected function setupEncodingList($list)
@@ -796,7 +796,7 @@ class UtilStringTest extends WebTestCasePhaseii {
         return $offset;
     }    
     public static function tinyMceTextStripTags($string) {
-        return trim(preg_replace('/[\t\r\n\s]{2,}/mu', ' ', html_entity_decode(preg_replace('/(<[^>]+?>)/', ' ', $string))));
+        return trim(preg_replace('/[\t\r\n\s\xC2\xA0]{2,}/mu', ' ', html_entity_decode(preg_replace('/(<[^>]+?>)/', ' ', $string))));
     }
     public static function tinyMceTextSlugify($string) {
         return static::urlizeTrim(static::tinyMceTextStripTags($string));
