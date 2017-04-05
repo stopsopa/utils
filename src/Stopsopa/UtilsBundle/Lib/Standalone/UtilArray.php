@@ -26,6 +26,17 @@ class UtilArray
 
         return self::_flat($d, $data);
     }
+    public static function fillKeys($fn, $array) {
+
+        $tmp = array();
+
+        foreach ($array as $a) {
+            $tmp[ $fn($a) ] = $a;
+        }
+
+        return $tmp;
+    }
+
     /**
      * Pomocnicza metoda dla flat.
      *
