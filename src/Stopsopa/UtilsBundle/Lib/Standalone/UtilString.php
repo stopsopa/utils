@@ -794,7 +794,7 @@ class UtilStringTest extends WebTestCasePhaseii {
         }
 
         return $offset;
-    }    
+    }   
     /**
      * http://mrrena.blogspot.co.uk/2009/07/entityref-expecting-at-line-1.html
      * error: EntityRef: expecting ';'
@@ -810,11 +810,11 @@ class UtilStringTest extends WebTestCasePhaseii {
      */
     public static function sitemapLinks($url) {
 
-        $url = str_replace('"', '&quot;', $url);
         $url = str_replace('&', '&amp;', $url);
-        $url = str_replace("'", '&quot;', $url);
-        $url = str_replace('<', '&lt;', $url);
+        $url = str_replace("'", '&apos;', $url);
+        $url = str_replace('"', '&quot;', $url);
         $url = str_replace('>', '&gt;', $url);
+        $url = str_replace('<', '&lt;', $url);
 
         return $url;
     }
