@@ -799,7 +799,7 @@ class UtilStringTest extends WebTestCasePhaseii {
      * http://mrrena.blogspot.co.uk/2009/07/entityref-expecting-at-line-1.html
      * error: EntityRef: expecting ';'
      *
-     * More info: https://support.google.com/webmasters/answer/183668?hl=en
+     * More info: https://support.google.com/webmasters/answer/183668?hl=en g(Build and submit a sitemap)
      *
      * Method to replace:
      *
