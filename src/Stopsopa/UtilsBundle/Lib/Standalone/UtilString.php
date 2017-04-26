@@ -795,6 +795,29 @@ class UtilStringTest extends WebTestCasePhaseii {
 
         return $offset;
     }    
+    /**
+     * http://mrrena.blogspot.co.uk/2009/07/entityref-expecting-at-line-1.html
+     * error: EntityRef: expecting ';'
+     *
+     * More info: https://support.google.com/webmasters/answer/183668?hl=en
+     *
+     * Method to replace:
+     *
+    <loc>http://www.amlglobalportal.com/licenses?page=1&perpage=2name=&filterIds=</loc>
+     * to
+    <loc>http://www.amlglobalportal.com/licenses?page=1&amp;perpage=2&amp;name=&amp;filterIds=</loc>
+     * in sitemap like xml files
+     */
+    public static function sitemapLinks($url) {
+
+        $url = str_replace('"', '&quot;', $url);
+        $url = str_replace('&', '&amp;', $url);
+        $url = str_replace("'", '&quot;', $url);
+        $url = str_replace('<', '&lt;', $url);
+        $url = str_replace('>', '&gt;', $url);
+
+        return $url;
+    }
     public static function tinyMceTextStripTags($string) {
         return trim(preg_replace('/[\t\r\n\s\xC2\xA0]{2,}/mu', ' ', html_entity_decode(preg_replace('/(<[^>]+?>)/', ' ', $string))));
     }
