@@ -854,4 +854,75 @@ class UtilStringTest extends WebTestCasePhaseii {
     public static function toArray($string) {
         return preg_split('/(?<!^)(?!$)/u', $string);
     }
+    
+    /**
+     * Would be nice to improve this method in the future to be more exact with reutrned string length
+     * because there can be differences up to 2 characters betwen actual length and expected
+     * 2017-05-05
+     */
+    public static function zoom2($string, $search, $limit, $dots = '...', $ci = true, $encoding = 'UTF8')
+    {
+        $length = mb_strlen($string);
+
+        if ($length <= $limit) {
+
+            return $string;
+        }
+
+        $flen = mb_strlen($search);
+
+        if ($length < $flen) {
+
+            return $string;
+        }
+
+        $dlen = mb_strlen($dots) + 1;
+
+        if (!$flen) {
+
+            return mb_substr($string, 0, $limit - $dlen) . ' ' . $dots;
+        }
+
+        preg_match('#^(.*?)(' . preg_quote($search, '#') . ')(.*)$#' . ($ci ? 'i' : ''), $string, $match);
+
+        if (count($match) !== 4) {
+
+            return mb_substr($string, 0, $limit - $dlen) . ' ' . $dots;
+        }
+
+        $tosplit        = $limit - $flen;
+
+        $sidecut     = intval(floor($tosplit / 2));
+
+        $leftactual     = mb_strlen($match[1]);
+
+        if ($sidecut > $leftactual) {
+
+            return mb_substr($string, 0, $limit - $dlen) . ' ' . $dots;
+        }
+
+        $leftcut = $leftactual - $sidecut + $dlen;
+
+        $ret = $dots . ' ' . mb_substr($match[1], $leftcut, null, $encoding) . $match[2];
+
+        $rightactual     = mb_strlen($match[3]);
+
+        $rightcut = $sidecut - $dlen;
+
+        $rdots = false;
+
+        if (($rightactual - $dlen) > $rightcut) {
+
+            $rdots = true;
+        }
+
+        if ($rdots) {
+
+            $ret .= mb_substr($match[3], 0, $rightcut, $encoding) . ' ' . $dots;
+
+            return $ret;
+        }
+
+        return $ret . $match[3];
+    }
 }
