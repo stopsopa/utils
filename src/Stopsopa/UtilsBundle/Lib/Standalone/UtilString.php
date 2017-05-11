@@ -663,9 +663,13 @@ class UtilStringTest extends WebTestCasePhaseii {
      
      
         and later...
-        $_d = preg_replace_callback('#(' . preg_quote($search, '#') . ')#im', function ($d) {
-            return static::PREFIX . ($d[1]) . static::POSTFIX;
-        }, $tmp2);
+
+        $data['found']  = 0;
+
+        $data['body']   = preg_replace_callback('#(' . preg_quote($this->scope, '#') . ')#im', function ($d) use ($prefix, $postfix, &$data) {
+            $data['found'] += 1;
+            return $prefix . ($d[1]) . $postfix;
+        }, $data['body']);
      */
     public static function zoom($string, $find, $forward = 50, $backward = 50, $encoding = 'UTF8')
     {
