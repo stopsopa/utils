@@ -660,6 +660,12 @@ class UtilStringTest extends WebTestCasePhaseii {
      * @param int    $backward
      *
      * @return string
+     
+     
+        and later...
+        $_d = preg_replace_callback('#(' . preg_quote($search, '#') . ')#im', function ($d) {
+            return static::PREFIX . ($d[1]) . static::POSTFIX;
+        }, $tmp2);
      */
     public static function zoom($string, $find, $forward = 50, $backward = 50, $encoding = 'UTF8')
     {
