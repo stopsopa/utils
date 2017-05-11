@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#vendor/bin/phpunit --stop-on-failure --filter="testInde"
+
+vendor/bin/phpunit --stop-on-failure $@
+
+# grab last status code
+CODE=$?;
+
+#rm -rf var/cache/test/phpunit_cache_*
+
+# return status code from phpunit for jenkins
+exit $CODE;
+
+
+

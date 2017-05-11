@@ -1,3 +1,4 @@
-/nbproject
-/stopsopa.lnk
-/.idea
+/nbproject/
+/.idea/
+/build/
+/vendor/
