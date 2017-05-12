@@ -2,7 +2,7 @@
 
 #vendor/bin/phpunit --stop-on-failure --filter="testInde"
 
-vendor/bin/phpunit --stop-on-failure $@
+php vendor/bin/phpunit --stop-on-failure $@
 
 # grab last status code
 CODE=$?;
