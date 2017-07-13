@@ -7,6 +7,19 @@ use Exception;
 
 /**
  * @package CoreBundle\Libs\ReCaptcha
+ 
+
+    recaptcha:
+        class: CoreBundle\Libs\ReCaptcha
+        calls:
+            -
+                method: setSecretKey
+                arguments:
+                    - "%recaptcha_secretkey%"
+                    
+                    
+    recaptcha_secretkey: ...
+    recaptcha_public: ...                 
  */
 class ReCaptcha {
     const SERVICE = 'recaptcha';
