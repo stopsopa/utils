@@ -5,6 +5,63 @@ namespace Stopsopa\UtilsBundle\Lib;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Iterator;
 
+/*
+
+AbstractException::setErrorHandler();
+
+$file = '2017-08-10-dump.txt';
+
+$csv = new CsvFileIterator($file, array(
+    'delimiter' => "\t",
+    'escape' => '\\',
+), function ($row) {
+    echo "test\n";
+    print_r($row);
+    return $row;
+});
+
+$row = 0;
+$headers = array();
+
+foreach ($csv as $item) {
+
+    if ($row === 0) {
+        $headers = $item;
+    }
+    else {
+        try {
+            $item = array_combine($headers, $item);
+        }
+        catch (Exception $e) {
+            if ( strpos($e->getMessage(), 'Both parameters should have an equal number of elements') !== false ) {
+                var_dump(array(
+                    $headers,
+                    $item
+                ));
+                die('end');
+            }
+            else {
+                throw $e;
+            }
+        }
+        print_r($item);
+    }
+
+    if ( ($row % 100000) === 0 ) {
+        print_r($item);
+    }
+    if ( ($row % 1000) === 0 ) {
+        echo "$row ";
+    }
+
+    if ($row > 5) {
+
+        break;
+    }
+
+    $row += 1;
+}
+*/
 class CsvFileIterator implements Iterator
 {
     protected $file;
