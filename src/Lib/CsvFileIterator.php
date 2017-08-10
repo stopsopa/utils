@@ -5,7 +5,7 @@ namespace Stopsopa\UtilsBundle\Lib;
 use Stopsopa\UtilsBundle\Lib\Standalone\UtilFilesystem;
 use Iterator;
 
-/**
+/*
 
 
 $file = '2017-08-10-dump.txt';
