@@ -70,17 +70,25 @@ class CsvFileIterator implements Iterator
     protected $valid;
     protected $options;
     protected $transform;
+    protected $return;
 
     /**
      * CsvFileIterator constructor.
      * @param $file
      * @param array $options
+     *
+     *    WARNING: use only if you have no newlines in data
      * @param callable|null $transform - optional function to process row before splitting it by "str_getcsv"
+     *
+     *    WARNING: use only if you have no newlines in data
+     * @param callable|null $return - function that you can change structure of current iterated element
+     *      default: function ($svg_row_as_array, $i, $raw_row_from_svg, $in_file_offset) {
+     *          // $i - zero indexed number of row
+     *          return $svg_row_as_array;
+     *      }
      */
-    public function __construct($file, $options = array(), Callable $transform = null)
+    public function __construct($file, $options = array(), Callable $transform = null, Callable $return = null)
     {
-        UtilFilesystem::checkFile($file);
-        
         $this->file = fopen($file, 'r');
         if (is_array($options)) {
             $this->options = array_merge(array(
@@ -92,7 +100,16 @@ class CsvFileIterator implements Iterator
             ), $options);
         }
 
-        $this->transform = $transform;
+        $this->transform    = $transform;
+        $this->return       = $return;
+
+        if ($return && ! $this->transform) {
+
+            $this->transform = function ($row) {
+
+                return $row;
+            };
+        }
     }
     public function __destruct()
     {
@@ -125,15 +142,24 @@ class CsvFileIterator implements Iterator
                 $this->current = fgets($this->file);
             }
 
+            $offset = ftell($this->file);
+
+            $row = call_user_func(
+                $this->transform,
+                $this->current
+            );
+
             $this->current = str_getcsv(
-                call_user_func(
-                    $this->transform,
-                    $this->current
-                ),
+                $row,
                 $this->options['delimiter'],
                 $this->options['enclosure'],
                 $this->options['escape']
             );
+
+            if ($this->return) {
+
+                $this->current = call_user_func($this->return, $this->current, $this->key, $row, $offset);
+            }
         }
         else {
             $this->current = fgetcsv(
