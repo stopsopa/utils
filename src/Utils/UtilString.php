@@ -16,4 +16,9 @@ class UtilString
 
         return trim($string);
     }
+    public static function toUnicode($str) {
+        return preg_replace_callback("/./", function($matched) {
+            return '\x'.dechex(ord($matched[0]));
+        }, $str);
+    }
 }
