@@ -4,10 +4,6 @@ namespace Stopsopa\UtilsBundle\Lib\Standalone;
 
 use Exception;
 
-/**
- * Patrz klasę Symfony\Component\Filesystem\Filesystem
- * warto może poprzerabiać co nieco tak jak jest w tej klasie.
- */
 class UtilFilesystem
 {
     /**
@@ -165,14 +161,14 @@ class UtilFilesystem
         return (count(scandir($dir)) == 2);
     }
     /**
-     * Usuwa puste katalogi przy parametrach.
+     * Remove empty directory up to path
      *
      UtilFilesystem::removeEmptyDirsToPath(
      pathinfo($file, PATHINFO_DIRNAME),
      $this->getUploadRootDir()
      );
      *
-     * ze stanu :
+     * from state :
      .
      `-- user
      |-- d3
@@ -183,7 +179,7 @@ class UtilFilesystem
 
      * removeEmptyDirsToPath('/var/docker/www/main/web/media/uploads/d3/5d', '/var/docker/www/main/web/media/uploads')
      *
-     * do stanu
+     * to state
      .
      `-- user
      `-- e8
@@ -209,7 +205,7 @@ class UtilFilesystem
         }
     }
     /**
-     * Robi to co zwykły move z tym że tworzy katalogi po drodze jeśli nie istnieją dla ścieżki docelowej.
+     * Move method but it will create directory if doesn't eist
      *
      * @param type $source
      * @param type $target
@@ -226,7 +222,7 @@ class UtilFilesystem
     }
 
     /**
-     * Przełącza flagi w plikach w formacie /*id* /!!1 na /*id* /!!0 i odwrotnie za pomocą stpa:switch
+     * Flag switcher from /*id* /!!1 to /*id* /!!0 and back
      * @param string $file
      * @param string $id
      */
@@ -269,10 +265,10 @@ class UtilFilesystem
         }
     }
     /**
-     * Zwraca stan flagi
+     * Return state of flag
      * @param string $file
      * @param string $id
-     * @return bool|null - null: brak flagi, true: flaga włączona, false: flaga wyłączona
+     * @return bool|null - null: no flag, true: flag is on, false: flag is off
      */
     public static function toggleFlagGetState($file, $id) {
 
@@ -285,9 +281,9 @@ class UtilFilesystem
         preg_match("#/\*$id\*/!!([0|1])#", $content, $match);
 
         if (isset($match['1'])) {
-            return !!intval($match['1']); // zwraca stan flagi
+            return !!intval($match['1']); // return state of flag
         }
 
-        return null; // brak flagi w pliku
+        return null; // no flag in file
     }
 }
