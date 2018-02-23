@@ -14,6 +14,8 @@ use Doctrine\ORM\UnitOfWork;
 
 abstract class AbstractManager
 {
+    const NORMALIZE = '__normalize';
+    protected $normalizedetected = false;
     /**
      * @var EntityManager
      */
@@ -43,6 +45,64 @@ abstract class AbstractManager
             $this->repository = $em->getRepository($this->class);
             $this->table = $this->getTableName();
         }
+
+        $this->normalizedetected = $this->extend(true);
+    }
+    /**
+     * For processing data from DBAL before return to feed
+     *
+     * @param mixed $data , true  - retun name of method thats warm data - can be used to detect if method static::NORMALIZE exist
+     *                      array - warm up data - works acording to $many parameter
+     * @param bool $many - whether you want to process one row or array of rows
+     *
+     * @return string
+     */
+    public function extend($data = false, $many = false)
+    {
+        $name = static::NORMALIZE;
+
+        if ($data === true) {
+            return method_exists(get_called_class(), $name);
+        }
+
+        if (is_array($data)) {
+            if ($this->normalizedetected) {
+                if ($many) {
+                    foreach ($data as &$d) {
+                        $this->{$name}($d);
+                    }
+
+                    return $data;
+                }
+
+                $this->{$name}($data);
+
+                return $data;
+            }
+        }
+
+        return $data;
+    }
+    public function dbalFind($id) {
+
+        $table = $this->getTableName();
+
+        $row = $this->dbal->fetchAssoc("SELECT * FROM `$table` x where x.id = :id", array(
+            'id' => $id
+        ));
+
+        if ($row) {
+
+            if (is_numeric($row['id'])) {
+
+                $row['id'] = intval($row['id']);
+            }
+
+            return $this->extend($row);
+        }
+    }
+    public function dbalFetchAll($sql, array $params = array(), $types = array()) {
+        return $this->extend($this->dbal->fetchAll($sql, $params, $types), true);
     }
     public function count(callable $filter = null, $alias = 'x')
     {
