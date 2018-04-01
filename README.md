@@ -3,3 +3,8 @@
 
 [![Coverage Status](https://coveralls.io/repos/github/stopsopa/utils/badge.svg?branch=master)](https://coveralls.io/github/stopsopa/utils?branch=master)
 
+What? Why?
+-
+
+Old repository with various php libraries...
+
